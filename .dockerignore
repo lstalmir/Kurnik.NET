@@ -1,0 +1,6 @@
+# Kurnik.NET 2018
+# Ignore specified paths/elements in docker image.
+
+# Default ASP.NET Core outputs
+bin/
+obj/

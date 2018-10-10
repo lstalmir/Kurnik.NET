@@ -1,1 +1,41 @@
+# Kurnik.NET 2018
 
+image: docker:latest
+
+variables:
+  DOCKER_DRIVER: overlay
+  CONTAINER_TEST_IMAGE: kurnik.net-test:$CI_COMMIT_SHA
+  CONTAINER_RELEASE_IMAGE: kurnik.net:$CI_COMMIT_SHA
+
+services:
+- docker:dind
+
+# Only one stage is defined to enable parallelization of tasks
+stages:
+- run
+
+##############################################################################
+# Build release version of the application and publish the compressed
+# docker image. The default entrypoint for the image runs the application.
+##############################################################################
+release:
+  stage: run
+  script:
+  - docker build -t $CONTAINER_RELEASE_IMAGE .
+  - docker save $CONTAINER_RELEASE_IMAGE -o docker-image.tar.gz
+  artifacts:
+    name: "webpage_$CI_BUILD_REF_NAME-$CI_COMMIT_REF_NAME"
+    paths:
+    - docker-image.tar.gz
+    expire_in: 3 days
+
+##############################################################################
+# Build test version of the application and run automated tests. No artifacts
+# are pushed to the repository. The default entrypoint for the image runs
+# automated tests.
+##############################################################################
+test:
+  stage: run
+  script:
+  - docker build -t $CONTAINER_TEST_IMAGE --target test .
+  - docker run $CONTAINER_TEST_IMAGE
