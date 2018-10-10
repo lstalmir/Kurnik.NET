@@ -9,16 +9,15 @@ WORKDIR /Kurnik.NET-build
 # caches restore result by copying csproj file separately
 COPY *.sln .
 COPY Source/*.csproj ./Source/
-# remove tests project from solution
-RUN dotnet sln remove ./Tests/Kurnik.Tests.csproj
+COPY Tests/*.csproj ./Tests/
 RUN dotnet restore
 
 # copies the rest of your code
 COPY . .
-RUN dotnet publish ./Source/Kurnik.csproj --output /Kurnik.NET-bin/ --configuration Release
+RUN dotnet publish --output /Kurnik.NET-dev/ --configuration Release
 
-# Stage 2: Release
-FROM microsoft/dotnet:2.1-aspnetcore-runtime AS release
+# Stage 2: Tests
+FROM microsoft/dotnet:2.1-sdk AS test
 WORKDIR /Kurnik.NET
-COPY --from=build /Kurnik.NET-bin .
-ENTRYPOINT ["dotnet", "Kurnik.dll"]
+COPY --from=build /Kurnik.NET-dev .
+ENTRYPOINT ["dotnet", "vstest", "Kurnik.Tests.dll"]

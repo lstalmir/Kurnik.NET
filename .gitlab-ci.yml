@@ -21,8 +21,11 @@ stages:
 release:
   stage: run
   script:
-  - docker build -t $CONTAINER_RELEASE_IMAGE .
-  - docker save $CONTAINER_RELEASE_IMAGE -o docker-image.tar.gz
+  - docker build 
+    -t $CONTAINER_RELEASE_IMAGE .
+  - docker save 
+    $CONTAINER_RELEASE_IMAGE 
+    -o docker-image.tar.gz
   artifacts:
     name: "webpage_$CI_BUILD_REF_NAME-$CI_COMMIT_REF_NAME"
     paths:
@@ -37,5 +40,8 @@ release:
 test:
   stage: run
   script:
-  - docker build -t $CONTAINER_TEST_IMAGE --target test .
-  - docker run $CONTAINER_TEST_IMAGE
+  - docker build 
+    -f Tests.Dockerfile 
+    -t $CONTAINER_TEST_IMAGE .
+  - docker run 
+    $CONTAINER_TEST_IMAGE
