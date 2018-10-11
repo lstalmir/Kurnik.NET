@@ -1,0 +1,16 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "module": "amd",
+        "noImplicitAny": false,
+        "noEmitOnError": true,
+        "removeComments": true,
+        "sourceMap": true,
+        "allowJs": true,
+        "outFile": "./bin/game_engine.js"
+    },
+    "exclude": [
+        "./bin/**/*",
+        "./lib/**/*"
+    ]
+}

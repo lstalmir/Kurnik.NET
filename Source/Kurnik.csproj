@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <UserSecretsId>aspnet-Source-331988D7-0E92-4452-A050-BBA3758142E9</UserSecretsId>
+    <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,5 +15,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.1.2" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.3" PrivateAssets="All" />
   </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="COPY $(SolutionDir)Engine\bin\*.js $(ProjectDir)wwwroot\js\&#xD;&#xA;COPY $(SolutionDir)Engine\lib\*.js $(ProjectDir)wwwroot\js\&#xD;&#xA;" />
+  </Target>
 
 </Project>

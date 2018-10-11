@@ -262,3 +262,6 @@ __pycache__/
 
 # Intel Advisor
 **/My Advisor Results*
+
+# Engine build outputs
+**/game_engine.js
