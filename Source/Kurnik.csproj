@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="COPY $(ProjectDir)..\Engine\bin\*.js $(ProjectDir)wwwroot\js\&#xD;&#xA;" />
+    <Exec Command="dotnet $(ProjectDir)../Engine/bin/netcoreapp2.1/Engine.dll $(ProjectDir)../Engine/bin/game_engine.js $(ProjectDir)wwwroot/js/game_engine.js" />
   </Target>
 
 </Project>

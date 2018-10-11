@@ -4,30 +4,11 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <ApplicationIcon />
-    <OutputType>Library</OutputType>
-    <StartupObject />
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="src\**" />
-    <Content Remove="src\**" />
-    <EmbeddedResource Remove="src\**" />
-    <None Remove="src\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Source\game_engine.ts" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <TypeScriptCompile Include="Source\game_engine.ts" />
-  </ItemGroup>
-
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <OutputType>Exe</OutputType>
+    <StartupObject>KurnikNET.Engine.EngineDeployAction</StartupObject>
+    <OutputPath>bin</OutputPath>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
     <TypeScriptTarget>ES5</TypeScriptTarget>
     <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
     <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
@@ -43,8 +24,12 @@
     <TypeScriptSourceRoot></TypeScriptSourceRoot>
   </PropertyGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="RMDIR /S /Q bin\$(ConfigurationName)&#xD;&#xA;" />
-  </Target>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="Source\game_engine.ts" />
+  </ItemGroup>
 
 </Project>
