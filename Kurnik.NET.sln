@@ -7,28 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kurnik.Tests", "Tests\Kurni
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kurnik", "Source\Kurnik.csproj", "{23C022D8-17C7-4D1E-A0CB-C26A7AD1CC7C}"
 	ProjectSection(ProjectDependencies) = postProject
-		{D9F93127-9863-4E90-A7A6-8F80BE70D015} = {D9F93127-9863-4E90-A7A6-8F80BE70D015}
-	EndProjectSection
-EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Engine", "Engine\", "{D9F93127-9863-4E90-A7A6-8F80BE70D015}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_50557"
-		Debug.AspNetCompiler.PhysicalPath = "Engine\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_50557\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_50557"
-		Release.AspNetCompiler.PhysicalPath = "Engine\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_50557\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "50557"
-		SlnRelativePath = "Engine\"
+		{E994E6A7-B6BA-4960-BD42-4563B5C931AB} = {E994E6A7-B6BA-4960-BD42-4563B5C931AB}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repo", "Repo", "{C67B7805-379D-437F-8C3D-2312E404742A}"
@@ -40,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repo", "Repo", "{C67B7805-3
 		README.md = README.md
 		Tests.Dockerfile = Tests.Dockerfile
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Engine", "Engine\Engine.csproj", "{E994E6A7-B6BA-4960-BD42-4563B5C931AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,18 +56,18 @@ Global
 		{23C022D8-17C7-4D1E-A0CB-C26A7AD1CC7C}.Release|x64.Build.0 = Release|Any CPU
 		{23C022D8-17C7-4D1E-A0CB-C26A7AD1CC7C}.Release|x86.ActiveCfg = Release|Any CPU
 		{23C022D8-17C7-4D1E-A0CB-C26A7AD1CC7C}.Release|x86.Build.0 = Release|Any CPU
-		{D9F93127-9863-4E90-A7A6-8F80BE70D015}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D9F93127-9863-4E90-A7A6-8F80BE70D015}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D9F93127-9863-4E90-A7A6-8F80BE70D015}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D9F93127-9863-4E90-A7A6-8F80BE70D015}.Debug|x64.Build.0 = Debug|Any CPU
-		{D9F93127-9863-4E90-A7A6-8F80BE70D015}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D9F93127-9863-4E90-A7A6-8F80BE70D015}.Debug|x86.Build.0 = Debug|Any CPU
-		{D9F93127-9863-4E90-A7A6-8F80BE70D015}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{D9F93127-9863-4E90-A7A6-8F80BE70D015}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{D9F93127-9863-4E90-A7A6-8F80BE70D015}.Release|x64.ActiveCfg = Debug|Any CPU
-		{D9F93127-9863-4E90-A7A6-8F80BE70D015}.Release|x64.Build.0 = Debug|Any CPU
-		{D9F93127-9863-4E90-A7A6-8F80BE70D015}.Release|x86.ActiveCfg = Debug|Any CPU
-		{D9F93127-9863-4E90-A7A6-8F80BE70D015}.Release|x86.Build.0 = Debug|Any CPU
+		{E994E6A7-B6BA-4960-BD42-4563B5C931AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E994E6A7-B6BA-4960-BD42-4563B5C931AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E994E6A7-B6BA-4960-BD42-4563B5C931AB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E994E6A7-B6BA-4960-BD42-4563B5C931AB}.Debug|x64.Build.0 = Debug|Any CPU
+		{E994E6A7-B6BA-4960-BD42-4563B5C931AB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E994E6A7-B6BA-4960-BD42-4563B5C931AB}.Debug|x86.Build.0 = Debug|Any CPU
+		{E994E6A7-B6BA-4960-BD42-4563B5C931AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E994E6A7-B6BA-4960-BD42-4563B5C931AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E994E6A7-B6BA-4960-BD42-4563B5C931AB}.Release|x64.ActiveCfg = Release|Any CPU
+		{E994E6A7-B6BA-4960-BD42-4563B5C931AB}.Release|x64.Build.0 = Release|Any CPU
+		{E994E6A7-B6BA-4960-BD42-4563B5C931AB}.Release|x86.ActiveCfg = Release|Any CPU
+		{E994E6A7-B6BA-4960-BD42-4563B5C931AB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

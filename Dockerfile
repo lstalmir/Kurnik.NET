@@ -9,6 +9,7 @@ WORKDIR /Kurnik.NET-build
 # caches restore result by copying csproj file separately
 COPY *.sln .
 COPY Source/*.csproj ./Source/
+COPY Engine/*.csproj ./Engine/
 # remove tests project from solution
 RUN dotnet sln remove ./Tests/Kurnik.Tests.csproj
 RUN dotnet restore

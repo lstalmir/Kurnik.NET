@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="COPY $(SolutionDir)Engine\bin\*.js $(ProjectDir)wwwroot\js\&#xD;&#xA;COPY $(SolutionDir)Engine\lib\*.js $(ProjectDir)wwwroot\js\&#xD;&#xA;" />
+    <Exec Command="COPY $(ProjectDir)..\Engine\bin\*.js $(ProjectDir)wwwroot\js\&#xD;&#xA;" />
   </Target>
 
 </Project>
