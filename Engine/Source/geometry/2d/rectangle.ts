@@ -1,6 +1,7 @@
 ﻿import { CObject } from "../../game/object";
 import { CContext } from "../../rendering/context";
 import { FVertex } from "../../game/vertex";
+import { ERenderPass } from "../../rendering/renderable";
 
 export class CRectangle extends CObject
 {
@@ -10,10 +11,11 @@ export class CRectangle extends CObject
         name: string,
         width: number,
         height: number,
-        x = 0,
-        y = 0 )
+        x: number = 0,
+        y: number = 0,
+        renderFlags: number = ERenderPass.Geometry )
     {
-        super( context, name );
+        super( context, name, renderFlags );
         
         this.SetVertexDataRaw(
             context,

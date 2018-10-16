@@ -1,6 +1,5 @@
 ﻿
-export abstract class FPostProcessShaders
-{
+export abstract class FGeometryShaders {
     private static VertexShaderCode: string =
         'precision mediump float;' +
         'attribute vec3 aPosition;' +
@@ -15,26 +14,29 @@ export abstract class FPostProcessShaders
     private static PixelShaderCode: string =
         'precision mediump float;' +
         'varying vec2 vTexcoord;' +
-        'uniform sampler2D tFrameTex;' +
+        'uniform sampler2D tColorTex;' +
+        'uniform sampler2D tAlphaTex;' +
+        'uniform int bUseAlphaTex;' +
         'void main( void ) {' +
-        '   vec4 color = texture2D( tFrameTex, vTexcoord );' +
-        '   gl_FragColor = color;' +
+        '   vec4 color = texture2D( tColorTex, vTexcoord );' +
+        '   if( bUseAlphaTex == 1 ) {' +
+        '       color.a = texture2D( tAlphaTex, vTexcoord ).r;' +
+        '   }' +
+        '   gl_FragColor = vec4( 1, 0, 0, 1 );' +
         '}';
 
 
     //////////////////////////////////////////////////////////////////////////
-    // @brief Get vertex shader code for user interface program.
+    // @brief Get vertex shader code for geometry program.
     // @return Vertex shader code.
-    public static GetVertexShaderCode(): string
-    {
-        return FPostProcessShaders.VertexShaderCode;
+    public static GetVertexShaderCode(): string {
+        return FGeometryShaders.VertexShaderCode;
     };
 
     //////////////////////////////////////////////////////////////////////////
-    // @brief Get pixel (fragment) shader code for user interface program.
+    // @brief Get pixel (fragment) shader code for geometry program.
     // @return Pixel shader code.
-    public static GetPixelShaderCode(): string
-    {
-        return FPostProcessShaders.PixelShaderCode;
+    public static GetPixelShaderCode(): string {
+        return FGeometryShaders.PixelShaderCode;
     };
 };

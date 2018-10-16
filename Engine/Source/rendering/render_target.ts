@@ -1,18 +1,19 @@
-﻿
+﻿import { CContext } from "./context";
+import { EUniform } from "./program";
+
 export class CRenderTarget
 {
+    private mName: string;
     private mRenderTarget: WebGLTexture;
     private mRenderTargetView: WebGLFramebuffer;
 
 
     //////////////////////////////////////////////////////////////////////////
-    public constructor(
-        gl: WebGLRenderingContext,
-        width: number,
-        height: number,
-        format: number,
-        type: number )
+    public constructor( context: CContext, name: string, width: number, height: number, format: number, type: number )
     {
+        var gl = context.GetGLContext();
+
+        this.mName = name;
         this.mRenderTarget = gl.createTexture();
         this.mRenderTargetView = gl.createFramebuffer();
 
@@ -33,20 +34,33 @@ export class CRenderTarget
 
         if ( gl.checkFramebufferStatus( gl.FRAMEBUFFER ) != gl.FRAMEBUFFER_COMPLETE )
         { // Call to framebufferTexture2D failed
-            throw Error( "Failed to create render target" );
+            throw Error( "Failed to create render target: " + gl.getError() );
         }
     };
 
     //////////////////////////////////////////////////////////////////////////
-    public BindRenderTarget( gl: WebGLRenderingContext ): void
+    public BindRenderTarget( context: CContext ): void
     {
+        var gl = context.GetGLContext();
+
         gl.bindFramebuffer( gl.FRAMEBUFFER, this.mRenderTargetView );
+
+        context.GetDebug().Log(
+            'Render target ' + this.mName +
+            ' set as target framebuffer' );
     };
 
     //////////////////////////////////////////////////////////////////////////
-    public BindTexture( gl: WebGLRenderingContext, slot: number ): void
+    public BindTexture( context: CContext, slot: number ): void
     {
+        var gl = context.GetGLContext();
+
         gl.activeTexture( gl.TEXTURE0 + slot );
         gl.bindTexture( gl.TEXTURE_2D, this.mRenderTarget );
+        gl.uniform1i( context.GetProgram().GetUniformLocation( EUniform.ColorTexture ), slot );
+
+        context.GetDebug().Log(
+            'Render target ' + this.mName +
+            ' bound to texture slot ' + slot );
     };
 };

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Example game engine application</title>
+    <script src="../lib/requirejs-min.js" type="text/javascript"></script>
+    <script src="../bin/game_engine.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var application;
+        function update()
+        {
+            application.Run();
+        }
+        function init() {
+            require(['./game_engine'], function (game_engine) {
+                try {
+                    application = new game_engine.CApplication();
+                    setInterval( update, 1000 );
+                }
+                catch (e) {
+                    alert(e);
+                }
+            });
+        }
+    </script>
+</head>
+<body onload="init()">
+    <h1>Example game engine application</h1>
+    <canvas width="640" height="480" id="GameWindow">
+        CANVAS element not supported.
+    </canvas>
+</body>
+</html>

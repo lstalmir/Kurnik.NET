@@ -8,7 +8,7 @@ export abstract class FUserInterfaceShaders
         'varying vec2 vTexcoord;' +
         'uniform vec2 uInvFrameSize;' +
         'void main( void ) {' +
-        '   gl_Position = vec4( (2.0 * aPosition.xy / uInvFrameSize - 1.0), 0.0, 1.0 );' +
+        '   gl_Position = vec4( (2.0 * aPosition.xy * uInvFrameSize - 1.0), 0.0, 1.0 );' +
         '   vTexcoord = aTexcoord;' +
         '}';
 

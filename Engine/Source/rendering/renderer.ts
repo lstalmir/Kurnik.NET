@@ -1,13 +1,16 @@
 ﻿import { mod_Renderable } from "./index";
 import { mod_Color } from "./../core/index";
 import { CContext } from "./context";
-import { EAttribute, CProgram } from "./program";
+import { EAttribute, CProgram, EUniform } from "./program";
 import { FVertex } from "../game/vertex";
 import { ERenderPass } from "./renderable";
 import { FUserInterfaceShaders } from "../shaders/user_interface";
 import { FPostProcessShaders } from "../shaders/post_process";
+import { FGeometryShaders } from "../shaders/geometry";
+import { FLightingShaders } from "../shaders/lighting";
 import { CRenderTarget } from "./render_target";
 import { CRectangle } from "../geometry/2d/rectangle";
+import { CRectangleFactory } from "../geometry/2d/rectangle_factory";
 
 
 class FViewport
@@ -47,7 +50,6 @@ class FViewport
 
 export class CRenderer
 {
-    private mGL: WebGLRenderingContext;
     private mContext: CContext;
     private mFrameViewport: FViewport;
     private mGeometryProgram: CProgram;
@@ -66,28 +68,50 @@ export class CRenderer
     constructor( context: CContext )
     {
         this.mContext = context;
-        this.mGL = context.GetGLContext();
+        var gl = context.GetGLContext();
 
         var canvas = this.mContext.GetCanvas();
-        this.mFrameViewport = new FViewport( 0, 0, canvas.width, canvas.height, 0, 1 );
+        this.mFrameViewport = new FViewport(0, 0, canvas.width, canvas.height, 0, 1);
+
+        this.mGeometryProgram = new CProgram(
+            gl,
+            "GeometryProgram",
+            FGeometryShaders.GetVertexShaderCode(),
+            FGeometryShaders.GetPixelShaderCode());
+
+        this.mLightingProgram = new CProgram(
+            gl,
+            "LightingProgram",
+            FLightingShaders.GetVertexShaderCode(),
+            FLightingShaders.GetPixelShaderCode() );
         
         this.mUserInterfaceProgram = new CProgram(
-            this.mGL,
+            gl,
+            "UserInterfaceProgram",
             FUserInterfaceShaders.GetVertexShaderCode(),
             FUserInterfaceShaders.GetPixelShaderCode() );
 
         this.mPostProcessProgram = new CProgram(
-            this.mGL,
+            gl,
+            "PostProcessProgram",
             FPostProcessShaders.GetVertexShaderCode(),
             FPostProcessShaders.GetPixelShaderCode() );
-
+        
         this.mGBufferRenderTarget = new CRenderTarget(
-            this.mGL, canvas.width * 2, canvas.height * 2, this.mGL.RGBA, this.mGL.UNSIGNED_BYTE );
+            context, "GBufferRT", canvas.width * 2, canvas.height * 2, gl.RGBA, gl.UNSIGNED_BYTE );
 
         this.mFrameRenderTarget = new CRenderTarget(
-            this.mGL, canvas.width, canvas.height, this.mGL.RGBA, this.mGL.UNSIGNED_BYTE );
+            context, "FrameRT", canvas.width, canvas.height, gl.RGBA, gl.UNSIGNED_BYTE );
 
-        this.mFrame = new CRectangle( this.mContext, "FRAME", canvas.width, canvas.height );
+        this.mFrame =
+            new CRectangleFactory( context )
+                .SetName( "FRAME" )
+                .SetWidth( canvas.width )
+                .SetHeight( canvas.height )
+                .SetRenderFlag( ERenderPass.Lighting )
+                .SetRenderFlag( ERenderPass.PostProcessing )
+                .SetRenderFlag( ERenderPass.UserInterface )
+                .Create();
     };
 
     //////////////////////////////////////////////////////////////////////////
@@ -96,8 +120,10 @@ export class CRenderer
     // @param renderable [in] Instance of object to render.
     public Render( renderable: mod_Renderable.IRenderable ): void
     {
+        var gl = this.mContext.GetGLContext();
+
         // Setup viewport
-        this.mGL.viewport(
+        gl.viewport(
             this.mFrameViewport.X,
             this.mFrameViewport.Y,
             this.mFrameViewport.Width,
@@ -105,39 +131,74 @@ export class CRenderer
 
         // Geometry
         this.mContext.SetProgram( this.mGeometryProgram );
-        this.mGBufferRenderTarget.BindRenderTarget( this.mGL );
+        this.mGBufferRenderTarget.BindRenderTarget( this.mContext );
+        this.Clear();
+
+        gl.uniform2f(
+            this.mGeometryProgram.GetUniformLocation( EUniform.InvFrameSize ),
+            1 / this.mFrameViewport.Width,
+            1 / this.mFrameViewport.Height );
+        gl.uniform1i(
+            this.mGeometryProgram.GetUniformLocation( EUniform.UseAlphaTexture ),
+            0 );
 
         renderable.Render( this.mContext, ERenderPass.Geometry );
 
         // Lighting
         this.mContext.SetProgram( this.mLightingProgram );
-        this.mGBufferRenderTarget.BindTexture( this.mGL, 0 );
-        this.mFrameRenderTarget.BindRenderTarget( this.mGL );
-
+        this.mFrameRenderTarget.BindRenderTarget( this.mContext );
+        this.mGBufferRenderTarget.BindTexture( this.mContext, 0 );
+        this.Clear();
+        
+        gl.uniform2f(
+            this.mLightingProgram.GetUniformLocation( EUniform.InvFrameSize ),
+            1 / this.mFrameViewport.Width,
+            1 / this.mFrameViewport.Height );
+        gl.uniform1i(
+            this.mLightingProgram.GetUniformLocation( EUniform.UseAlphaTexture ),
+            0 );
+        
         this.mFrame.Render( this.mContext, ERenderPass.Lighting );
-
+        
         // User interface
         this.mContext.SetProgram( this.mUserInterfaceProgram );
-
+        
         if ( this.mUserInterfaceBlendEnable )
         {
-            this.mGL.enable( this.mGL.BLEND );
-            this.mGL.disable( this.mGL.DEPTH_TEST );
-            this.mGL.blendFunc( this.mGL.SRC_ALPHA, this.mGL.ONE );
+            gl.enable( gl.BLEND );
+            gl.disable( gl.DEPTH_TEST );
+            gl.blendFunc( gl.SRC_ALPHA, gl.ONE );
         }
-
+        
+        gl.uniform2f(
+            this.mUserInterfaceProgram.GetUniformLocation( EUniform.InvFrameSize ),
+            1 / this.mFrameViewport.Width,
+            1 / this.mFrameViewport.Height );
+        gl.uniform1i(
+            this.mUserInterfaceProgram.GetUniformLocation( EUniform.UseAlphaTexture ),
+            0 );
+        
         renderable.Render( this.mContext, ERenderPass.UserInterface );
         
         if ( this.mUserInterfaceBlendEnable )
         {
-            this.mGL.disable( this.mGL.BLEND );
+            gl.disable( gl.BLEND );
         }
-
+        
         // Post process
         this.mContext.SetProgram( this.mPostProcessProgram );
-        this.mFrameRenderTarget.BindTexture( this.mGL, 0 );
-        this.mGL.bindFramebuffer( this.mGL.FRAMEBUFFER, null );
-
+        this.mFrameRenderTarget.BindTexture( this.mContext, 0 );
+        gl.bindFramebuffer( gl.FRAMEBUFFER, null );
+        
+        gl.uniform2f(
+            this.mPostProcessProgram.GetUniformLocation( EUniform.InvFrameSize ),
+            1 / this.mFrameViewport.Width,
+            1 / this.mFrameViewport.Height );
+        gl.uniform1i(
+            this.mPostProcessProgram.GetUniformLocation( EUniform.UseAlphaTexture ),
+            0 );
+        
+        this.Clear();
         this.mFrame.Render( this.mContext, ERenderPass.PostProcessing );
     };
 
@@ -147,9 +208,18 @@ export class CRenderer
     // @param color [in] Color to fill render target with.
     public Clear( color = mod_Color.FColor.Get( mod_Color.EColor.Black ) ): void
     {
-        this.mGL.clearColor( color.r, color.g, color.b, color.a );
-        this.mGL.clearDepth( this.mFrameViewport.DepthMax );
-        this.mGL.clear( this.mGL.COLOR_BUFFER_BIT | this.mGL.DEPTH_BUFFER_BIT );
+        var gl = this.mContext.GetGLContext();
+
+        gl.clearColor( color.r, color.g, color.b, color.a );
+        gl.clearDepth( this.mFrameViewport.DepthMax );
+        gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+
+        this.mContext.GetDebug().Log(
+            'Render target clear ('
+            + color.r + ', '
+            + color.g + ', '
+            + color.b + ', '
+            + color.a + ')' );
     };
 
     //////////////////////////////////////////////////////////////////////////
@@ -158,15 +228,29 @@ export class CRenderer
     // @param color [in] Color to fill render target with.
     public ClearTarget( color = mod_Color.FColor.Get( mod_Color.EColor.Black ) ): void
     {
-        this.mGL.clearColor( color.r, color.g, color.b, color.a );
-        this.mGL.clear( this.mGL.COLOR_BUFFER_BIT );
+        var gl = this.mContext.GetGLContext();
+
+        gl.clearColor( color.r, color.g, color.b, color.a );
+        gl.clear( gl.COLOR_BUFFER_BIT );
+
+        this.mContext.GetDebug().Log(
+            'Render target color clear ('
+            + color.r + ', '
+            + color.g + ', '
+            + color.b + ', '
+            + color.a + ')' );
     };
 
     //////////////////////////////////////////////////////////////////////////
     // @brief Clear depth target. The target will be filled with ones (1).
     public ClearDepth(): void
     {
-        this.mGL.clearDepth( this.mFrameViewport.DepthMax );
-        this.mGL.clear( this.mGL.DEPTH_BUFFER_BIT );
+        var gl = this.mContext.GetGLContext();
+
+        gl.clearDepth( this.mFrameViewport.DepthMax );
+        gl.clear( gl.DEPTH_BUFFER_BIT );
+
+        this.mContext.GetDebug().Log(
+            'Render target depth clear' );
     };
 };

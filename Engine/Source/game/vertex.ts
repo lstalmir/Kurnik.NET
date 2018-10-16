@@ -47,7 +47,9 @@ export class FVertex
         gl.vertexAttribPointer( pos_idx, 3, gl.FLOAT, false, FVertex.Size(), 0 );
         gl.enableVertexAttribArray( pos_idx );
 
-        //gl.enableVertexAttribArray( program.GetAttributeLocation( EAttribute.Texcoord ) );
+        var tex_idx = program.GetAttributeLocation( EAttribute.Texcoord );
+        gl.vertexAttribPointer( tex_idx, 2, gl.FLOAT, false, FVertex.Size(), 12 );
+        gl.enableVertexAttribArray( program.GetAttributeLocation( EAttribute.Texcoord ) );
     };
 
     //////////////////////////////////////////////////////////////////////////
@@ -57,6 +59,6 @@ export class FVertex
         var program = context.GetProgram();
 
         gl.disableVertexAttribArray( program.GetAttributeLocation( EAttribute.Position ) );
-        //gl.disableVertexAttribArray( program.GetAttributeLocation( EAttribute.Texcoord ) );
+        gl.disableVertexAttribArray( program.GetAttributeLocation( EAttribute.Texcoord ) );
     };
 };

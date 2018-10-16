@@ -18,22 +18,28 @@ export abstract class CObject implements IRenderable, IDisposable
     protected mPosition: FVector;
     protected mRotation: FQuaternion;
     protected mModelMatrix: FMatrix;
+    protected mRenderFlags: number;
 
 
     //////////////////////////////////////////////////////////////////////////
     // @brief Construct new object instance.
     // @param context [in] Instance of WebGL context wrapper.
     // @param name [in] Name of the object.
-    public constructor( context: CContext, name: string )
+    public constructor( context: CContext, name: string, renderFlags: number = ERenderPass.Geometry )
     {
         var gl = context.GetGLContext();
 
         this.mName = name;
+        this.mRenderFlags = renderFlags;
         this.mPosition = new FVector();
         this.mRotation = new FQuaternion();
         this.mModelMatrix = new FMatrix();
         this.mVertexBuffer = gl.createBuffer();
         this.mIndexBuffer = gl.createBuffer();
+
+        context.GetDebug().Log(
+            'Created object ' + this.mName +
+            ' with render flags (' + this.mRenderFlags + ')' );
     };
 
     //////////////////////////////////////////////////////////////////////////
@@ -70,7 +76,7 @@ export abstract class CObject implements IRenderable, IDisposable
     // @param context [in] Instance of WebGL context wrapper.
     public Render( context: CContext, renderPass: ERenderPass ): void
     {
-        if ( renderPass == ERenderPass.Geometry )
+        if ( renderPass & this.mRenderFlags )
         {
             var gl = context.GetGLContext();
             var program = context.GetProgram();
@@ -79,7 +85,7 @@ export abstract class CObject implements IRenderable, IDisposable
             gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.mIndexBuffer );
 
             // Set model matrix for vertex shader
-            program.SetUniform( EUniform.ModelMatrix, this.mModelMatrix.M );
+            program.SetUniform( gl, EUniform.ModelMatrix, this.mModelMatrix.M );
 
             // Must be called after buffer binding
             FVertex.EnableInputLayout( context );
@@ -90,6 +96,8 @@ export abstract class CObject implements IRenderable, IDisposable
 
             if ( GDebug )
             {
+                context.GetDebug().Log( this.mName + ' drawn' );
+
                 // DEBUG: Cleanup buffers, remove in release
                 gl.bindBuffer( gl.ARRAY_BUFFER, null );
                 gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, null );
