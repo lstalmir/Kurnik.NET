@@ -2,10 +2,10 @@
 
 export enum ERenderPass
 {
-    Geometry,
-    Lighting,
-    PostProcessing,
-    UserInterface
+    Geometry = 1,
+    Lighting = 2,
+    PostProcessing = 4,
+    UserInterface = 8
 };
 
 export interface IRenderable

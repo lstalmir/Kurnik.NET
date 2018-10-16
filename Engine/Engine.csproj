@@ -25,7 +25,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Source\shaders\geometry.ts" />
+    <None Remove="Source\shaders\lighting.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
     <TypeScriptCompile Include="Source\game_engine.ts" />
+    <TypeScriptCompile Include="Source\shaders\geometry.ts" />
+    <TypeScriptCompile Include="Source\shaders\lighting.ts" />
   </ItemGroup>
 
 </Project>

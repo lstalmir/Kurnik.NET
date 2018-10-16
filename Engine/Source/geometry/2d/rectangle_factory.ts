@@ -2,11 +2,13 @@
 import { CObject } from "../../game/object";
 import { CContext } from "../../rendering/context";
 import { CRectangle } from "./rectangle";
+import { ERenderPass } from "../../rendering/renderable";
 
 export class CRectangleFactory implements IGeometryFactory
 {
     private context: CContext;
     private name: string;
+    private renderFlags: number;
     private x: number;
     private y: number;
     private w: number;
@@ -16,6 +18,7 @@ export class CRectangleFactory implements IGeometryFactory
     public constructor( context: CContext )
     {
         this.context = context;
+        this.name = 'unnamed';
         this.Reset();
     };
 
@@ -27,13 +30,14 @@ export class CRectangleFactory implements IGeometryFactory
         this.y = 0;
         this.w = 0;
         this.h = 0;
+        this.ResetRenderFlags();
         return this;
     };
 
     //////////////////////////////////////////////////////////////////////////
     public Create(): CObject
     {
-        return new CRectangle( this.context, this.name, this.w, this.h, this.x, this.y );
+        return new CRectangle( this.context, this.name, this.w, this.h, this.x, this.y, this.renderFlags );
     };
 
     //////////////////////////////////////////////////////////////////////////
@@ -68,6 +72,20 @@ export class CRectangleFactory implements IGeometryFactory
     public SetPosY( y: number ): CRectangleFactory
     {
         this.y = y;
+        return this;
+    };
+
+    //////////////////////////////////////////////////////////////////////////
+    public SetRenderFlag( renderFlag: ERenderPass ): CRectangleFactory
+    {
+        this.renderFlags |= renderFlag;
+        return this;
+    };
+
+    //////////////////////////////////////////////////////////////////////////
+    public ResetRenderFlags(): CRectangleFactory
+    {
+        this.renderFlags = ERenderPass.Geometry;
         return this;
     };
 };
