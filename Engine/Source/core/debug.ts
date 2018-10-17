@@ -246,7 +246,7 @@ export class CDebugWebGLRenderingContext implements WebGLRenderingContext
         this.STENCIL_CLEAR_VALUE = this.mGL.STENCIL_CLEAR_VALUE;
         this.STENCIL_FAIL = this.mGL.STENCIL_FAIL;
         this.STENCIL_FUNC = this.mGL.STENCIL_FUNC;
-        this.STENCIL_INDEX = this.mGL.STENCIL_INDEX;
+        //this.STENCIL_INDEX = this.mGL.STENCIL_INDEX;
         this.STENCIL_INDEX8 = this.mGL.STENCIL_INDEX8;
         this.STENCIL_PASS_DEPTH_FAIL = this.mGL.STENCIL_PASS_DEPTH_FAIL;
         this.STENCIL_PASS_DEPTH_PASS = this.mGL.STENCIL_PASS_DEPTH_PASS;
@@ -619,7 +619,7 @@ export class CDebugWebGLRenderingContext implements WebGLRenderingContext
             case this.mGL.STENCIL_CLEAR_VALUE: return 'GL_STENCIL_CLEAR_VALUE';
             case this.mGL.STENCIL_FAIL: return 'GL_STENCIL_FAIL';
             case this.mGL.STENCIL_FUNC: return 'GL_STENCIL_FUNC';
-            case this.mGL.STENCIL_INDEX: return 'GL_STENCIL_INDEX';
+            //case this.mGL.STENCIL_INDEX: return 'GL_STENCIL_INDEX';
             case this.mGL.STENCIL_INDEX8: return 'GL_STENCIL_INDEX8';
             case this.mGL.STENCIL_PASS_DEPTH_FAIL: return 'GL_STENCIL_PASS_DEPTH_FAIL';
             case this.mGL.STENCIL_PASS_DEPTH_PASS: return 'GL_STENCIL_PASS_DEPTH_PASS';
@@ -817,7 +817,7 @@ export class CDebugWebGLRenderingContext implements WebGLRenderingContext
         this.mGL.blendFuncSeparate( srcRGB, dstRGB, srcAlpha, dstAlpha );
     };
 
-    public bufferData( target: number, size: number | Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer, usage: number ): void
+    public bufferData( target: number, size: any, usage: number ): void
     {
         this.LogFunctionCall(
             'glBufferData',
@@ -827,7 +827,7 @@ export class CDebugWebGLRenderingContext implements WebGLRenderingContext
         this.mGL.bufferData( target, size, usage );
     };
 
-    public bufferSubData( target: number, offset: number, data: Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer ): void
+    public bufferSubData( target: number, offset: number, data: any ): void
     {
         this.LogFunctionCall( 'glBufferSubData',
             this.GetOpenGLConstName( target ),
