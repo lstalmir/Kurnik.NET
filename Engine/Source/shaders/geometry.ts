@@ -22,7 +22,7 @@ export abstract class FGeometryShaders {
         '   if( bUseAlphaTex == 1 ) {' +
         '       color.a = texture2D( tAlphaTex, vTexcoord ).r;' +
         '   }' +
-        '   gl_FragColor = vec4( 1, 0, 0, 1 );' +
+        '   gl_FragColor = color;' +
         '}';
 
 

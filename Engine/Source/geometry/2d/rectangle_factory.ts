@@ -1,5 +1,5 @@
 ﻿import { IGeometryFactory } from "../geometry_factory";
-import { CObject } from "../../game/object";
+import { CObject } from "../../engine/object";
 import { CContext } from "../../rendering/context";
 import { CRectangle } from "./rectangle";
 import { ERenderPass } from "../../rendering/renderable";

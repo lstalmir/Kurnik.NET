@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
     <StartupObject>KurnikNET.Engine.EngineDeployAction</StartupObject>
@@ -25,12 +25,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Source\engine\font.ts" />
+    <None Remove="Source\engine\material.ts" />
+    <None Remove="Source\engine\texture.ts" />
+    <None Remove="Source\geometry\2d\text2d.ts" />
+    <None Remove="Source\net\http_request.ts" />
+    <None Remove="Source\net\http_response.ts" />
+    <None Remove="Source\net\index.ts" />
     <None Remove="Source\shaders\geometry.ts" />
     <None Remove="Source\shaders\lighting.ts" />
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="Source\engine\font.ts" />
+    <TypeScriptCompile Include="Source\engine\material.ts" />
+    <TypeScriptCompile Include="Source\engine\texture.ts" />
     <TypeScriptCompile Include="Source\game_engine.ts" />
+    <TypeScriptCompile Include="Source\geometry\2d\text2d.ts" />
+    <TypeScriptCompile Include="Source\net\http_request.ts" />
+    <TypeScriptCompile Include="Source\net\http_response.ts" />
+    <TypeScriptCompile Include="Source\net\index.ts" />
     <TypeScriptCompile Include="Source\shaders\geometry.ts" />
     <TypeScriptCompile Include="Source\shaders\lighting.ts" />
   </ItemGroup>
