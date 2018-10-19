@@ -3,7 +3,8 @@ export enum EColor
 {
     Black,
     White,
-    Red
+    Red,
+    Gray
 };
 
 export class FColor
@@ -32,6 +33,7 @@ export class FColor
             case EColor.Black: return new FColor( 0, 0, 0 );
             case EColor.White: return new FColor( 1, 1, 1 );
             case EColor.Red: return new FColor( 1, 0, 0 );
+            case EColor.Gray: return new FColor( 0.5, 0.5, 0.5 );
         }
         throw Error( "GetColor: Invalid color specified" );
     };

@@ -1,8 +1,7 @@
 ﻿import { mod_Renderable } from "./index";
 import { mod_Color } from "./../core/index";
 import { CContext } from "./context";
-import { EAttribute, CProgram, EUniform } from "./program";
-import { FVertex } from "../game/vertex";
+import { CProgram, EUniform } from "./program";
 import { ERenderPass } from "./renderable";
 import { FUserInterfaceShaders } from "../shaders/user_interface";
 import { FPostProcessShaders } from "../shaders/post_process";

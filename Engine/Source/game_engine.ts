@@ -1,5 +1,5 @@
 ﻿import * as mod_Core from "./core/index";
-import * as mod_Game from "./game/index";
+import * as mod_Game from "./engine/index";
 import * as mod_Geometry from "./geometry/index";
 import * as mod_Rendering from "./rendering/index";
 

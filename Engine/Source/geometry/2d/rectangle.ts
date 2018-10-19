@@ -1,6 +1,5 @@
-﻿import { CObject } from "../../game/object";
+﻿import { CObject } from "../../engine/object";
 import { CContext } from "../../rendering/context";
-import { FVertex } from "../../game/vertex";
 import { ERenderPass } from "../../rendering/renderable";
 
 export class CRectangle extends CObject

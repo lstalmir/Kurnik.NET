@@ -1,4 +1,4 @@
-﻿export const GDebug: boolean = false;
+﻿export const GDebug: boolean = true;
 
 export class CDebug
 {

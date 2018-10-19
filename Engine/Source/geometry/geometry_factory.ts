@@ -1,4 +1,4 @@
-﻿import { CObject } from "../game/object";
+﻿import { CObject } from "../engine/object";
 
 export interface IGeometryFactory
 {

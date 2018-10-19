@@ -4,6 +4,8 @@ import { CDebug, CDebugWebGLRenderingContext } from "../core/debug";
 export class CContext
 {
     private mGL: WebGLRenderingContext;
+    private mGL2: WebGL2RenderingContext;
+    private mUseWebGL2: boolean;
     private mCanvas: HTMLCanvasElement;
     private mCurrentProgram: CProgram;
     private mDebug: CDebug;
@@ -13,20 +15,38 @@ export class CContext
     {
         this.mDebug = new CDebug();
         this.mCanvas = canvas;
-        this.mGL = canvas.getContext( "webgl" );
 
-        if ( this.mGL == null )
+        this.mGL2 = canvas.getContext( "webgl2" );
+        this.mGL = this.mGL2 as WebGLRenderingContext;
+        this.mUseWebGL2 = true;
+        
+        if ( this.mGL2 == null )
+        { // The browser does not support WebGL2.
+            this.mGL = canvas.getContext( "webgl" );
+            this.mUseWebGL2 = false;
+        }
+
+        if ( this.mGL == null && this.mGL2 == null )
         {
             throw Error( "Failed to initialize WebGL context." );
         }
 
-        this.mDebug.Log( 'WebGL context created' );
+        if ( this.mGL2 )
+        {
+            this.mDebug.Log( "Using webgl2 rendering context" );
+        }
     };
 
     //////////////////////////////////////////////////////////////////////////
     public GetGLContext(): WebGLRenderingContext
     {
         return this.mGL;
+    };
+
+    //////////////////////////////////////////////////////////////////////////
+    public GetGL2Context(): WebGL2RenderingContext
+    {
+        return this.mGL2;
     };
 
     //////////////////////////////////////////////////////////////////////////

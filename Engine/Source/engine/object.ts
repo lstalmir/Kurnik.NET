@@ -1,7 +1,7 @@
 ﻿import { IRenderable, ERenderPass } from "../rendering/renderable";
 import { FVertex } from "./vertex";
 import { CContext } from "../rendering/context";
-import { EAttribute, EUniform } from "../rendering/program";
+import { EUniform } from "../rendering/program";
 import { FVector } from "../core/math/vector";
 import { FQuaternion } from "../core/math/quaternion";
 import { FMatrix } from "../core/math/matrix";

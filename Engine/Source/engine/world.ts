@@ -4,6 +4,9 @@ import { CContext } from "../rendering/context";
 import { CRectangleFactory } from "../geometry/2d/rectangle_factory";
 import { IDisposable } from "../core/disposable";
 import { CObject } from "./object";
+import { CText2D } from "../geometry/2d/text2d";
+import { FVector2D } from "../core/math/vector2d";
+import { CFont } from "./font";
 
 export class CWorld implements IRenderable, IDisposable
 {
@@ -26,6 +29,15 @@ export class CWorld implements IRenderable, IDisposable
             .SetName( "Rectangle" )
             .Create();
 
+        var text = new CText2D(
+            context,
+            "TEXT",
+            "Abc",
+            16,
+            new FVector2D( 0, 0 ),
+            new CFont( context, "images/fonts/engine/default.png" ) );
+
+        this.mObjects.push( text );
         this.mObjects.push( rect );
     };
 

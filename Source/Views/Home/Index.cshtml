@@ -54,6 +54,35 @@
 </div>
 
 <div class="row">
+    <div class="col-md-12">
+        <script type="text/javascript" src="/js/requirejs-min.js"></script>
+        <script type="text/javascript" src="/js/game_engine.js"></script>
+        <script type="text/javascript">        
+            var application;
+            function update()
+            {
+                application.Run();
+            }
+            function init() {
+                require(['./game_engine'], function (game_engine) {
+                    try {
+                        application = new game_engine.CApplication();
+                        setInterval( update, 1000 );
+                    }
+                    catch (e) {
+                        alert(e);
+                    }
+                });
+            }
+        </script>
+        <button class="btn btn-default" onclick="init()">Start</button>
+        <canvas width="640" height="480" id="GameWindow">
+            HTML5 canvas element is not supported.
+        </canvas>
+    </div>
+</div>
+
+<div class="row">
     <div class="col-md-3">
         <h2>Application uses</h2>
         <ul>
