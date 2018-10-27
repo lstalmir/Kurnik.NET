@@ -25,28 +25,56 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Source\engine\font.ts" />
-    <None Remove="Source\engine\material.ts" />
-    <None Remove="Source\engine\texture.ts" />
-    <None Remove="Source\geometry\2d\text2d.ts" />
-    <None Remove="Source\net\http_request.ts" />
-    <None Remove="Source\net\http_response.ts" />
-    <None Remove="Source\net\index.ts" />
-    <None Remove="Source\shaders\geometry.ts" />
-    <None Remove="Source\shaders\lighting.ts" />
+    <None Remove="Source\bomberman.ts" />
+    <None Remove="Source\Bomberman\application.ts" />
+    <None Remove="Source\Bomberman\block.ts" />
+    <None Remove="Source\Bomberman\bomb.ts" />
+    <None Remove="Source\Bomberman\player.ts" />
+    <None Remove="Source\Bomberman\world.ts" />
+    <None Remove="Source\game_engine\core\map.ts" />
+    <None Remove="Source\game_engine\core\math\rotator.ts" />
+    <None Remove="Source\game_engine\core\math\utility.ts" />
+    <None Remove="Source\game_engine\engine\animated_texture.ts" />
+    <None Remove="Source\game_engine\engine\font.ts" />
+    <None Remove="Source\game_engine\engine\instanced_object.ts" />
+    <None Remove="Source\game_engine\engine\material.ts" />
+    <None Remove="Source\game_engine\engine\object_factory.ts" />
+    <None Remove="Source\game_engine\engine\texture.ts" />
+    <None Remove="Source\game_engine\geometry\2d\text2d.ts" />
+    <None Remove="Source\game_engine\geometry\3d\box.ts" />
+    <None Remove="Source\game_engine\geometry\3d\index.ts" />
+    <None Remove="Source\game_engine\net\http_request.ts" />
+    <None Remove="Source\game_engine\net\http_response.ts" />
+    <None Remove="Source\game_engine\net\index.ts" />
+    <None Remove="Source\game_engine\shaders\geometry.ts" />
+    <None Remove="Source\game_engine\shaders\lighting.ts" />
   </ItemGroup>
 
   <ItemGroup>
-    <TypeScriptCompile Include="Source\engine\font.ts" />
-    <TypeScriptCompile Include="Source\engine\material.ts" />
-    <TypeScriptCompile Include="Source\engine\texture.ts" />
+    <TypeScriptCompile Include="Source\bomberman.ts" />
+    <TypeScriptCompile Include="Source\Bomberman\application.ts" />
+    <TypeScriptCompile Include="Source\Bomberman\block.ts" />
+    <TypeScriptCompile Include="Source\Bomberman\bomb.ts" />
+    <TypeScriptCompile Include="Source\Bomberman\player.ts" />
+    <TypeScriptCompile Include="Source\Bomberman\world.ts" />
+    <TypeScriptCompile Include="Source\game_engine\core\map.ts" />
+    <TypeScriptCompile Include="Source\game_engine\core\math\rotator.ts" />
+    <TypeScriptCompile Include="Source\game_engine\core\math\utility.ts" />
+    <TypeScriptCompile Include="Source\game_engine\engine\animated_texture.ts" />
+    <TypeScriptCompile Include="Source\game_engine\engine\font.ts" />
+    <TypeScriptCompile Include="Source\game_engine\engine\instanced_object.ts" />
+    <TypeScriptCompile Include="Source\game_engine\engine\material.ts" />
+    <TypeScriptCompile Include="Source\game_engine\engine\object_factory.ts" />
+    <TypeScriptCompile Include="Source\game_engine\engine\texture.ts" />
     <TypeScriptCompile Include="Source\game_engine.ts" />
-    <TypeScriptCompile Include="Source\geometry\2d\text2d.ts" />
-    <TypeScriptCompile Include="Source\net\http_request.ts" />
-    <TypeScriptCompile Include="Source\net\http_response.ts" />
-    <TypeScriptCompile Include="Source\net\index.ts" />
-    <TypeScriptCompile Include="Source\shaders\geometry.ts" />
-    <TypeScriptCompile Include="Source\shaders\lighting.ts" />
+    <TypeScriptCompile Include="Source\game_engine\geometry\2d\text2d.ts" />
+    <TypeScriptCompile Include="Source\game_engine\geometry\3d\box.ts" />
+    <TypeScriptCompile Include="Source\game_engine\geometry\3d\index.ts" />
+    <TypeScriptCompile Include="Source\game_engine\net\http_request.ts" />
+    <TypeScriptCompile Include="Source\game_engine\net\http_response.ts" />
+    <TypeScriptCompile Include="Source\game_engine\net\index.ts" />
+    <TypeScriptCompile Include="Source\game_engine\shaders\geometry.ts" />
+    <TypeScriptCompile Include="Source\game_engine\shaders\lighting.ts" />
   </ItemGroup>
 
 </Project>

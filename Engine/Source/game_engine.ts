@@ -1,41 +1,25 @@
-﻿import * as mod_Core from "./core/index";
-import * as mod_Game from "./engine/index";
-import * as mod_Geometry from "./geometry/index";
-import * as mod_Rendering from "./rendering/index";
+﻿import { GDebug } from "./game_engine/core/debug";
+import { CContext } from "./game_engine/rendering/context";
+import { CRenderer } from "./game_engine/rendering/renderer";
+import { CWorld } from "./game_engine/engine/world";
 
-export
+export abstract class CApplication
 {
-    mod_Core,
-    mod_Game,
-    mod_Geometry,
-    mod_Rendering
-}
+    protected mCanvas: HTMLCanvasElement;
+    protected mContext: CContext;
+    protected mRenderer: CRenderer;
+    protected mWorld: CWorld;
+    protected mTargetRefreshRate: number;
 
-
-export class CApplication
-{
-    private mCanvas: HTMLCanvasElement;
-    private mGL: WebGLRenderingContext;
-    private mContext: mod_Rendering.mod_Context.CContext;
-    private mRenderer: mod_Rendering.mod_Renderer.CRenderer;
-    private mWorld: mod_Game.mod_World.CWorld;
+    // Callbacks
 
 
     //////////////////////////////////////////////////////////////////////////
-    constructor()
+    constructor( canvasId: string )
     {
-        this.mCanvas = document.querySelector( "#GameWindow" );
-        this.mContext = new mod_Rendering.mod_Context.CContext( this.mCanvas );
-        this.mGL = this.mContext.GetGLContext();
-        this.mRenderer = new mod_Rendering.mod_Renderer.CRenderer( this.mContext );
-        this.mRenderer.Clear();
-
-        this.mWorld = new mod_Game.mod_World.CWorld( this.mContext, "SimpleWorld" );
-    };
-
-    //////////////////////////////////////////////////////////////////////////
-    public Run()
-    {
-        this.mRenderer.Render( this.mWorld );
+        this.mCanvas = document.querySelector( "#" + canvasId );
+        this.mContext = new CContext( this.mCanvas, GDebug );
+        this.mRenderer = new CRenderer( this.mContext );
+        this.mTargetRefreshRate = 60;
     };
 };

@@ -59,15 +59,11 @@
         <script type="text/javascript" src="/js/game_engine.js"></script>
         <script type="text/javascript">        
             var application;
-            function update()
-            {
-                application.Run();
-            }
             function init() {
-                require(['./game_engine'], function (game_engine) {
+                require(['./bomberman'], function (bomberman) {
                     try {
-                        application = new game_engine.CApplication();
-                        setInterval( update, 1000 );
+                        application = new bomberman.CreateBombermanApplication( "GameWindow" );
+                        application.Run();
                     }
                     catch (e) {
                         alert(e);
