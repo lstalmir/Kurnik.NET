@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Areas\Identity\Pages\Account\images\background.jpeg" />
+    <None Remove="Areas\Identity\Pages\Account\Manage\images\background.jpeg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\images\background.jpeg" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="app.db" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
@@ -20,6 +27,9 @@
     <Folder Include="Areas\Identity\Services\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Remove="wwwroot\images\background.jpeg" />
+  </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="dotnet $(ProjectDir)../Engine/bin/netcoreapp2.1/Engine.dll $(ProjectDir)../Engine/bin/game_engine.js $(ProjectDir)wwwroot/js/game_engine.js" />
   </Target>
