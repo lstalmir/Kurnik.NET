@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Kurnik.Models;
 
 namespace Source.Data
 {
@@ -12,5 +13,6 @@ namespace Source.Data
             : base(options)
         {
         }
+        public DbSet<Kurnik.Models.User> User { get; set; }
     }
 }

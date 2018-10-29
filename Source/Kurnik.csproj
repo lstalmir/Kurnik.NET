@@ -16,6 +16,10 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.3" PrivateAssets="All" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Areas\Identity\Services\" />
+  </ItemGroup>
+
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="dotnet $(ProjectDir)../Engine/bin/netcoreapp2.1/Engine.dll $(ProjectDir)../Engine/bin/game_engine.js $(ProjectDir)wwwroot/js/game_engine.js" />
   </Target>
