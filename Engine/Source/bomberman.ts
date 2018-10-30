@@ -15,6 +15,18 @@ export interface IBombermanApplication
     //////////////////////////////////////////////////////////////////////////
     /// \function
     ///     Run
+    ///
+    /// \brief
+    ///     Start application's render loop.
+    ///
+    ///     After calling this function, the application will start rendering
+    ///     frames with specified frame rate. To change the frame rate, see
+    ///     SetTargetRefreshRate function.
+    ///
+    /// \return
+    ///     Result of the operation.
+    ///     - EBombermanStatus.OK - application successfully started.
+    ///     - EBombermanStatus.Error - function failed.
     //////////////////////////////////////////////////////////////////////////
     Run(): EBombermanStatus;
 

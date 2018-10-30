@@ -68,16 +68,24 @@ export abstract class CObject implements IRenderable, IDisposable
 
             gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.mIndexBuffer );
 
-            gl.vertexAttrib3f(
-                program.GetAttributeLocation( EAttribute.InstancePosition ),
-                this.Position.x,
-                this.Position.y,
-                this.Position.z );
+            let instancePositionLoc = program.GetAttributeLocation( EAttribute.InstancePosition );
+            if ( instancePositionLoc >= 0 )
+            {
+                gl.vertexAttrib3f(
+                    instancePositionLoc,
+                    this.Position.x,
+                    this.Position.y,
+                    this.Position.z );
+            }
 
-            gl.vertexAttrib2f(
-                program.GetAttributeLocation( EAttribute.InstanceTexcoord ),
-                this.TexcoordOffset.x,
-                this.TexcoordOffset.y );
+            let instanceTexcoordLoc = program.GetAttributeLocation( EAttribute.InstanceTexcoord );
+            if ( instanceTexcoordLoc >= 0 )
+            {
+                gl.vertexAttrib2f(
+                    program.GetAttributeLocation( EAttribute.InstanceTexcoord ),
+                    this.TexcoordOffset.x,
+                    this.TexcoordOffset.y );
+            }
 
             gl.drawElements( gl.TRIANGLES, this.mIndexCount, gl.UNSIGNED_SHORT, 0 );
 

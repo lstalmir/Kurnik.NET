@@ -110,8 +110,8 @@ export class CRenderer
             new CRectangleFactory()
                 .SetWidth( 2 )
                 .SetHeight( 2 )
-                .SetPosX( -1 )
-                .SetPosY( -1 )
+                .SetX( -1 )
+                .SetY( -1 )
                 .SetName( "FRAME" )
                 .SetRenderFlag( ERenderPass.Lighting )
                 .SetRenderFlag( ERenderPass.PostProcessing )
@@ -148,36 +148,37 @@ export class CRenderer
 
         renderable.Render( this.mContext, ERenderPass.Geometry );
 
-        // Depth PASS
-        this.mDepthRenderTarget.BindRenderTarget( this.mContext );
-        this.Clear();
-
-        gl.uniform1i(
-            this.mGeometryProgram.GetUniformLocation( EUniform.RenderingPass ),
-            0 );
-
-        renderable.Render( this.mContext, ERenderPass.Geometry );
+        //// Depth PASS
+        //this.mDepthRenderTarget.BindRenderTarget( this.mContext );
+        //this.Clear();
+        //
+        //gl.uniform1i(
+        //    this.mGeometryProgram.GetUniformLocation( EUniform.RenderingPass ),
+        //    0 );
+        //
+        //renderable.Render( this.mContext, ERenderPass.Geometry );
         
-        // Lighting
-        this.mContext.SetProgram( this.mLightingProgram );
+        //// Lighting
+        //this.mContext.SetProgram( this.mLightingProgram );
+        //this.mDepthRenderTarget.BindTexture( this.mContext, 1 );
+        //
+        //gl.uniform2f(
+        //    this.mLightingProgram.GetUniformLocation( EUniform.InvFrameSize ),
+        //    1 / this.mFrameViewport.Width,
+        //    1 / this.mFrameViewport.Height );
+        //gl.uniform1i(
+        //    this.mLightingProgram.GetUniformLocation( EUniform.UseAlphaTexture ),
+        //    0 );
+        //
+        //this.mFrame.Render( this.mContext, ERenderPass.Lighting );
+        
+        // User interface
+        this.mContext.SetProgram( this.mUserInterfaceProgram );
         this.mFrameRenderTarget.BindRenderTarget( this.mContext );
         this.Clear();
 
         this.mColorRenderTarget.BindTexture( this.mContext, 0 );
-        this.mDepthRenderTarget.BindTexture( this.mContext, 1 );
-        
-        gl.uniform2f(
-            this.mLightingProgram.GetUniformLocation( EUniform.InvFrameSize ),
-            1 / this.mFrameViewport.Width,
-            1 / this.mFrameViewport.Height );
-        gl.uniform1i(
-            this.mLightingProgram.GetUniformLocation( EUniform.UseAlphaTexture ),
-            0 );
-        
-        this.mFrame.Render( this.mContext, ERenderPass.Lighting );
-        
-        // User interface
-        this.mContext.SetProgram( this.mUserInterfaceProgram );
+        this.mFrame.Render( this.mContext, ERenderPass.UserInterface );
         
         if ( this.mUserInterfaceBlendEnable )
         {
@@ -202,9 +203,9 @@ export class CRenderer
         }
         
         // Post process
+        gl.bindFramebuffer( gl.FRAMEBUFFER, null );
         this.mContext.SetProgram( this.mPostProcessProgram );
         this.mFrameRenderTarget.BindTexture( this.mContext, 0 );
-        gl.bindFramebuffer( gl.FRAMEBUFFER, null );
         
         gl.uniform2f(
             this.mPostProcessProgram.GetUniformLocation( EUniform.InvFrameSize ),

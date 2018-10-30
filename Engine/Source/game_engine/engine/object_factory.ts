@@ -4,6 +4,7 @@ import { FVector } from "../core/math/vector";
 import { FVector2D } from "../core/math/vector2d";
 import { ERenderPass } from "../rendering/renderable";
 import { FRotator } from "../core/math/rotator";
+import { CObjectBuilder } from "./object_builder";
 
 export abstract class CObjectFactory<T extends CObject>
 {
@@ -69,4 +70,5 @@ export abstract class CObjectFactory<T extends CObject>
     };
 
     public abstract Create( context: CContext ): T;
+    public abstract GetBuilder(): CObjectBuilder<T>;
 };

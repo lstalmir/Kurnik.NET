@@ -5,6 +5,8 @@ export abstract class FUserInterfaceShaders
         'precision mediump float;' +
         'attribute vec3 aPosition;' +
         'attribute vec2 aTexcoord;' +
+        'attribute vec3 aInstancePosition;' +
+        'attribute vec2 aInstanceTexcoord;' +
         'varying vec2 vTexcoord;' +
         'uniform vec2 uInvFrameSize;' +
         'void main( void ) {' +

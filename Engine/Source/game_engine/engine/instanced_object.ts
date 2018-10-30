@@ -2,10 +2,9 @@
 import { CContext } from "../rendering/context";
 import { ERenderPass } from "../rendering/renderable";
 import { FVertex, FInstancedVertexAttribute } from "./vertex";
-import { EUniform } from "../rendering/program";
 import { FVector } from "../core/math/vector";
 import { FVector2D } from "../core/math/vector2d";
-import { CObjectFactory } from "./object_factory";
+import { CObjectBuilder } from "./object_builder";
 
 export class CInstancedObject<T extends CObject> extends CObject
 {
@@ -13,8 +12,9 @@ export class CInstancedObject<T extends CObject> extends CObject
     protected mInstanceCount: number;
     protected mInstanceBuffer: WebGLBuffer;
     protected mInstanceBufferData: FInstancedVertexAttribute[];
+    protected mInstanceBufferDirty: boolean;
     protected mEmulatedInstances: CObject[];
-    protected mEmulatedInstancesFactory: CObjectFactory<T>;
+    protected mEmulatedInstancesBuilder: CObjectBuilder<T>;
 
     //////////////////////////////////////////////////////////////////////////
     // @brief Create new instanced object. Instanced objects represent group
@@ -25,7 +25,7 @@ export class CInstancedObject<T extends CObject> extends CObject
     // @param renderFlags [in] When should be the objects rendered.
     // @param objectFactory [in] Object factory, used when instancing is not
     //  supported in current version of WebGL (<2.0).
-    public constructor( context: CContext, name: string, renderFlags: number, objectFactory: CObjectFactory<T> )
+    public constructor( context: CContext, name: string, renderFlags: number, objectBuilder: CObjectBuilder<T> )
     {
         super( context, name, renderFlags );
 
@@ -34,14 +34,18 @@ export class CInstancedObject<T extends CObject> extends CObject
         if ( gl2 == null )
         { // WebGL 2.0 not supported, use emulation
             this.mEmulatedInstances = new Array<CObject>();
-            this.mEmulatedInstancesFactory = objectFactory;
+            this.mEmulatedInstancesBuilder = objectBuilder;
             this.mInstancingSupported = false;
         }
         else
         {
             this.mInstanceBuffer = gl2.createBuffer();
+            this.mInstanceBufferData = new Array<FInstancedVertexAttribute>();
+            this.mInstanceBufferDirty = true;
             this.mInstancingSupported = true;
         }
+
+        this.mInstanceCount = 0;
     };
 
     //////////////////////////////////////////////////////////////////////////
@@ -62,17 +66,14 @@ export class CInstancedObject<T extends CObject> extends CObject
                 tex = new FVector2D();
 
             this.mInstanceBufferData.push(
-                new FInstancedVertexAttribute(
-                    position.x,
-                    position.y,
-                    position.z,
-                    texcoord.x,
-                    texcoord.y ) );
+                new FInstancedVertexAttribute( pos.x, pos.y, pos.z, tex.x, tex.y ) );
+
+            this.mInstanceBufferDirty = true;
         }
         else
         {
-            let newObject = this.mEmulatedInstancesFactory
-                .SetName( this.Name + "_instance" + this.mIndexCount.toString() )
+            let newObject = this.mEmulatedInstancesBuilder.GetFactory()
+                .SetName( this.Name + "_instance" + this.mInstanceCount.toString() )
                 .SetRenderFlags( this.mRenderFlags )
                 .SetPosition( position )
                 .SetTexcoordOffset( texcoord )
@@ -93,6 +94,11 @@ export class CInstancedObject<T extends CObject> extends CObject
         let gl2 = context.GetGL2Context();
         if ( gl2 != null )
         {
+            if ( this.mInstanceBufferDirty )
+            {
+
+            }
+
             let program = context.GetProgram();
 
             gl2.bindBuffer( gl2.ARRAY_BUFFER, this.mVertexBuffer );

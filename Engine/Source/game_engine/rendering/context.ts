@@ -18,7 +18,7 @@ export class CContext
         this.mDebug = new CDebug();
         this.mCanvas = canvas;
 
-        this.mGL2 = canvas.getContext( "webgl2" );
+        //this.mGL2 = canvas.getContext( "webgl2" );
         this.mGL = this.mGL2 as WebGLRenderingContext;
         this.mUseWebGL2 = true;
 

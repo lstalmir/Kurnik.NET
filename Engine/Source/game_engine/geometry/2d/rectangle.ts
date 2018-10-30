@@ -4,6 +4,9 @@ import { ERenderPass } from "../../rendering/renderable";
 
 export class CRectangle extends CObject
 {
+    public readonly Width: number;
+    public readonly Height: number;
+
     //////////////////////////////////////////////////////////////////////////
     public constructor(
         context: CContext,
@@ -31,5 +34,8 @@ export class CRectangle extends CObject
                 0, 1, 2,
                 0, 2, 3
             ] );
+
+        this.Width = width;
+        this.Height = height;
     };
 };
