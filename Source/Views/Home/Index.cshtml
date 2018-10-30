@@ -62,7 +62,7 @@
             function init() {
                 require(['./bomberman'], function (bomberman) {
                     try {
-                        application = new bomberman.CreateBombermanApplication( "GameWindow" );
+                        application = bomberman.CreateBombermanApplication( "GameWindow" );
                         application.Run();
                     }
                     catch (e) {

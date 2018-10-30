@@ -1,15 +1,14 @@
-﻿import { CObject } from "../../engine/object";
-import { CContext } from "../../rendering/context";
+﻿import { CContext } from "../../rendering/context";
 import { CRectangle } from "./rectangle";
-import { ERenderPass } from "../../rendering/renderable";
 import { CObjectFactory } from "../../engine/object_factory";
+import { CRectangleBuilder } from "./rectangle_builder";
 
 export class CRectangleFactory extends CObjectFactory<CRectangle>
 {
-    private x: number;
-    private y: number;
-    private w: number;
-    private h: number;
+    protected mWidth: number;
+    protected mHeight: number;
+    protected mX: number;
+    protected mY: number;
 
     //////////////////////////////////////////////////////////////////////////
     public constructor()
@@ -23,23 +22,23 @@ export class CRectangleFactory extends CObjectFactory<CRectangle>
     public Reset(): CRectangleFactory
     {
         super.Reset();
-        this.x = 0;
-        this.y = 0;
-        this.w = 0;
-        this.h = 0;
+        this.mWidth = 0;
+        this.mHeight = 0;
+        this.mX = 0;
+        this.mY = 0;
         return this;
     };
 
     //////////////////////////////////////////////////////////////////////////
-    public Create( context: CContext ): CObject
+    public Create( context: CContext ): CRectangle
     {
         let rect = new CRectangle(
             context,
             this.mName,
-            this.w,
-            this.h,
-            this.x,
-            this.y,
+            this.mWidth,
+            this.mHeight,
+            this.mX,
+            this.mY,
             this.mRenderFlags );
 
         rect.Position.Set( this.mPosition );
@@ -51,30 +50,45 @@ export class CRectangleFactory extends CObjectFactory<CRectangle>
     };
 
     //////////////////////////////////////////////////////////////////////////
+    public GetBuilder(): CRectangleBuilder
+    {
+        return new CRectangleBuilder(
+            this.mName,
+            this.mPosition,
+            this.mRotation,
+            this.mTexcoord,
+            this.mRenderFlags,
+            this.mWidth,
+            this.mHeight,
+            this.mX,
+            this.mY );
+    };
+
+    //////////////////////////////////////////////////////////////////////////
     public SetWidth( width: number ): CRectangleFactory
     {
-        this.w = width;
+        this.mWidth = width;
         return this;
     };
 
     //////////////////////////////////////////////////////////////////////////
     public SetHeight( height: number ): CRectangleFactory
     {
-        this.h = height;
+        this.mHeight = height;
         return this;
     };
 
     //////////////////////////////////////////////////////////////////////////
-    public SetPosX( x: number ): CRectangleFactory
+    public SetX( x: number ): CRectangleFactory
     {
-        this.x = x;
+        this.mX = x;
         return this;
     };
 
     //////////////////////////////////////////////////////////////////////////
-    public SetPosY( y: number ): CRectangleFactory
+    public SetY( y: number ): CRectangleFactory
     {
-        this.y = y;
+        this.mY = y;
         return this;
     };
 };

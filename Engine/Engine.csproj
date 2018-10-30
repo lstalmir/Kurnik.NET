@@ -38,8 +38,10 @@
     <None Remove="Source\game_engine\engine\font.ts" />
     <None Remove="Source\game_engine\engine\instanced_object.ts" />
     <None Remove="Source\game_engine\engine\material.ts" />
+    <None Remove="Source\game_engine\engine\object_builder.ts" />
     <None Remove="Source\game_engine\engine\object_factory.ts" />
     <None Remove="Source\game_engine\engine\texture.ts" />
+    <None Remove="Source\game_engine\geometry\2d\rectangle_builder.ts" />
     <None Remove="Source\game_engine\geometry\2d\text2d.ts" />
     <None Remove="Source\game_engine\geometry\3d\box.ts" />
     <None Remove="Source\game_engine\geometry\3d\index.ts" />
@@ -64,9 +66,11 @@
     <TypeScriptCompile Include="Source\game_engine\engine\font.ts" />
     <TypeScriptCompile Include="Source\game_engine\engine\instanced_object.ts" />
     <TypeScriptCompile Include="Source\game_engine\engine\material.ts" />
+    <TypeScriptCompile Include="Source\game_engine\engine\object_builder.ts" />
     <TypeScriptCompile Include="Source\game_engine\engine\object_factory.ts" />
     <TypeScriptCompile Include="Source\game_engine\engine\texture.ts" />
     <TypeScriptCompile Include="Source\game_engine.ts" />
+    <TypeScriptCompile Include="Source\game_engine\geometry\2d\rectangle_builder.ts" />
     <TypeScriptCompile Include="Source\game_engine\geometry\2d\text2d.ts" />
     <TypeScriptCompile Include="Source\game_engine\geometry\3d\box.ts" />
     <TypeScriptCompile Include="Source\game_engine\geometry\3d\index.ts" />
