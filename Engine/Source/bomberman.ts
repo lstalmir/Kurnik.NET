@@ -1,4 +1,4 @@
-﻿import { CBombermanApplication } from "./Bomberman/application";
+﻿import { CBombermanApplication, FBombermanApplicationDesc } from "./Bomberman/application";
 
 export enum EBombermanStatus
 {
@@ -202,16 +202,29 @@ export interface IBombermanApplication
 ///     HTML Canvas element id for the target canvas. If the specified canvas
 ///     is not found, the function returns null.
 ///
+/// \param width [in]
+///     Number of intersections in each row.
+///
+/// \param height [in]
+///     Number of intersections in each column.
+///
 /// \return
 ///     Valid IBombmermanApplication instance on success, null of failure.
 //////////////////////////////////////////////////////////////////////////////
 export function CreateBombermanApplication(
-    canvasId: string
+    canvasId: string,
+    width: number,
+    height: number
 ): IBombermanApplication
 {
     try
     {
-        return new CBombermanApplication( canvasId );
+        let appDesc = new FBombermanApplicationDesc;
+        appDesc.CanvasID = canvasId;
+        appDesc.Width = width;
+        appDesc.Height = height;
+
+        return new CBombermanApplication( appDesc );
     }
     catch ( e ) { }
     return null;

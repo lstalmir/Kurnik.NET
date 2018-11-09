@@ -11,6 +11,13 @@ import { FVector } from "../game_engine/core/math/vector";
 import { FColor, EColor } from "../game_engine/core/color";
 import { CInstancedObject } from "../game_engine/engine/instanced_object";
 
+export class FBombermanWorldDesc
+{
+    public Name: string;
+    public Width: number;
+    public Height: number;
+};
+
 export class CBombermanWorld extends CWorld
 {
     public Players: CMap<number, CBombermanPlayer>;
@@ -21,11 +28,13 @@ export class CBombermanWorld extends CWorld
     protected mBombsMaterial: CMaterial;
     protected mBlocksMaterial: CMaterial;
     protected mDefaultBlocksMaterial: CMaterial;
+    protected mWidth: number;
+    protected mHeight: number;
 
     //////////////////////////////////////////////////////////////////////////
-    public constructor( context: CContext, name: string )
+    public constructor( context: CContext, worldDesc: FBombermanWorldDesc )
     {
-        super( context, name );
+        super( context, worldDesc.Name );
         this.mPlayersMaterial = new CMaterial( "PLAYERS_MATERIAL" );
         this.mBombsMaterial = new CMaterial( "BOMBS_MATERIAL" );
         this.mBlocksMaterial = new CMaterial( "BLOCKS_MATERIAL" );
@@ -34,6 +43,8 @@ export class CBombermanWorld extends CWorld
         this.Players = new CMap<number, CBombermanPlayer>();
         this.Bombs = new CMap<number, CBombermanBomb>();
         this.Blocks = new CMap<number, CBombermanBlock>();
+        this.mWidth = worldDesc.Width;
+        this.mHeight = worldDesc.Height;
 
         this.GenerateDefaultBlocks( context );
     };
@@ -77,16 +88,19 @@ export class CBombermanWorld extends CWorld
             ERenderPass.Geometry,
             factory.GetBuilder() );
 
-        let width = 42 * 15;
-        let height = 42 * 11;
+        let totalBlocks_w = this.mWidth * 2 + 1;
+        let totalBlocks_h = this.mHeight * 2 + 1;
+
+        let width = 42 * totalBlocks_w;
+        let height = 42 * totalBlocks_h;
         let screen_w = context.GetCanvas().width;
         let screen_h = context.GetCanvas().height;
 
-        for ( let i = 0; i < 15; ++i )
+        for ( let i = 0; i < totalBlocks_w; ++i )
         {
-            for ( let j = 0; j < 11; ++j )
+            for ( let j = 0; j < totalBlocks_h; ++j )
             {
-                if ( i == 0 || j == 0 || i == 14 || j == 10 ||
+                if ( i == 0 || j == 0 || i == ( totalBlocks_w - 1 ) || j == ( totalBlocks_h - 1 ) ||
                      (i % 2 == 0 && j % 2 == 0) )
                 {
                     blockInstances.AddInstance(

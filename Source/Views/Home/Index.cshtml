@@ -57,18 +57,26 @@
     <div class="col-md-12">
         <script type="text/javascript" src="/js/requirejs-min.js"></script>
         <script type="text/javascript" src="/js/game_engine.js"></script>
-        <script type="text/javascript">        
+        <script type="text/javascript">
             var application;
-            function init() {
-                require(['./bomberman'], function (bomberman) {
-                    try {
-                        application = bomberman.CreateBombermanApplication( "GameWindow" );
+            function init()
+            {
+                require( ['./bomberman'], function ( bomberman )
+                {
+                    try
+                    {
+                        application = bomberman.CreateBombermanApplication(
+                                    /* canvasId */ "GameWindow",
+                                    /* width    */ 7,
+                                    /* height   */ 5 );
+
                         application.Run();
                     }
-                    catch (e) {
-                        alert(e);
+                    catch ( e )
+                    {
+                        alert( e );
                     }
-                });
+                } );
             }
         </script>
         <button class="btn btn-default" onclick="init()">Start</button>
