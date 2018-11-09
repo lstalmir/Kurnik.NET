@@ -22,7 +22,10 @@ Strona powinna dołączyć bibliotekę RequireJS oraz wygenerowany game_engine.j
             function( mod_Bomberman ) 
             {
                 BombermanApp = mod_Bomberman
-                    .CreateBombermanApplication( "GameWindow" );
+                    .CreateBombermanApplication( 
+                    /* canvasId */ "GameWindow",
+                    /* width    */ 7,
+                    /* height   */ 5 );
             } );
     }
 
@@ -47,6 +50,34 @@ Wymiary podane w elemencie &lt;canvas&gt; są dowolne.
 # Dokumentacja API
 
 Poniżej przedstawiono udostępnione przez silnik funkcje i typy danych.
+
+---
+
+## Funkcja CreateBombermanApplication
+
+Tworzy nową instancję gry Bomberman.
+
+``` Typescript
+function CreateBombermanApplication(
+    canvasId    : string,
+    width       : number,
+    height      : number 
+): CBombermanApplication;
+```
+
+Po utworzeniu aplikacja oczekuje na wywołanie metody Run().
+
+**Parametry**  
+Funkcja przyjmuje następujące parametry:  
+- canvasId: _string_ [in]  
+Identyfikator elementu &lt;canvas&gt;, wewnątrz którego ma zostać wyświetlona aplikacja.
+- width: _number_ [in]  
+Liczba przecięć wiersza z kolumnami. Dla podanej liczby N wygenerowana zostanie mapa o szerokości 2N+1 bloków.
+- height: _number_ [in]  
+Liczba przecięć kolumny z wierszami. Podobnie jak przy szerokości, wysokość dla podanej liczby N wynosi 2N+1.
+
+**Zwracana wartość**  
+Funkcja zwraca instancję aplikacji Bomberman. Jeżeli wystąpił błąd podczas jej tworzenia, zwracana jest wartość null.
 
 ---
 

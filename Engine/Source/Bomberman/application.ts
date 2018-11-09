@@ -1,11 +1,18 @@
 ﻿import { CApplication } from "../game_engine";
 import { IBombermanApplication, EBombermanStatus } from "../bomberman"
-import { CBombermanWorld } from "./world";
+import { CBombermanWorld, FBombermanWorldDesc } from "./world";
 import { CBombermanPlayer } from "./player";
 import { FVector } from "../game_engine/core/math/vector";
 import { FRotator } from "../game_engine/core/math/rotator";
 import { CBombermanBomb } from "./bomb";
 import { CBombermanRenderer } from "./renderer";
+
+export class FBombermanApplicationDesc
+{
+    public CanvasID: string;
+    public Width: number;
+    public Height: number;
+};
 
 export class CBombermanApplication
     extends CApplication
@@ -14,10 +21,16 @@ export class CBombermanApplication
     protected mBlurStrength: number;
 
     //////////////////////////////////////////////////////////////////////////
-    public constructor( canvasId: string )
+    public constructor( appDesc: FBombermanApplicationDesc )
     {
-        super( canvasId );
-        this.mWorld = new CBombermanWorld( this.mContext, "BOMBERMAN_WORLD" );
+        super( appDesc.CanvasID );
+
+        let worldDesc = new FBombermanWorldDesc;
+        worldDesc.Name = "BOMBERMAN-WORLD";
+        worldDesc.Width = appDesc.Width;
+        worldDesc.Height = appDesc.Height;
+
+        this.mWorld = new CBombermanWorld( this.mContext, worldDesc );
         this.mRenderer = new CBombermanRenderer( this.mContext );
         this.mTargetRefreshRate = 30;
 

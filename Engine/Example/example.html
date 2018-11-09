@@ -9,7 +9,7 @@
         function init() {
             require( ['./bomberman'], function ( bomberman )
             {
-                application = bomberman.CreateBombermanApplication( "GameWindow" );
+                application = bomberman.CreateBombermanApplication( "GameWindow", 7, 5 );
                 application.Run();
             });
         }
