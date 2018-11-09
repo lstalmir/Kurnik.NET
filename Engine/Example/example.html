@@ -6,10 +6,6 @@
     <script src="../bin/game_engine.js" type="text/javascript"></script>
     <script type="text/javascript">
         var application;
-        function setRefreshRate( fps )
-        {
-            application.SetTargetRefreshRate( fps );
-        }
         function init() {
             require( ['./bomberman'], function ( bomberman )
             {
@@ -21,11 +17,8 @@
 </head>
 <body onload="init()">
     <h1>Example game engine application</h1>
-    <canvas width="640" height="480" id="GameWindow">
+    <canvas width="1280" height="720" id="GameWindow">
         CANVAS element not supported.
     </canvas>
-    <button onclick="setRefreshRate( 60 )">60 fps</button>
-    <button onclick="setRefreshRate( 30 )">30 fps</button>
-    <button onclick="setRefreshRate( 25 )">25 fps</button>
 </body>
 </html>

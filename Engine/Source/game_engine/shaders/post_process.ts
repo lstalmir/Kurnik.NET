@@ -1,4 +1,5 @@
-﻿
+﻿import { CProgram, EAttribute, ETexture, EUniform } from "../rendering/program";
+
 export abstract class FPostProcessShaders
 {
     private static VertexShaderCode: string =
@@ -38,5 +39,22 @@ export abstract class FPostProcessShaders
     public static GetPixelShaderCode(): string
     {
         return FPostProcessShaders.PixelShaderCode;
+    };
+};
+
+export class CPostProcessProgram extends CProgram
+{
+    public constructor( gl: WebGLRenderingContext, name: string )
+    {
+        super( gl, name, FPostProcessShaders.GetVertexShaderCode(), FPostProcessShaders.GetPixelShaderCode() );
+
+        this.QueryAttributeLocation( gl, "aPosition", EAttribute.Position );
+        this.QueryAttributeLocation( gl, "aTexcoord", EAttribute.Texcoord );
+        this.QueryAttributeLocation( gl, "aInstancePosition", EAttribute.InstancePosition );
+        this.QueryAttributeLocation( gl, "aInstanceTexcoord", EAttribute.InstanceTexcoord );
+
+        this.QueryTextureLocation( gl, "tFrameTex", ETexture.Color );
+
+        this.QueryUniformLocation( gl, "uInvFrameSize", EUniform.InvFrameSize );
     };
 };

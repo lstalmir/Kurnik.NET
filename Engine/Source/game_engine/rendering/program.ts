@@ -1,4 +1,5 @@
 ﻿import { CVertexShader, CPixelShader } from "./shader";
+import { InvalidArgumentException } from "../core/error";
 
 export enum EAttribute
 {
@@ -14,6 +15,7 @@ export enum EUniform
     ViewMatrix,
     ModelMatrix,
     InvFrameSize,
+    BlurPixelOffset,
     UseDiffuseTexture,
     UseSpecularTexture,
     UseNormalTexture,
@@ -35,14 +37,25 @@ export enum EUniform
     RenderingPass
 };
 
+export enum ETexture
+{
+    Color,
+    Alpha,
+    MaterialDiffuse,
+    MaterialSpecular,
+    MaterialNormal,
+    MaterialAlpha
+};
+
 export class CProgram
 {
-    private mVS: CVertexShader;
-    private mPS: CPixelShader;
-    private mName: string;
-    private mProgram: WebGLProgram;
-    private mAttribLocations: number[];
-    private mUniformLocations: WebGLUniformLocation[];
+    protected mVS: CVertexShader;
+    protected mPS: CPixelShader;
+    protected mName: string;
+    protected mProgram: WebGLProgram;
+    protected mAttribLocations: number[];
+    protected mUniformLocations: WebGLUniformLocation[];
+    protected mTextureLocations: WebGLUniformLocation[];
 
     //////////////////////////////////////////////////////////////////////////
     /// @brief Create new rendering program.
@@ -69,63 +82,9 @@ export class CProgram
             throw Error();
         }
 
-        // Attributes
         this.mAttribLocations = new Array<number>();
-
-        this.mAttribLocations.push(
-            gl.getAttribLocation( this.mProgram, "aPosition" ) );
-        this.mAttribLocations.push(
-            gl.getAttribLocation( this.mProgram, "aTexcoord" ) );
-        this.mAttribLocations.push( 
-            gl.getAttribLocation( this.mProgram, "aInstancePosition" ) );
-        this.mAttribLocations.push(
-            gl.getAttribLocation( this.mProgram, "aInstanceTexcoord" ) );
-
-        // Uniforms
         this.mUniformLocations = new Array<WebGLUniformLocation>();
-        
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "uProjectionMatrix" ) );
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "uViewMatrix" ) );
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "uModelMatrix" ) );
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "uInvFrameSize" ) );
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "bUseDiffuseTex" ) );
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "bUseSpecularTex" ) );
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "bUseNormalTex" ) );
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "bUseAlphaTex" ) );
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "tColorTex" ) );
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "tAlphaTex" ) );
-
-        // Material uniforms
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "uMatDiffuseTex" ) );
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "uMatDiffuseColor" ) );
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "uMatSpecularTex" ) );
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "uMatSpecularValue" ) );
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "uMatSpecularExponent" ) );
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "uMatNormalTex" ) );
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "uMatAlphaTex" ) );
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "uMatTransparency" ) );
-
-
-        this.mUniformLocations.push(
-            gl.getUniformLocation( this.mProgram, "uPass" ) );
+        this.mTextureLocations = new Array<WebGLUniformLocation>();
     };
 
     //////////////////////////////////////////////////////////////////////////
@@ -134,6 +93,17 @@ export class CProgram
     public GetName(): string
     {
         return this.mName;
+    };
+
+    //////////////////////////////////////////////////////////////////////////
+    public GetTextureLocation( slot: number ): WebGLUniformLocation
+    {
+        if ( slot >= this.mTextureLocations.length )
+        {
+            throw new InvalidArgumentException( 'Texture slot out of range' );
+        }
+
+        return this.mTextureLocations[slot];
     };
 
     //////////////////////////////////////////////////////////////////////////
@@ -177,5 +147,38 @@ export class CProgram
     public Use( gl: WebGLRenderingContext ): void
     {
         gl.useProgram( this.mProgram );
+    };
+
+    //////////////////////////////////////////////////////////////////////////
+    protected QueryAttributeLocation( gl: WebGLRenderingContext, attributeName: string, location: number ): void
+    {
+        if ( location >= this.mAttribLocations.length )
+        {
+            this.mAttribLocations.length = location + 1;
+        }
+
+        this.mAttribLocations[location] = gl.getAttribLocation( this.mProgram, attributeName );
+    };
+
+    //////////////////////////////////////////////////////////////////////////
+    protected QueryUniformLocation( gl: WebGLRenderingContext, uniformName: string, location: number ): void
+    {
+        if ( location >= this.mUniformLocations.length )
+        {
+            this.mUniformLocations.length = location + 1;
+        }
+
+        this.mUniformLocations[location] = gl.getUniformLocation( this.mProgram, uniformName );
+    };
+
+    //////////////////////////////////////////////////////////////////////////
+    protected QueryTextureLocation( gl: WebGLRenderingContext, textureName: string, location: number ): void
+    {
+        if ( location >= this.mTextureLocations.length )
+        {
+            this.mTextureLocations.length = location + 1;
+        }
+
+        this.mTextureLocations[location] = gl.getUniformLocation( this.mProgram, textureName );
     };
 };

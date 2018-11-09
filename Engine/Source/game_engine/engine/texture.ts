@@ -8,8 +8,9 @@ export interface ITexture3D extends ITexture2D { Depth: number; };
 
 export class CTexture implements ITexture
 {
+    public readonly Dimension: number;
+
     protected mTextureView: WebGLTexture;
-    protected mDimension: number;
     protected mGLDimension: number;
 
     //////////////////////////////////////////////////////////////////////////
@@ -18,7 +19,7 @@ export class CTexture implements ITexture
     public constructor( context: CContext, dimension: number, path: string )
     {
         let gl = context.GetGLContext();
-        this.mDimension = dimension;
+        this.Dimension = dimension;
         this.mGLDimension = this.GetWebGLDimension( gl );
         
         // Check if texture dimension is supported.
@@ -32,6 +33,12 @@ export class CTexture implements ITexture
             texture.OnTextureLoad( gl, image );
         };
         image.src = path;
+    };
+
+    //////////////////////////////////////////////////////////////////////////
+    public GetView(): WebGLTexture
+    {
+        return this.mTextureView;
     };
 
     //////////////////////////////////////////////////////////////////////////
@@ -51,7 +58,7 @@ export class CTexture implements ITexture
     // @param gl [in] The rendering context with valid GL constants.
     protected GetWebGLDimension( gl: WebGLRenderingContext | WebGL2RenderingContext ): number
     {
-        switch ( this.mDimension )
+        switch ( this.Dimension )
         {
             case 1:
                 return gl.TEXTURE;

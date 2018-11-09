@@ -77,6 +77,11 @@ export class CBombermanWorld extends CWorld
             ERenderPass.Geometry,
             factory.GetBuilder() );
 
+        let width = 42 * 15;
+        let height = 42 * 11;
+        let screen_w = context.GetCanvas().width;
+        let screen_h = context.GetCanvas().height;
+
         for ( let i = 0; i < 15; ++i )
         {
             for ( let j = 0; j < 11; ++j )
@@ -86,7 +91,7 @@ export class CBombermanWorld extends CWorld
                 {
                     blockInstances.AddInstance(
                         context,
-                        new FVector( 42 * i, 42 * j, 0 ) );
+                        new FVector( (screen_w - width) / 2 + 42 * i, (screen_h - height) / 2 + 42 * j, 0 ) );
                 }
             }
         }

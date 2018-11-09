@@ -1,5 +1,5 @@
 ﻿import { CContext } from "./context";
-import { EUniform } from "./program";
+import { EUniform, ETexture } from "./program";
 
 export class CRenderTarget
 {
@@ -39,6 +39,18 @@ export class CRenderTarget
     };
 
     //////////////////////////////////////////////////////////////////////////
+    public GetRenderTargetView(): WebGLFramebuffer
+    {
+        return this.mRenderTargetView;
+    };
+
+    //////////////////////////////////////////////////////////////////////////
+    public GetTextureView(): WebGLTexture
+    {
+        return this.mRenderTarget;
+    };
+
+    //////////////////////////////////////////////////////////////////////////
     public BindRenderTarget( context: CContext ): void
     {
         var gl = context.GetGLContext();
@@ -57,7 +69,7 @@ export class CRenderTarget
 
         gl.activeTexture( gl.TEXTURE0 + slot );
         gl.bindTexture( gl.TEXTURE_2D, this.mRenderTarget );
-        gl.uniform1i( context.GetProgram().GetUniformLocation( EUniform.ColorTexture ), slot );
+        gl.uniform1i( context.GetProgram().GetTextureLocation( ETexture.Color ), slot );
 
         context.GetDebug().Log(
             'Render target ' + this.mName +
