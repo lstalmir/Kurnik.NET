@@ -5,17 +5,26 @@ import { CBombermanPlayer } from "./player";
 import { FVector } from "../game_engine/core/math/vector";
 import { FRotator } from "../game_engine/core/math/rotator";
 import { CBombermanBomb } from "./bomb";
+import { CBombermanRenderer } from "./renderer";
 
 export class CBombermanApplication
     extends CApplication
     implements IBombermanApplication
 {
+    protected mBlurStrength: number;
+
     //////////////////////////////////////////////////////////////////////////
     public constructor( canvasId: string )
     {
         super( canvasId );
         this.mWorld = new CBombermanWorld( this.mContext, "BOMBERMAN_WORLD" );
-        this.mTargetRefreshRate = 60;
+        this.mRenderer = new CBombermanRenderer( this.mContext );
+        this.mTargetRefreshRate = 30;
+
+        ( <CBombermanRenderer>this.mRenderer ).SetBlurEnable( true );
+
+        this.mBlurStrength = 10;
+        ( <CBombermanRenderer>this.mRenderer ).SetBlurStrength( this.mBlurStrength );
     };
 
     //////////////////////////////////////////////////////////////////////////
@@ -30,6 +39,18 @@ export class CBombermanApplication
     {
         setTimeout( this.RenderLoop.bind( this ), 1000 / this.mTargetRefreshRate );
         this.mRenderer.Render( this.mWorld );
+
+        if ( this.mBlurStrength > 0.05 )
+        {
+            this.mBlurStrength *= 0.95;
+            ( <CBombermanRenderer>this.mRenderer ).SetBlurStrength( this.mBlurStrength );
+        }
+        else if ( this.mBlurStrength != 0 )
+        {
+            this.mBlurStrength = 0;
+            ( <CBombermanRenderer>this.mRenderer ).SetBlurStrength( this.mBlurStrength );
+            ( <CBombermanRenderer>this.mRenderer ).SetBlurEnable( false );
+        }
     };
 
     //////////////////////////////////////////////////////////////////////////

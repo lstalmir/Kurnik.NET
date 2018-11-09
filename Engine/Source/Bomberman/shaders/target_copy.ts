@@ -1,6 +1,6 @@
-﻿import { CProgram, ETexture, EAttribute, EUniform } from "../rendering/program";
+﻿import { CProgram, ETexture, EAttribute, EUniform } from "../../game_engine/rendering/program";
 
-export abstract class FUserInterfaceShaders
+export abstract class FTargetCopyShaders
 {
     private static VertexShaderCode: string =
         'precision mediump float;' +
@@ -18,15 +18,9 @@ export abstract class FUserInterfaceShaders
     private static PixelShaderCode: string =
         'precision mediump float;' +
         'varying vec2 vTexcoord;' +
-        'uniform sampler2D tColorTex;' +
-        'uniform sampler2D tAlphaTex;' +
-        'uniform int bUseAlphaTex;' +
+        'uniform sampler2D tFrameTex;' +
         'void main( void ) {' +
-        '   vec4 color = texture2D( tColorTex, vTexcoord );' +
-        '   if( bUseAlphaTex == 1 ) {' +
-        '       color.a = texture2D( tAlphaTex, vTexcoord ).r;' +
-        '   }' +
-        '   gl_FragColor = color;' +
+        '   gl_FragColor = texture2D( tFrameTex, vTexcoord );' +
         '}';
 
 
@@ -35,7 +29,7 @@ export abstract class FUserInterfaceShaders
     // @return Vertex shader code.
     public static GetVertexShaderCode(): string
     {
-        return FUserInterfaceShaders.VertexShaderCode;
+        return FTargetCopyShaders.VertexShaderCode;
     };
 
     //////////////////////////////////////////////////////////////////////////
@@ -43,25 +37,23 @@ export abstract class FUserInterfaceShaders
     // @return Pixel shader code.
     public static GetPixelShaderCode(): string
     {
-        return FUserInterfaceShaders.PixelShaderCode;
+        return FTargetCopyShaders.PixelShaderCode;
     };
 };
 
-export class CUserInterfaceProgram extends CProgram
+export class CTargetCopyProgram extends CProgram
 {
     public constructor( gl: WebGLRenderingContext, name: string )
     {
-        super( gl, name, FUserInterfaceShaders.GetVertexShaderCode(), FUserInterfaceShaders.GetPixelShaderCode() );
+        super( gl, name, FTargetCopyShaders.GetVertexShaderCode(), FTargetCopyShaders.GetPixelShaderCode() );
 
         this.QueryAttributeLocation( gl, "aPosition", EAttribute.Position );
         this.QueryAttributeLocation( gl, "aTexcoord", EAttribute.Texcoord );
         this.QueryAttributeLocation( gl, "aInstancePosition", EAttribute.InstancePosition );
         this.QueryAttributeLocation( gl, "aInstanceTexcoord", EAttribute.InstanceTexcoord );
 
-        this.QueryTextureLocation( gl, "tColorTex", ETexture.Color );
-        this.QueryTextureLocation( gl, "tAlphaTex", ETexture.Alpha );
+        this.QueryTextureLocation( gl, "tFrameTex", ETexture.Color );
 
-        this.QueryUniformLocation( gl, "bUseAlphaTex", EUniform.UseAlphaTexture );
         this.QueryUniformLocation( gl, "uInvFrameSize", EUniform.InvFrameSize );
-    }
+    };
 };

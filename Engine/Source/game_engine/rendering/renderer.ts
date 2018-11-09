@@ -3,16 +3,16 @@ import { mod_Color } from "./../core/index";
 import { CContext } from "./context";
 import { CProgram, EUniform } from "./program";
 import { ERenderPass } from "./renderable";
-import { FUserInterfaceShaders } from "../shaders/user_interface";
-import { FPostProcessShaders } from "../shaders/post_process";
-import { FGeometryShaders } from "../shaders/geometry";
+import { FUserInterfaceShaders, CUserInterfaceProgram } from "../shaders/user_interface";
+import { FPostProcessShaders, CPostProcessProgram } from "../shaders/post_process";
+import { FGeometryShaders, CGeometryProgram } from "../shaders/geometry";
 import { FLightingShaders } from "../shaders/lighting";
 import { CRenderTarget } from "./render_target";
 import { CRectangle } from "../geometry/2d/rectangle";
 import { CRectangleFactory } from "../geometry/2d/rectangle_factory";
 
 
-class FViewport
+export class FViewport
 {
     public X: number;
     public Y: number;
@@ -49,17 +49,17 @@ class FViewport
 
 export class CRenderer
 {
-    private mContext: CContext;
-    private mFrameViewport: FViewport;
-    private mGeometryProgram: CProgram;
-    private mLightingProgram: CProgram;
-    private mUserInterfaceProgram: CProgram;
-    private mPostProcessProgram: CProgram;
-    private mUserInterfaceBlendEnable: boolean;
-    private mColorRenderTarget: CRenderTarget;
-    private mDepthRenderTarget: CRenderTarget;
-    private mFrameRenderTarget: CRenderTarget;
-    private mFrame: CRectangle;
+    protected mContext: CContext;
+    protected mFrameViewport: FViewport;
+    protected mGeometryProgram: CProgram;
+    protected mLightingProgram: CProgram;
+    protected mUserInterfaceProgram: CProgram;
+    protected mPostProcessProgram: CProgram;
+    protected mUserInterfaceBlendEnable: boolean;
+    protected mColorRenderTarget: CRenderTarget;
+    protected mDepthRenderTarget: CRenderTarget;
+    protected mFrameRenderTarget: CRenderTarget;
+    protected mFrame: CRectangle;
 
 
     //////////////////////////////////////////////////////////////////////////
@@ -73,29 +73,15 @@ export class CRenderer
         var canvas = this.mContext.GetCanvas();
         this.mFrameViewport = new FViewport( 0, 0, canvas.width, canvas.height, 0, 1 );
 
-        this.mGeometryProgram = new CProgram(
-            gl,
-            "GeometryProgram",
-            FGeometryShaders.GetVertexShaderCode(),
-            FGeometryShaders.GetPixelShaderCode());
+        this.mGeometryProgram = new CGeometryProgram( gl, "GeometryProgram" );
+        this.mUserInterfaceProgram = new CUserInterfaceProgram( gl, "UserInterfaceProgram" );
+        this.mPostProcessProgram = new CPostProcessProgram( gl, "PostProcessProgram" );
 
         this.mLightingProgram = new CProgram(
             gl,
             "LightingProgram",
             FLightingShaders.GetVertexShaderCode(),
             FLightingShaders.GetPixelShaderCode() );
-        
-        this.mUserInterfaceProgram = new CProgram(
-            gl,
-            "UserInterfaceProgram",
-            FUserInterfaceShaders.GetVertexShaderCode(),
-            FUserInterfaceShaders.GetPixelShaderCode() );
-
-        this.mPostProcessProgram = new CProgram(
-            gl,
-            "PostProcessProgram",
-            FPostProcessShaders.GetVertexShaderCode(),
-            FPostProcessShaders.GetPixelShaderCode() );
         
         this.mColorRenderTarget = new CRenderTarget(
             context, "ColorRT", canvas.width, canvas.height, gl.RGBA, gl.UNSIGNED_BYTE );
@@ -129,24 +115,23 @@ export class CRenderer
 
         // Color PASS
         this.mContext.SetProgram( this.mGeometryProgram );
-        this.mColorRenderTarget.BindRenderTarget( this.mContext );
-        this.Clear();
+        this.mContext.SetViewport( this.mFrameViewport );
 
-        gl.viewport(
-            this.mFrameViewport.X,
-            this.mFrameViewport.Y,
-            this.mFrameViewport.Width,
-            this.mFrameViewport.Height );
+        this.mContext.SetRenderTargets( 1, [this.mColorRenderTarget] );
+        this.Clear();
 
         gl.uniform2f(
             this.mGeometryProgram.GetUniformLocation( EUniform.InvFrameSize ),
             1 / this.mFrameViewport.Width,
             1 / this.mFrameViewport.Height );
+
         gl.uniform1i(
             this.mGeometryProgram.GetUniformLocation( EUniform.UseAlphaTexture ),
             0 );
 
         renderable.Render( this.mContext, ERenderPass.Geometry );
+
+        this.OnRender_PostGeometryPass( renderable );
 
         //// Depth PASS
         //this.mDepthRenderTarget.BindRenderTarget( this.mContext );
@@ -174,7 +159,7 @@ export class CRenderer
         
         // User interface
         this.mContext.SetProgram( this.mUserInterfaceProgram );
-        this.mFrameRenderTarget.BindRenderTarget( this.mContext );
+        this.mContext.SetRenderTargets( 1, [this.mFrameRenderTarget] );
         this.Clear();
 
         this.mColorRenderTarget.BindTexture( this.mContext, 0 );
@@ -196,6 +181,8 @@ export class CRenderer
             0 );
         
         renderable.Render( this.mContext, ERenderPass.UserInterface );
+
+        this.OnRender_PostUserInterfacePass( renderable );
         
         if ( this.mUserInterfaceBlendEnable )
         {
@@ -203,8 +190,8 @@ export class CRenderer
         }
         
         // Post process
-        gl.bindFramebuffer( gl.FRAMEBUFFER, null );
         this.mContext.SetProgram( this.mPostProcessProgram );
+        this.mContext.SetRenderTargets( 1, [null] );
         this.mFrameRenderTarget.BindTexture( this.mContext, 0 );
         
         gl.uniform2f(
@@ -217,7 +204,14 @@ export class CRenderer
         
         this.Clear();
         this.mFrame.Render( this.mContext, ERenderPass.PostProcessing );
+
+        this.OnRender_PostPostProcessPass( renderable );
     };
+
+    // Extensions
+    protected OnRender_PostGeometryPass( renderable: mod_Renderable.IRenderable ): void { };
+    protected OnRender_PostUserInterfacePass( renderable: mod_Renderable.IRenderable ): void { };
+    protected OnRender_PostPostProcessPass( renderable: mod_Renderable.IRenderable ): void { };
 
     //////////////////////////////////////////////////////////////////////////
     // @brief Clear color and depth targets. Color target may be optionally
@@ -225,18 +219,8 @@ export class CRenderer
     // @param color [in] Color to fill render target with.
     public Clear( color = mod_Color.FColor.Get( mod_Color.EColor.Black ) ): void
     {
-        var gl = this.mContext.GetGLContext();
-
-        gl.clearColor( color.r, color.g, color.b, color.a );
-        gl.clearDepth( this.mFrameViewport.DepthMax );
-        gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
-
-        this.mContext.GetDebug().Log(
-            'Render target clear ('
-            + color.r + ', '
-            + color.g + ', '
-            + color.b + ', '
-            + color.a + ')' );
+        this.mContext.ClearRenderTarget( color );
+        this.mContext.ClearDepth();
     };
 
     //////////////////////////////////////////////////////////////////////////
@@ -245,29 +229,13 @@ export class CRenderer
     // @param color [in] Color to fill render target with.
     public ClearTarget( color = mod_Color.FColor.Get( mod_Color.EColor.Black ) ): void
     {
-        var gl = this.mContext.GetGLContext();
-
-        gl.clearColor( color.r, color.g, color.b, color.a );
-        gl.clear( gl.COLOR_BUFFER_BIT );
-
-        this.mContext.GetDebug().Log(
-            'Render target color clear ('
-            + color.r + ', '
-            + color.g + ', '
-            + color.b + ', '
-            + color.a + ')' );
+        this.mContext.ClearRenderTarget( color );
     };
 
     //////////////////////////////////////////////////////////////////////////
     // @brief Clear depth target. The target will be filled with ones (1).
     public ClearDepth(): void
     {
-        var gl = this.mContext.GetGLContext();
-
-        gl.clearDepth( this.mFrameViewport.DepthMax );
-        gl.clear( gl.DEPTH_BUFFER_BIT );
-
-        this.mContext.GetDebug().Log(
-            'Render target depth clear' );
+        this.mContext.ClearDepth();
     };
 };

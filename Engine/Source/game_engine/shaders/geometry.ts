@@ -1,5 +1,7 @@
-﻿
-export abstract class FGeometryShaders {
+﻿import { CProgram, EUniform, ETexture, EAttribute } from "../rendering/program";
+
+export abstract class FGeometryShaders
+{
     private static VertexShaderCode: string =
         'precision mediump float;' +
         'attribute vec3 aPosition;' +
@@ -74,14 +76,46 @@ export abstract class FGeometryShaders {
     //////////////////////////////////////////////////////////////////////////
     // @brief Get vertex shader code for geometry program.
     // @return Vertex shader code.
-    public static GetVertexShaderCode(): string {
+    public static GetVertexShaderCode(): string
+    {
         return FGeometryShaders.VertexShaderCode;
     };
 
     //////////////////////////////////////////////////////////////////////////
     // @brief Get pixel (fragment) shader code for geometry program.
     // @return Pixel shader code.
-    public static GetPixelShaderCode(): string {
+    public static GetPixelShaderCode(): string
+    {
         return FGeometryShaders.PixelShaderCode;
     };
 };
+
+export class CGeometryProgram extends CProgram
+{
+    public constructor( gl: WebGLRenderingContext, name: string )
+    {
+        super( gl, name, FGeometryShaders.GetVertexShaderCode(), FGeometryShaders.GetPixelShaderCode() );
+
+        this.QueryAttributeLocation( gl, "aPosition", EAttribute.Position );
+        this.QueryAttributeLocation( gl, "aTexcoord", EAttribute.Texcoord );
+        this.QueryAttributeLocation( gl, "aInstancePosition", EAttribute.InstancePosition );
+        this.QueryAttributeLocation( gl, "aInstanceTexcoord", EAttribute.InstanceTexcoord );
+
+        this.QueryTextureLocation( gl, "uMatDiffuseTex", ETexture.MaterialDiffuse );
+        this.QueryTextureLocation( gl, "uMatSpecularTex", ETexture.MaterialSpecular );
+        this.QueryTextureLocation( gl, "uMatNormalTex", ETexture.MaterialNormal );
+        this.QueryTextureLocation( gl, "uMatAlphaTex", ETexture.MaterialAlpha );
+
+        this.QueryUniformLocation( gl, "uInvFrameSize", EUniform.InvFrameSize );
+        this.QueryUniformLocation( gl, "uPass", EUniform.RenderingPass );
+
+        this.QueryUniformLocation( gl, "uMatDiffuseColor", EUniform.MaterialDiffuseColor );
+        this.QueryUniformLocation( gl, "uMatSpecularValue", EUniform.MaterialSpecularValue );
+        this.QueryUniformLocation( gl, "uMatSpecularExponent", EUniform.MaterialSpecularExponent );
+        this.QueryUniformLocation( gl, "uMatTransparency", EUniform.MaterialTransparency );
+        this.QueryUniformLocation( gl, "bUseDiffuseTex", EUniform.UseDiffuseTexture );
+        this.QueryUniformLocation( gl, "bUseSpecularTex", EUniform.UseSpecularTexture );
+        this.QueryUniformLocation( gl, "bUseNormalTex", EUniform.UseNormalTexture );
+        this.QueryUniformLocation( gl, "bUseAlphaTex", EUniform.UseAlphaTexture );
+    }
+}
