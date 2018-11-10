@@ -21,11 +21,13 @@ Strona powinna dołączyć bibliotekę RequireJS oraz wygenerowany game_engine.j
             ['./Bomberman'],
             function( mod_Bomberman ) 
             {
+                var applicationDesc = new mod_Bomberman.FBombermanApplicationDesc;
+                applicationDesc.CanvasID = "GameWindow";
+                applicationDesc.Width = 7;
+                applicationDesc.Height = 5;
+
                 BombermanApp = mod_Bomberman
-                    .CreateBombermanApplication( 
-                    /* canvasId */ "GameWindow",
-                    /* width    */ 7,
-                    /* height   */ 5 );
+                    .CreateBombermanApplication( applicationDesc );
             } );
     }
 
@@ -59,9 +61,7 @@ Tworzy nową instancję gry Bomberman.
 
 ``` Typescript
 function CreateBombermanApplication(
-    canvasId    : string,
-    width       : number,
-    height      : number 
+    appDesc: FBombermanApplicationDesc
 ): CBombermanApplication;
 ```
 
@@ -69,15 +69,35 @@ Po utworzeniu aplikacja oczekuje na wywołanie metody Run().
 
 **Parametry**  
 Funkcja przyjmuje następujące parametry:  
-- canvasId: _string_ [in]  
-Identyfikator elementu &lt;canvas&gt;, wewnątrz którego ma zostać wyświetlona aplikacja.
-- width: _number_ [in]  
-Liczba przecięć wiersza z kolumnami. Dla podanej liczby N wygenerowana zostanie mapa o szerokości 2N+1 bloków.
-- height: _number_ [in]  
-Liczba przecięć kolumny z wierszami. Podobnie jak przy szerokości, wysokość dla podanej liczby N wynosi 2N+1.
+- appDesc: _FBombermanApplicationDesc_ [in]  
+Struktura opisująca aplikację.
 
 **Zwracana wartość**  
 Funkcja zwraca instancję aplikacji Bomberman. Jeżeli wystąpił błąd podczas jej tworzenia, zwracana jest wartość null.
+
+---
+
+## Struktura FBombermanApplicationDesc
+
+Struktura opisująca aplikację Bomberman.
+
+``` TypeScript
+class FBombermanApplicationDesc {
+    CanvasID    : string;
+    Width       : number;
+    Height      : number;
+};
+```
+
+**CanvasID**: _string_  
+Identyfikator elementu &lt;canvas&gt; wewnątrz którego ma być wyświetlana aplikacja.
+
+**Width**: _number_  
+Liczba przecięć wiersza z kolumnami. Dla podanej liczby N wygenerowana zostanie mapa o szerokości 2N+1 bloków.
+
+**Height**: _number_  
+Liczba przecięć kolumny z wierszami. Podobnie jak przy szerokości, wysokość dla podanej liczby N wynosi 2N+1.
+
 
 ---
 

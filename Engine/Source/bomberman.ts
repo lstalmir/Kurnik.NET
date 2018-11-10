@@ -1,4 +1,4 @@
-﻿import { CBombermanApplication, FBombermanApplicationDesc } from "./Bomberman/application";
+﻿import { CBombermanApplication } from "./Bomberman/application";
 
 export enum EBombermanStatus
 {
@@ -189,6 +189,14 @@ export interface IBombermanApplication
 };
 
 //////////////////////////////////////////////////////////////////////////////
+export class FBombermanApplicationDesc
+{
+    CanvasID: string;
+    Width: number;
+    Height: number;
+};
+
+//////////////////////////////////////////////////////////////////////////////
 /// \function
 ///     CreateBombermanApplication
 ///
@@ -212,19 +220,12 @@ export interface IBombermanApplication
 ///     Valid IBombmermanApplication instance on success, null of failure.
 //////////////////////////////////////////////////////////////////////////////
 export function CreateBombermanApplication(
-    canvasId: string,
-    width: number,
-    height: number
+    applicationDesc: FBombermanApplicationDesc
 ): IBombermanApplication
 {
     try
     {
-        let appDesc = new FBombermanApplicationDesc;
-        appDesc.CanvasID = canvasId;
-        appDesc.Width = width;
-        appDesc.Height = height;
-
-        return new CBombermanApplication( appDesc );
+        return new CBombermanApplication( applicationDesc );
     }
     catch ( e ) { }
     return null;
