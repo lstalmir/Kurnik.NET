@@ -9,7 +9,12 @@
         function init() {
             require( ['./bomberman'], function ( bomberman )
             {
-                application = bomberman.CreateBombermanApplication( "GameWindow", 7, 5 );
+                var applicationDesc = new bomberman.FBombermanApplicationDesc;
+                applicationDesc.CanvasID = "GameWindow";
+                applicationDesc.Width = 7;
+                applicationDesc.Height = 5;
+
+                application = bomberman.CreateBombermanApplication( applicationDesc );
                 application.Run();
             });
         }
