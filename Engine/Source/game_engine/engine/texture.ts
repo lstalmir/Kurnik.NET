@@ -1,6 +1,10 @@
 ﻿import { CContext } from "../rendering/context";
 
-export interface ITexture { Bind( gl: WebGLRenderingContext, uniform: WebGLUniformLocation, slot: number ): void; };
+export interface ITexture
+{
+    Bind( gl: WebGLRenderingContext, uniform: WebGLUniformLocation, slot: number ): void;
+    GetView(): WebGLTexture;
+};
 export interface ITexture1D extends ITexture { Width: number; };
 export interface ITexture2D extends ITexture1D { Height: number; };
 export interface ITexture3D extends ITexture2D { Depth: number; };

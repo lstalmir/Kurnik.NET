@@ -2,9 +2,16 @@
 
 export class CDebug
 {
+    protected mEnabled: boolean;
+
+    public constructor( debugEnable: boolean )
+    {
+        this.mEnabled = debugEnable;
+    };
+
     public Log( message: string ): void
     {
-        if ( GDebug )
+        if ( this.mEnabled )
         {
             console.log( new Date().toISOString() + ': ' + message );
         }
@@ -26,7 +33,7 @@ export class CDebugWebGLRenderingContext implements WebGLRenderingContext
     public constructor( gl: WebGLRenderingContext )
     {
         this.mGL = gl;
-        this.mDebug = new CDebug();
+        this.mDebug = new CDebug( true );
         this.canvas = gl.canvas;
         this.drawingBufferHeight = gl.drawingBufferHeight;
         this.drawingBufferWidth = gl.drawingBufferWidth;

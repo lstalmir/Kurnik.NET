@@ -1,5 +1,6 @@
 ﻿import { CBombermanApplication } from "./Bomberman/application";
 
+//////////////////////////////////////////////////////////////////////////////
 export enum EBombermanStatus
 {
     OK,
@@ -186,6 +187,20 @@ export interface IBombermanApplication
     SetTargetRefreshRate(
         fps : number
     ): EBombermanStatus;
+
+    //////////////////////////////////////////////////////////////////////////
+    SetRefreshRateCallback(
+        fpsCb: ( fps: number ) => void 
+    ): EBombermanStatus;
+};
+
+//////////////////////////////////////////////////////////////////////////////
+export enum EBombermanApplicationFlags
+{
+    None = 0,
+    NoTextures = 1,
+    UseWebGL2 = 2,
+    Debug = 4
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -194,6 +209,7 @@ export class FBombermanApplicationDesc
     CanvasID: string;
     Width: number;
     Height: number;
+    Flags: number;
 };
 
 //////////////////////////////////////////////////////////////////////////////

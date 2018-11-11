@@ -43,13 +43,16 @@ export class CWorld implements IRenderable, IDisposable
     // @param renderPass [in] Type of the current render pass.
     public Render( context: CContext, renderPass: ERenderPass ): void
     {
-        for ( let material_object of this.mObjects.Pairs() )
+        if ( renderPass == ERenderPass.Geometry )
         {
-            material_object.First.Use( context );
-
-            for ( let object of material_object.Second )
+            for ( let material_object of this.mObjects.Pairs() )
             {
-                object.Render( context, renderPass );
+                material_object.First.Use( context );
+
+                for ( let object of material_object.Second )
+                {
+                    object.Render( context, renderPass );
+                }
             }
         }
     };

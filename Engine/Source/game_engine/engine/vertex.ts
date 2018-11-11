@@ -27,7 +27,7 @@ export class FInstancedVertexAttribute
     };
 
     //////////////////////////////////////////////////////////////////////////
-    public static EnableInputLayout( context: CContext )
+    public static EnableInputLayout( context: CContext, buffer: WebGLBuffer )
     {
         let gl2 = context.GetGL2Context();
         var program = context.GetProgram();
@@ -35,15 +35,17 @@ export class FInstancedVertexAttribute
         if ( gl2 == null )
             throw Error( "FInstancedVertexAttribute: Instancing is not supported" );
         
-        var instance_pos_idx = program.GetAttributeLocation( EAttribute.InstancePosition );
-        gl2.vertexAttribDivisor( instance_pos_idx, 1 );
-        gl2.vertexAttribPointer( instance_pos_idx, 3, gl2.FLOAT, false, FInstancedVertexAttribute.Size(), 0 );
-        gl2.enableVertexAttribArray( instance_pos_idx );
+        var instancePositionAttribute = program.GetAttributeLocation( EAttribute.InstancePosition );
+        var instanceTexcoordAttribute = program.GetAttributeLocation( EAttribute.InstanceTexcoord );
 
-        var instance_tex_idx = program.GetAttributeLocation( EAttribute.InstanceTexcoord );
-        gl2.vertexAttribDivisor( instance_tex_idx, 1 );
-        gl2.vertexAttribPointer( instance_tex_idx, 2, gl2.FLOAT, false, FInstancedVertexAttribute.Size(), 12 );
-        gl2.enableVertexAttribArray( instance_tex_idx );
+        gl2.enableVertexAttribArray( instancePositionAttribute );
+        gl2.enableVertexAttribArray( instanceTexcoordAttribute );
+
+        gl2.bindBuffer( gl2.ARRAY_BUFFER, buffer );
+        gl2.vertexAttribPointer( instancePositionAttribute, 3, gl2.FLOAT, false, FInstancedVertexAttribute.Size(), 0 );
+        gl2.vertexAttribPointer( instanceTexcoordAttribute, 2, gl2.FLOAT, false, FInstancedVertexAttribute.Size(), 12 );
+        gl2.vertexAttribDivisor( instancePositionAttribute, 1 );
+        gl2.vertexAttribDivisor( instanceTexcoordAttribute, 1 );
     };
 
     //////////////////////////////////////////////////////////////////////////
@@ -95,18 +97,20 @@ export class FVertex
     };
 
     //////////////////////////////////////////////////////////////////////////
-    public static EnableInputLayout( context: CContext ): void
+    public static EnableInputLayout( context: CContext, buffer: WebGLBuffer ): void
     {
         var gl = context.GetGLContext();
         var program = context.GetProgram();
 
-        var pos_idx = program.GetAttributeLocation( EAttribute.Position );
-        gl.vertexAttribPointer( pos_idx, 3, gl.FLOAT, false, FVertex.Size(), 0 );
-        gl.enableVertexAttribArray( pos_idx );
+        var positionAttribute = program.GetAttributeLocation( EAttribute.Position );
+        var texcoordAttribute = program.GetAttributeLocation( EAttribute.Texcoord );
 
-        var tex_idx = program.GetAttributeLocation( EAttribute.Texcoord );
-        gl.vertexAttribPointer( tex_idx, 2, gl.FLOAT, false, FVertex.Size(), 12 );
-        gl.enableVertexAttribArray( program.GetAttributeLocation( EAttribute.Texcoord ) );
+        gl.enableVertexAttribArray( positionAttribute );
+        gl.enableVertexAttribArray( texcoordAttribute );
+
+        gl.bindBuffer( gl.ARRAY_BUFFER, buffer );
+        gl.vertexAttribPointer( positionAttribute, 3, gl.FLOAT, false, FVertex.Size(), 0 );
+        gl.vertexAttribPointer( texcoordAttribute, 2, gl.FLOAT, false, FVertex.Size(), 12 );
     };
 
     //////////////////////////////////////////////////////////////////////////
