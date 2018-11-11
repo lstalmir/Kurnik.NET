@@ -1,8 +1,8 @@
 ﻿import { CProgram, ETexture, EAttribute, EUniform } from "../rendering/program";
 
-export abstract class FUserInterfaceShaders
+abstract class FUserInterfaceShaders
 {
-    private static VertexShaderCode: string =
+    static VertexShaderCode: string =
         'precision mediump float;' +
         'attribute vec3 aPosition;' +
         'attribute vec2 aTexcoord;' +
@@ -15,7 +15,7 @@ export abstract class FUserInterfaceShaders
         '   vTexcoord = aTexcoord;' +
         '}';
 
-    private static PixelShaderCode: string =
+    static PixelShaderCode: string =
         'precision mediump float;' +
         'varying vec2 vTexcoord;' +
         'uniform sampler2D tColorTex;' +
@@ -28,30 +28,13 @@ export abstract class FUserInterfaceShaders
         '   }' +
         '   gl_FragColor = color;' +
         '}';
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // @brief Get vertex shader code for user interface program.
-    // @return Vertex shader code.
-    public static GetVertexShaderCode(): string
-    {
-        return FUserInterfaceShaders.VertexShaderCode;
-    };
-
-    //////////////////////////////////////////////////////////////////////////
-    // @brief Get pixel (fragment) shader code for user interface program.
-    // @return Pixel shader code.
-    public static GetPixelShaderCode(): string
-    {
-        return FUserInterfaceShaders.PixelShaderCode;
-    };
 };
 
 export class CUserInterfaceProgram extends CProgram
 {
     public constructor( gl: WebGLRenderingContext, name: string )
     {
-        super( gl, name, FUserInterfaceShaders.GetVertexShaderCode(), FUserInterfaceShaders.GetPixelShaderCode() );
+        super( gl, name, FUserInterfaceShaders.VertexShaderCode, FUserInterfaceShaders.PixelShaderCode );
 
         this.QueryAttributeLocation( gl, "aPosition", EAttribute.Position );
         this.QueryAttributeLocation( gl, "aTexcoord", EAttribute.Texcoord );

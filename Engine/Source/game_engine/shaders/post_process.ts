@@ -1,8 +1,8 @@
 ﻿import { CProgram, EAttribute, ETexture, EUniform } from "../rendering/program";
 
-export abstract class FPostProcessShaders
+abstract class FPostProcessShaders
 {
-    private static VertexShaderCode: string =
+    static VertexShaderCode: string =
         'precision mediump float;' +
         'attribute vec3 aPosition;' +
         'attribute vec2 aTexcoord;' +
@@ -11,11 +11,11 @@ export abstract class FPostProcessShaders
         'varying vec2 vTexcoord;' +
         'uniform vec2 uInvFrameSize;' +
         'void main( void ) {' +
-        '   gl_Position = vec4( aPosition.xy, 0.0, 1.0 );' +
+        '   gl_Position = vec4( vec2( 1, -1 ) * aPosition.xy, 0.0, 1.0 );' +
         '   vTexcoord = aTexcoord;' +
         '}';
 
-    private static PixelShaderCode: string =
+    static PixelShaderCode: string =
         'precision mediump float;' +
         'varying vec2 vTexcoord;' +
         'uniform sampler2D tFrameTex;' +
@@ -23,30 +23,13 @@ export abstract class FPostProcessShaders
         '   vec4 color = texture2D( tFrameTex, vTexcoord );' +
         '   gl_FragColor = color;' +
         '}';
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // @brief Get vertex shader code for user interface program.
-    // @return Vertex shader code.
-    public static GetVertexShaderCode(): string
-    {
-        return FPostProcessShaders.VertexShaderCode;
-    };
-
-    //////////////////////////////////////////////////////////////////////////
-    // @brief Get pixel (fragment) shader code for user interface program.
-    // @return Pixel shader code.
-    public static GetPixelShaderCode(): string
-    {
-        return FPostProcessShaders.PixelShaderCode;
-    };
 };
 
 export class CPostProcessProgram extends CProgram
 {
     public constructor( gl: WebGLRenderingContext, name: string )
     {
-        super( gl, name, FPostProcessShaders.GetVertexShaderCode(), FPostProcessShaders.GetPixelShaderCode() );
+        super( gl, name, FPostProcessShaders.VertexShaderCode, FPostProcessShaders.PixelShaderCode );
 
         this.QueryAttributeLocation( gl, "aPosition", EAttribute.Position );
         this.QueryAttributeLocation( gl, "aTexcoord", EAttribute.Texcoord );

@@ -9,7 +9,6 @@ export abstract class FGaussianBlurShaders
         'attribute vec3 aInstancePosition;' +
         'attribute vec2 aInstanceTexcoord;' +
         'varying vec2 vTexcoord;' +
-        'uniform vec2 uInvFrameSize;' +
         'void main( void ) {' +
         '   gl_Position = vec4( aPosition.xy, 0.0, 1.0 );' +
         '   vTexcoord = aTexcoord;' +

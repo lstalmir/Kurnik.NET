@@ -62,9 +62,8 @@ export abstract class CObject implements IRenderable, IDisposable
         {
             var gl = context.GetGLContext();
             var program = context.GetProgram();
-
-            gl.bindBuffer( gl.ARRAY_BUFFER, this.mVertexBuffer );
-            FVertex.EnableInputLayout( context );
+            
+            FVertex.EnableInputLayout( context, this.mVertexBuffer);
 
             gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.mIndexBuffer );
 
@@ -82,7 +81,7 @@ export abstract class CObject implements IRenderable, IDisposable
             if ( instanceTexcoordLoc >= 0 )
             {
                 gl.vertexAttrib2f(
-                    program.GetAttributeLocation( EAttribute.InstanceTexcoord ),
+                    instanceTexcoordLoc,
                     this.TexcoordOffset.x,
                     this.TexcoordOffset.y );
             }
@@ -142,5 +141,23 @@ export abstract class CObject implements IRenderable, IDisposable
     protected RecalculateModelMatrix(): void
     {
         alert( "CObject.RecalculateModelMatrix: not implemented" );
+    };
+
+    //////////////////////////////////////////////////////////////////////////
+    public GetVertexBuffer(): WebGLBuffer
+    {
+        return this.mVertexBuffer;
+    };
+
+    //////////////////////////////////////////////////////////////////////////
+    public GetIndexBuffer(): WebGLBuffer
+    {
+        return this.mIndexBuffer;
+    };
+
+    //////////////////////////////////////////////////////////////////////////
+    public GetIndexCount(): number
+    {
+        return this.mIndexCount;
     };
 };

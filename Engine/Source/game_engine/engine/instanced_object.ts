@@ -43,6 +43,12 @@ export class CInstancedObject<T extends CObject> extends CObject
             this.mInstanceBufferData = new Array<FInstancedVertexAttribute>();
             this.mInstanceBufferDirty = true;
             this.mInstancingSupported = true;
+
+            // Obtain single mesh data
+            let dummyObject = objectBuilder.Create( context );
+            this.mVertexBuffer = dummyObject.GetVertexBuffer();
+            this.mIndexBuffer = dummyObject.GetIndexBuffer();
+            this.mIndexCount = dummyObject.GetIndexCount();
         }
 
         this.mInstanceCount = 0;
@@ -96,16 +102,11 @@ export class CInstancedObject<T extends CObject> extends CObject
         {
             if ( this.mInstanceBufferDirty )
             {
-
+                this.UpdateBuffers( context );
             }
-
-            let program = context.GetProgram();
-
-            gl2.bindBuffer( gl2.ARRAY_BUFFER, this.mVertexBuffer );
-            FVertex.EnableInputLayout( context );
-
-            gl2.bindBuffer( gl2.ARRAY_BUFFER, this.mInstanceBuffer );
-            FInstancedVertexAttribute.EnableInputLayout( context );
+            
+            FVertex.EnableInputLayout( context, this.mVertexBuffer );
+            FInstancedVertexAttribute.EnableInputLayout( context, this.mInstanceBuffer );
 
             gl2.bindBuffer( gl2.ELEMENT_ARRAY_BUFFER, this.mIndexBuffer );
             
@@ -126,5 +127,33 @@ export class CInstancedObject<T extends CObject> extends CObject
                 instance.Render( context, renderPass );
             }
         }
+    };
+
+    protected UpdateBuffers( context: CContext ): void
+    {
+        let gl = context.GetGL2Context();
+
+        let instanceBuffer = new Array<number>( this.mInstanceBufferData.length * FInstancedVertexAttribute.Size() );
+
+        let currentByteOffset = 0;
+        for ( let instance of this.mInstanceBufferData )
+        {
+            instanceBuffer[currentByteOffset + 0] = instance.Position.x;
+            instanceBuffer[currentByteOffset + 1] = instance.Position.y;
+            instanceBuffer[currentByteOffset + 2] = instance.Position.z;
+
+            instanceBuffer[currentByteOffset + 3] = instance.Texcoord.x;
+            instanceBuffer[currentByteOffset + 4] = instance.Texcoord.y;
+
+            currentByteOffset += 5;
+        }
+
+        this.mInstanceBuffer = gl.createBuffer();
+
+        gl.bindBuffer( gl.ARRAY_BUFFER, this.mInstanceBuffer );
+        gl.bufferData( gl.ARRAY_BUFFER, new Float32Array( instanceBuffer ), gl.STATIC_DRAW );
+        gl.bindBuffer( gl.ARRAY_BUFFER, null );
+        
+        this.mInstanceBufferDirty = false;
     };
 };

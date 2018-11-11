@@ -65,10 +65,12 @@
                 {
                     try
                     {
-                        application = bomberman.CreateBombermanApplication(
-                                    /* canvasId */ "GameWindow",
-                                    /* width    */ 7,
-                                    /* height   */ 5 );
+                        var applicationDesc = new bomberman.FBombermanApplicationDesc;
+                        applicationDesc.CanvasID = "GameWindow";
+                        applicationDesc.Width = 7;
+                        applicationDesc.Height = 5;
+
+                        application = bomberman.CreateBombermanApplication( applicationDesc );
 
                         application.Run();
                     }

@@ -15,10 +15,10 @@ export abstract class CApplication
 
 
     //////////////////////////////////////////////////////////////////////////
-    constructor( canvasId: string )
+    constructor( canvasId: string, debugFlag: boolean = false, webgl2Flag: boolean = false )
     {
         this.mCanvas = document.querySelector( "#" + canvasId );
-        this.mContext = new CContext( this.mCanvas, GDebug );
+        this.mContext = new CContext( this.mCanvas, debugFlag, webgl2Flag );
         this.mRenderer = new CRenderer( this.mContext );
         this.mTargetRefreshRate = 60;
     };

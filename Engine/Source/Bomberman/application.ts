@@ -1,68 +1,109 @@
 ﻿import { CApplication } from "../game_engine";
-import { IBombermanApplication, EBombermanStatus, FBombermanApplicationDesc } from "../bomberman"
+import { IBombermanApplication, EBombermanStatus, FBombermanApplicationDesc, EBombermanApplicationFlags } from "../bomberman"
 import { CBombermanWorld, FBombermanWorldDesc } from "./world";
 import { CBombermanPlayer } from "./player";
 import { FVector } from "../game_engine/core/math/vector";
 import { FRotator } from "../game_engine/core/math/rotator";
 import { CBombermanBomb } from "./bomb";
 import { CBombermanRenderer } from "./renderer";
+import { CBombermanBlock } from "./block";
 
 export class CBombermanApplication
     extends CApplication
     implements IBombermanApplication
 {
     protected mBlurStrength: number;
+    protected mRenderLoop: number;
+    protected mRefreshRateCb: ( fps: number ) => void;
+
+    protected mPerfCaptureFrames: number;
+    protected mPerfStart: number;
+    protected mPerfEnd: number;
 
     //////////////////////////////////////////////////////////////////////////
     public constructor( appDesc: FBombermanApplicationDesc )
     {
-        super( appDesc.CanvasID );
+        super(
+            appDesc.CanvasID,
+            ( appDesc.Flags & EBombermanApplicationFlags.Debug ) > 0,
+            ( appDesc.Flags & EBombermanApplicationFlags.UseWebGL2 ) > 0 );
 
         let worldDesc = new FBombermanWorldDesc;
         worldDesc.Name = "BOMBERMAN-WORLD";
         worldDesc.Width = appDesc.Width;
         worldDesc.Height = appDesc.Height;
+        worldDesc.Flags = appDesc.Flags;
 
         this.mWorld = new CBombermanWorld( this.mContext, worldDesc );
         this.mRenderer = new CBombermanRenderer( this.mContext );
         this.mTargetRefreshRate = 30;
+        this.mPerfCaptureFrames = 0;
 
         ( <CBombermanRenderer>this.mRenderer ).SetBlurEnable( true );
 
         this.mBlurStrength = 10;
         ( <CBombermanRenderer>this.mRenderer ).SetBlurStrength( this.mBlurStrength );
+
+        this.mRenderLoop = 0;
     };
 
     //////////////////////////////////////////////////////////////////////////
     public Run(): EBombermanStatus
     {
-        this.RenderLoop();
-        return EBombermanStatus.OK;
+        if ( this.mRenderLoop == 0 )
+        {
+            this.mRenderLoop = setInterval( this.RenderLoop.bind( this ), 1000 / this.mTargetRefreshRate );
+            //setTimeout( this.RenderLoop.bind( this ), 0 );
+            return EBombermanStatus.OK;
+        }
+        return EBombermanStatus.AlreadyExists;
     };
     
     //////////////////////////////////////////////////////////////////////////
     protected RenderLoop(): void
     {
-        setTimeout( this.RenderLoop.bind( this ), 1000 / this.mTargetRefreshRate );
-        this.mRenderer.Render( this.mWorld );
+        //while ( true )
+        {
+            if ( this.mPerfCaptureFrames == 0 )
+            {
+                this.mPerfStart = Date.now();
+            }
+            
+            this.mRenderer.Render( this.mWorld );
 
-        if ( this.mBlurStrength > 0.05 )
-        {
-            this.mBlurStrength *= 0.95;
-            ( <CBombermanRenderer>this.mRenderer ).SetBlurStrength( this.mBlurStrength );
-        }
-        else if ( this.mBlurStrength != 0 )
-        {
-            this.mBlurStrength = 0;
-            ( <CBombermanRenderer>this.mRenderer ).SetBlurStrength( this.mBlurStrength );
-            ( <CBombermanRenderer>this.mRenderer ).SetBlurEnable( false );
+            if ( this.mBlurStrength > 0.05 )
+            {
+                this.mBlurStrength *= 0.95;
+                ( <CBombermanRenderer>this.mRenderer ).SetBlurStrength( this.mBlurStrength );
+            }
+            else if ( this.mBlurStrength != 0 )
+            {
+                this.mBlurStrength = 0;
+                ( <CBombermanRenderer>this.mRenderer ).SetBlurStrength( this.mBlurStrength );
+                ( <CBombermanRenderer>this.mRenderer ).SetBlurEnable( false );
+            }
+
+            if ( this.mPerfCaptureFrames == this.mTargetRefreshRate )
+            {
+                this.mPerfEnd = Date.now();
+
+                if ( this.mRefreshRateCb )
+                {
+                    this.mRefreshRateCb( this.mTargetRefreshRate * 1000 / ( this.mPerfEnd - this.mPerfStart ) );
+                    this.mPerfCaptureFrames = 0;
+                }
+            }
+            else
+            {
+                this.mPerfCaptureFrames++;
+            }
         }
     };
 
     //////////////////////////////////////////////////////////////////////////
     public AddBlock( id: number, x: number, y: number ): EBombermanStatus
     {
-        return EBombermanStatus.NotImplemented;
+        return ( <CBombermanWorld>this.mWorld ).AddBlock( this.mContext, id, x, y );
     };
 
     //////////////////////////////////////////////////////////////////////////
@@ -186,6 +227,15 @@ export class CBombermanApplication
         }
 
         this.mTargetRefreshRate = fps;
+        clearInterval( this.mRenderLoop );
+
+        return this.Run();
+    };
+
+    //////////////////////////////////////////////////////////////////////////
+    public SetRefreshRateCallback( fpsCb: ( fps: number ) => void ): EBombermanStatus
+    {
+        this.mRefreshRateCb = fpsCb;
         return EBombermanStatus.OK;
     };
 };
