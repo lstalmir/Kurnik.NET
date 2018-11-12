@@ -52,7 +52,8 @@ abstract class FGeometryShaders
         //'   if( uPass == 0 ) {' +
         '       vec3 color = uMatDiffuseColor;' +
         '       if( bUseDiffuseTex == 1 ) {' +
-        '           color = texture2D( uMatDiffuseTex, vTexcoord ).rgb;' +
+        '           vec4 diffuse = texture2D( uMatDiffuseTex, vTexcoord );' +
+        '           color = color * (1.0 - diffuse.a) + diffuse.rgb * diffuse.a;' +
         '       }' +
         '       float alpha = 1.0 - uMatTransparency;' +
         '       if( bUseAlphaTex == 1 ) {' +
