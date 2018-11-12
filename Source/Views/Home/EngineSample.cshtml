@@ -1,0 +1,46 @@
+﻿
+@{
+    ViewData["Title"] = "EngineSample";
+}
+
+<h2>EngineSample</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <script type="text/javascript" src="/js/requirejs-min.js"></script>
+        <script type="text/javascript" src="/js/game_engine.js"></script>
+        <script type="text/javascript">
+            var application = null;
+            function init()
+            {
+                if ( application === null )
+                {
+                    require( ['./bomberman'], function ( bomberman )
+                    {
+                        try
+                        {
+                            var applicationDesc = new bomberman.FBombermanApplicationDesc;
+                            applicationDesc.CanvasID = "GameWindow";
+                            applicationDesc.Width = 7;
+                            applicationDesc.Height = 5;
+                            applicationDesc.Flags = 0
+                                | bomberman.EBombermanApplicationFlags.UseWebGL2;
+
+                            application = bomberman.CreateBombermanApplication( applicationDesc );
+
+                            application.Run();
+                        }
+                        catch ( e )
+                        {
+                            alert( e );
+                        }
+                    } );
+                }
+            }
+        </script>
+        <button class="btn btn-default" onclick="init()">Start</button>
+        <canvas width="1280" height="720" id="GameWindow">
+            HTML5 canvas element is not supported.
+        </canvas>
+    </div>
+</div>

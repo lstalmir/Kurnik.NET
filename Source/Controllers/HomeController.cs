@@ -15,6 +15,11 @@ namespace Source.Controllers
             return View();
         }
 
+        public IActionResult EngineSample()
+        {
+            return View();
+        }
+        
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
