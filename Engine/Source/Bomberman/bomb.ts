@@ -63,8 +63,7 @@ export class CBombermanBomb extends CObject
                         Date.now() - this.mInvocationTimestamp ) );
                 }
                 
-                gl.bindBuffer( gl.ARRAY_BUFFER, this.mVertexBuffer );
-                FVertex.EnableInputLayout( context );
+                FVertex.EnableInputLayout( context, this.mVertexBuffer );
 
                 gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.mIndexBuffer );
 

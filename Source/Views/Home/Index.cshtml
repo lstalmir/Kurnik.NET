@@ -69,6 +69,8 @@
                         applicationDesc.CanvasID = "GameWindow";
                         applicationDesc.Width = 7;
                         applicationDesc.Height = 5;
+                        applicationDesc.Flags = 0
+                            | bomberman.EBombermanApplicationFlags.UseWebGL2;
 
                         application = bomberman.CreateBombermanApplication( applicationDesc );
 
