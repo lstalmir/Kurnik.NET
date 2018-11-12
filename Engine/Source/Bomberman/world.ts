@@ -62,7 +62,7 @@ export class CBombermanWorld extends CWorld
         // Load textures if not disabled
         if ( ( worldDesc.Flags & EBombermanApplicationFlags.NoTextures ) == 0 )
         {
-            this.mDefaultBlocksMaterial.DiffuseTexture = new CTexture2D( context, "images/default-block.png" );
+            this.mDefaultBlocksMaterial.DiffuseTexture = new CTexture2D( context, "/images/default-block.png" );
         }
 
         this.GenerateDefaultBlocks( context );

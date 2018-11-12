@@ -71,7 +71,7 @@ export class CBombermanRenderer extends CRenderer
         
         this.mBomberpersonBackground = new CTexture2D(
             context,
-            "images/background.png" );
+            "/images/background.png" );
 
         this.mWorldFrame =
             new CRectangleFactory()
