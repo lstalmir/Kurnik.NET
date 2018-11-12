@@ -12,6 +12,7 @@ import { FColor, EColor } from "../game_engine/core/color";
 import { CInstancedObject } from "../game_engine/engine/instanced_object";
 import { CTexture2D } from "../game_engine/engine/texture";
 import { EBombermanApplicationFlags, EBombermanStatus } from "../bomberman";
+import { EBombermanUniform } from "./shaders/shader_constants";
 
 export class FBombermanWorldDesc
 {
@@ -19,6 +20,8 @@ export class FBombermanWorldDesc
     public Width: number;
     public Height: number;
     public Flags: number;
+    public BlockSize: number;
+    public BlockSpacing: number;
 };
 
 export class CBombermanWorld extends CWorld
@@ -33,6 +36,10 @@ export class CBombermanWorld extends CWorld
     protected mDefaultBlocksMaterial: CMaterial;
     protected mWidth: number;
     protected mHeight: number;
+    protected mBlockSize: number;
+    protected mBlockSpacing: number;
+
+    protected mInvWorldSizeUniformData: number[];
 
     //////////////////////////////////////////////////////////////////////////
     public constructor( context: CContext, worldDesc: FBombermanWorldDesc )
@@ -49,6 +56,8 @@ export class CBombermanWorld extends CWorld
         this.Blocks = new CMap<number, CBombermanBlock>();
         this.mWidth = worldDesc.Width;
         this.mHeight = worldDesc.Height;
+        this.mBlockSize = worldDesc.BlockSize;
+        this.mBlockSpacing = worldDesc.BlockSpacing;
 
         // Load textures if not disabled
         if ( ( worldDesc.Flags & EBombermanApplicationFlags.NoTextures ) == 0 )
@@ -57,11 +66,20 @@ export class CBombermanWorld extends CWorld
         }
 
         this.GenerateDefaultBlocks( context );
+
+        this.mInvWorldSizeUniformData = new Array<number>();
+        this.mInvWorldSizeUniformData.push( 1 / ( ( this.mBlockSize + this.mBlockSpacing ) * ( this.mWidth * 2 + 1 ) ) );
+        this.mInvWorldSizeUniformData.push( 1 / ( ( this.mBlockSize + this.mBlockSpacing ) * ( this.mHeight * 2 + 1 ) ) );
     };
     
     //////////////////////////////////////////////////////////////////////////
     public Render( context: CContext, pass: ERenderPass ): void
     {
+        if ( pass == ERenderPass.Geometry )
+        {
+            context.SetUniform2fv( EBombermanUniform.InvWorldSize, this.mInvWorldSizeUniformData );
+        }
+
         super.Render( context, pass );
 
         if ( pass == ERenderPass.Geometry )
@@ -89,17 +107,19 @@ export class CBombermanWorld extends CWorld
             { // Block with specified ID already exists.
                 return EBombermanStatus.AlreadyExists;
             }
+            
+            let spacedBlockSize = this.mBlockSpacing + this.mBlockSize;
+            
+            let block = new CBombermanBlock(
+                context, 
+                id,
+                "BOMBERMAN-BLOCK-" + id.toString(),
+                this.mBlockSize,
+                this.mBlockSize );
 
-            let totalBlocks_w = this.mWidth * 2 + 1;
-            let totalBlocks_h = this.mHeight * 2 + 1;
-
-            let width = 42 * totalBlocks_w;
-            let height = 42 * totalBlocks_h;
-            let screen_w = context.GetCanvas().width;
-            let screen_h = context.GetCanvas().height;
-
-            let block = new CBombermanBlock( context, id, "BOMBERMAN-BLOCK-" + id.toString(), 40, 40 );
-            block.Position.Set( new FVector( ( screen_w - width ) / 2 + 42 * x, ( screen_h - height ) / 2 + 42 * y ) );
+            block.Position.Set( new FVector(
+                spacedBlockSize * x,
+                spacedBlockSize * y ) );
 
             this.Blocks.Put( id, block );
             return EBombermanStatus.OK;
@@ -120,8 +140,8 @@ export class CBombermanWorld extends CWorld
         }
 
         let factory = new CBombermanBlockFactory()
-            .SetWidth( 40 )
-            .SetHeight( 40 );
+            .SetWidth( this.mBlockSize )
+            .SetHeight( this.mBlockSize );
 
         let blockInstances = new CInstancedObject(
             context,
@@ -132,21 +152,23 @@ export class CBombermanWorld extends CWorld
         let totalBlocks_w = this.mWidth * 2 + 1;
         let totalBlocks_h = this.mHeight * 2 + 1;
 
-        let width = 42 * totalBlocks_w;
-        let height = 42 * totalBlocks_h;
-        let screen_w = context.GetCanvas().width;
-        let screen_h = context.GetCanvas().height;
-
+        let spacedBlockSize = this.mBlockSpacing + this.mBlockSize;
+        
         for ( let i = 0; i < totalBlocks_w; ++i )
         {
             for ( let j = 0; j < totalBlocks_h; ++j )
             {
-                if ( i == 0 || j == 0 || i == ( totalBlocks_w - 1 ) || j == ( totalBlocks_h - 1 ) ||
+                if ( i == 0 ||
+                     j == 0 ||
+                     i == ( totalBlocks_w - 1 ) || 
+                     j == ( totalBlocks_h - 1 ) ||
                      (i % 2 == 0 && j % 2 == 0) )
                 {
                     blockInstances.AddInstance(
                         context,
-                        new FVector( (screen_w - width) / 2 + 42 * i, (screen_h - height) / 2 + 42 * j, 0 ) );
+                        new FVector(
+                            spacedBlockSize * i,
+                            spacedBlockSize * j ) );
                 }
             }
         }

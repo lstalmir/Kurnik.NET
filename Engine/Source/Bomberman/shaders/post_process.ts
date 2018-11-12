@@ -1,4 +1,5 @@
-﻿import { CProgram, EAttribute, ETexture, EUniform } from "../rendering/program";
+﻿import { CProgram, EAttribute, ETexture, EUniform } from "../../game_engine/rendering/program";
+import { EBombermanUniform } from "./shader_constants";
 
 abstract class FPostProcessShaders
 {
@@ -20,10 +21,17 @@ abstract class FPostProcessShaders
         'varying vec2 vTexcoord;' +
         'uniform sampler2D tColorTex;' +
         'uniform sampler2D tUITex;' +
+        'uniform sampler2D tBackgroundTex;' +
+        'uniform int uPass;' +
         'void main( void ) {' +
-        '   vec4 color = texture2D( tColorTex, vTexcoord );' +
+        '   if( uPass == 1 ) {' +
+        '       gl_FragColor = texture2D( tColorTex, vTexcoord );' +
+        '       return;' +
+        '   }' +
+        '   vec4 color = vec4( 1, 1, 1, 1 );' +
         '   vec4 ui = texture2D( tUITex, vTexcoord );' +
-        '   gl_FragColor = vec4( mix( color.rgb, ui.rgb, ui.a ), 1.0 );' +
+        '   vec4 bg = texture2D( tBackgroundTex, vTexcoord );' +
+        '   gl_FragColor = vec4( mix( mix( color.rgb, ui.rgb, ui.a ), bg.rgb, bg.a ), 1.0 );' +
         '}';
 };
 
@@ -40,7 +48,9 @@ export class CPostProcessProgram extends CProgram
 
         this.QueryTextureLocation( gl, "tFrameTex", ETexture.Color );
         this.QueryTextureLocation( gl, "tUITex", ETexture.Color + 1 );
+        this.QueryTextureLocation( gl, "tBackgroundTex", ETexture.Color + 2 );
 
         this.QueryUniformLocation( gl, "uInvFrameSize", EUniform.InvFrameSize );
+        this.QueryUniformLocation( gl, "uPass", EBombermanUniform.PostProcessPass );
     };
 };

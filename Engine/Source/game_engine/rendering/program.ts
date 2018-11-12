@@ -6,7 +6,9 @@ export enum EAttribute
     Position,
     Texcoord,
     InstancePosition,
-    InstanceTexcoord
+    InstanceTexcoord,
+
+    USER_DEFINED
 };
 
 export enum EUniform
@@ -15,7 +17,6 @@ export enum EUniform
     ViewMatrix,
     ModelMatrix,
     InvFrameSize,
-    BlurPixelOffset,
     UseDiffuseTexture,
     UseSpecularTexture,
     UseNormalTexture,
@@ -34,7 +35,9 @@ export enum EUniform
     MaterialAlphaTexture,
     MaterialTransparency,
 
-    RenderingPass
+    RenderingPass,
+
+    USER_DEFINED
 };
 
 export enum ETexture
@@ -44,7 +47,9 @@ export enum ETexture
     MaterialDiffuse,
     MaterialSpecular,
     MaterialNormal,
-    MaterialAlpha
+    MaterialAlpha,
+
+    USER_DEFINED
 };
 
 export class CProgram
@@ -100,7 +105,7 @@ export class CProgram
     {
         if ( slot >= this.mTextureLocations.length )
         {
-            throw new InvalidArgumentException( 'Texture slot out of range' );
+            return null;
         }
 
         return this.mTextureLocations[slot];
@@ -130,6 +135,11 @@ export class CProgram
     /// @return Location of the attribute.
     public GetAttributeLocation( attribute: EAttribute ): number
     {
+        if ( attribute >= this.mAttribLocations.length )
+        {
+            return -1;
+        }
+
         return this.mAttribLocations[attribute];
     };
 
@@ -139,6 +149,11 @@ export class CProgram
     /// @return Location of the uniform.
     public GetUniformLocation( uniform: EUniform ): WebGLUniformLocation
     {
+        if ( uniform >= this.mUniformLocations.length )
+        {
+            return null;
+        }
+
         return this.mUniformLocations[uniform];
     };
 

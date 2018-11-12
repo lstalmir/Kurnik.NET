@@ -1,8 +1,9 @@
 ﻿import { CProgram, ETexture, EUniform, EAttribute } from "../../game_engine/rendering/program";
+import { EBombermanUniform } from "./shader_constants";
 
-export abstract class FGaussianBlurShaders
+abstract class FGaussianBlurShaders
 {
-    private static VertexShaderCode: string =
+    static VertexShaderCode: string =
         'precision mediump float;' +
         'attribute vec3 aPosition;' +
         'attribute vec2 aTexcoord;' +
@@ -14,7 +15,7 @@ export abstract class FGaussianBlurShaders
         '   vTexcoord = aTexcoord;' +
         '}';
 
-    private static PixelShaderCode: string =
+    static PixelShaderCode: string =
         'precision mediump float;' +
         'varying vec2 vTexcoord;' +
         'uniform vec2 uInvFrameSize;' +
@@ -45,30 +46,13 @@ export abstract class FGaussianBlurShaders
         'void main( void ) {' +
         '   gl_FragColor = blur9();' +
         '}';
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // @brief Get vertex shader code for user interface program.
-    // @return Vertex shader code.
-    public static GetVertexShaderCode(): string
-    {
-        return FGaussianBlurShaders.VertexShaderCode;
-    };
-
-    //////////////////////////////////////////////////////////////////////////
-    // @brief Get pixel (fragment) shader code for user interface program.
-    // @return Pixel shader code.
-    public static GetPixelShaderCode(): string
-    {
-        return FGaussianBlurShaders.PixelShaderCode;
-    };
 };
 
 export class CBlurProgram extends CProgram
 {
     public constructor( gl: WebGLRenderingContext, name: string )
     {
-        super( gl, name, FGaussianBlurShaders.GetVertexShaderCode(), FGaussianBlurShaders.GetPixelShaderCode() );
+        super( gl, name, FGaussianBlurShaders.VertexShaderCode, FGaussianBlurShaders.PixelShaderCode );
 
         this.QueryAttributeLocation( gl, "aPosition", EAttribute.Position );
         this.QueryAttributeLocation( gl, "aTexcoord", EAttribute.Texcoord );
@@ -78,6 +62,6 @@ export class CBlurProgram extends CProgram
         this.QueryTextureLocation( gl, "tFrameTex", ETexture.Color );
 
         this.QueryUniformLocation( gl, "uInvFrameSize", EUniform.InvFrameSize );
-        this.QueryUniformLocation( gl, "uPixelOffset", EUniform.BlurPixelOffset );
+        this.QueryUniformLocation( gl, "uPixelOffset", EBombermanUniform.BlurPixelOffset );
     };
 };

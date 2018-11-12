@@ -1,6 +1,6 @@
-﻿import { CProgram, EAttribute, ETexture, EUniform } from "../rendering/program";
+﻿import { EAttribute, ETexture, EUniform, CProgram } from "../../game_engine/rendering/program";
 
-abstract class FPostProcessShaders
+abstract class FUserInterfaceShaders
 {
     static VertexShaderCode: string =
         'precision mediump float;' +
@@ -11,7 +11,7 @@ abstract class FPostProcessShaders
         'varying vec2 vTexcoord;' +
         'uniform vec2 uInvFrameSize;' +
         'void main( void ) {' +
-        '   gl_Position = vec4( vec2( 1, -1 ) * aPosition.xy, 0.0, 1.0 );' +
+        '   gl_Position = vec4( aPosition.xy, 0.0, 1.0 );' +
         '   vTexcoord = aTexcoord;' +
         '}';
 
@@ -19,28 +19,32 @@ abstract class FPostProcessShaders
         'precision mediump float;' +
         'varying vec2 vTexcoord;' +
         'uniform sampler2D tColorTex;' +
-        'uniform sampler2D tUITex;' +
+        'uniform sampler2D tAlphaTex;' +
+        'uniform int bUseAlphaTex;' +
         'void main( void ) {' +
         '   vec4 color = texture2D( tColorTex, vTexcoord );' +
-        '   vec4 ui = texture2D( tUITex, vTexcoord );' +
-        '   gl_FragColor = vec4( mix( color.rgb, ui.rgb, ui.a ), 1.0 );' +
+        '   if( bUseAlphaTex == 1 ) {' +
+        '       color.a = texture2D( tAlphaTex, vTexcoord ).r;' +
+        '   }' +
+        '   gl_FragColor = color;' +
         '}';
 };
 
-export class CPostProcessProgram extends CProgram
+export class CUserInterfaceProgram extends CProgram
 {
     public constructor( gl: WebGLRenderingContext, name: string )
     {
-        super( gl, name, FPostProcessShaders.VertexShaderCode, FPostProcessShaders.PixelShaderCode );
+        super( gl, name, FUserInterfaceShaders.VertexShaderCode, FUserInterfaceShaders.PixelShaderCode );
 
         this.QueryAttributeLocation( gl, "aPosition", EAttribute.Position );
         this.QueryAttributeLocation( gl, "aTexcoord", EAttribute.Texcoord );
         this.QueryAttributeLocation( gl, "aInstancePosition", EAttribute.InstancePosition );
         this.QueryAttributeLocation( gl, "aInstanceTexcoord", EAttribute.InstanceTexcoord );
 
-        this.QueryTextureLocation( gl, "tFrameTex", ETexture.Color );
-        this.QueryTextureLocation( gl, "tUITex", ETexture.Color + 1 );
+        this.QueryTextureLocation( gl, "tColorTex", ETexture.Color );
+        this.QueryTextureLocation( gl, "tAlphaTex", ETexture.Alpha );
 
+        this.QueryUniformLocation( gl, "bUseAlphaTex", EUniform.UseAlphaTexture );
         this.QueryUniformLocation( gl, "uInvFrameSize", EUniform.InvFrameSize );
-    };
+    }
 };

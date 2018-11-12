@@ -25,13 +25,12 @@ export class CFont implements IDisposable
         gl.deleteTexture( this.mFontTexture );
     };
 
-    public GetCharacterOffset( character: number )
+    public GetCharacterOffset( character: number ): number[]
     {
         // Font textures are 16x16 characters.
-        let row = character / 16;
-        let col = character % 16;
-
-
+        let row = Math.floor( character / 16 );
+        let col = Math.floor( character % 16 );
+        return [col / 16, row / 16];
     };
 
     private OnFontTextureResponseReceive( gl: WebGLRenderingContext, image: HTMLImageElement ): void
