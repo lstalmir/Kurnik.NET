@@ -1,14 +1,14 @@
-﻿import { CObject } from "../../engine/object";
-import { CContext } from "../../rendering/context";
-import { ERenderPass } from "../../rendering/renderable";
+﻿import { CContext } from "../../rendering/context";
 import { FVector2D } from "../../core/math/vector2d";
 import { CFont } from "../../engine/font";
+import { CInstancedObject } from "../../engine/instanced_object";
+import { CRectangle } from "./rectangle";
+import { CRectangleFactory } from "./rectangle_factory";
+import { FVector } from "../../core/math/vector";
 
-export class CText2D extends CObject
+export class CText2D extends CInstancedObject<CRectangle>
 {
     private mText: string;
-    private mSize: number;
-    private mLocation: FVector2D;
     private mFont: CFont;
 
     //////////////////////////////////////////////////////////////////////////
@@ -20,10 +20,29 @@ export class CText2D extends CObject
     // @param size [in] Size of the text, in pixels.
     // @param location [in] Position of the top left corner of the text
     //  bounding box.
-    public constructor( context: CContext, name: string, text: string, size: number, location: FVector2D, font: CFont )
+    public constructor( context: CContext, name: string, renderFlags: number, text: string, size: number, location: FVector2D, font: CFont )
     {
-        super( context, name, ERenderPass.UserInterface );
+        super( context, name, renderFlags,
+            new CRectangleFactory()
+                .SetHeight( size )
+                .SetWidth( size )
+                .SetX( location.x )
+                .SetY( location.y )
+                .SetName( name + '-CHARACTER' )
+                .SetRenderFlags( renderFlags )
+                .GetBuilder() );
 
         this.mFont = font;
+
+        for ( let i = 0; i < text.length; ++i )
+        {
+            let ch = text.charCodeAt( i );
+            let choffset = this.mFont.GetCharacterOffset( ch );
+
+            let texcoord = new FVector2D( choffset[0], choffset[1] );
+            let position = new FVector( size * i, 0, 0 );
+
+            this.AddInstance( context, position, texcoord );
+        }
     }
 };

@@ -3,8 +3,16 @@ import { CProgram, EUniform, ETexture } from "../game_engine/rendering/program";
 import { CRenderTarget } from "../game_engine/rendering/render_target";
 import { IRenderable, ERenderPass } from "../game_engine/rendering/renderable";
 import { CContext } from "../game_engine/rendering/context";
-import { FGaussianBlurShaders, CBlurProgram } from "./shaders/blur";
-import { FTargetCopyShaders, CTargetCopyProgram } from "./shaders/target_copy";
+import { CBlurProgram } from "./shaders/blur";
+import { CTargetCopyProgram } from "./shaders/target_copy";
+import { CUserInterfaceProgram } from "./shaders/user_interface";
+import { CPostProcessProgram } from "./shaders/post_process";
+import { EBombermanUniform } from "./shaders/shader_constants";
+import { CGeometryProgram } from "./shaders/geometry";
+import { CTexture2D } from "../game_engine/engine/texture";
+import { FColor, EColor } from "../game_engine/core/color";
+import { CRectangle } from "../game_engine/geometry/2d/rectangle";
+import { CRectangleFactory } from "../game_engine/geometry/2d/rectangle_factory";
 
 export class CBombermanRenderer extends CRenderer
 {
@@ -18,6 +26,8 @@ export class CBombermanRenderer extends CRenderer
     protected mBlurStrength: number;
 
     protected mTargetCopyProgram: CProgram;
+    protected mWorldFrame: CRectangle;
+    protected mBomberpersonBackground: CTexture2D;
 
 
     public constructor( context: CContext )
@@ -26,12 +36,15 @@ export class CBombermanRenderer extends CRenderer
         let gl = context.GetGLContext();
 
         this.mBlurEnabled = false;
-        this.mBlurTempRenderTargetSizeFactor = 0.5;
+        this.mBlurTempRenderTargetSizeFactor = 1;
         this.mBlurPasses = 2;
         this.mBlurStrength = 1;
 
         this.mBlurProgram = new CBlurProgram( gl, "BLUR-PROGRAM" );
         this.mTargetCopyProgram = new CTargetCopyProgram( gl, "TARGET-COPY-PROGRAM" );
+        this.mGeometryProgram = new CGeometryProgram( gl, "GEOMETRY-PROGRAM" );
+        this.mUserInterfaceProgram = new CUserInterfaceProgram( gl, "USER-INTERFACE-PROGRAM" );
+        this.mPostProcessProgram = new CPostProcessProgram( gl, "POST-PROCESS-PROGRAM" );
 
         this.mBlurTempRenderTargets = new Array<CRenderTarget>();
 
@@ -55,6 +68,23 @@ export class CBombermanRenderer extends CRenderer
         this.mBlurInvFrameSizeUniformData = new Array<number>();
         this.mBlurInvFrameSizeUniformData.push( 1 / this.mBlurFrameViewport.Width );
         this.mBlurInvFrameSizeUniformData.push( 1 / this.mBlurFrameViewport.Height );
+        
+        this.mBomberpersonBackground = new CTexture2D(
+            context,
+            "images/background.png" );
+
+        this.mWorldFrame =
+            new CRectangleFactory()
+                .SetWidth( 1.390625 )
+                .SetHeight( 1.722222 )
+                .SetX( -0.921875 )
+                .SetY( -0.861111 )
+                .SetName( "WORLD-FRAME" )
+                .SetRenderFlag( ERenderPass.PostProcessing )
+                .Create( context );
+        
+        this.mClearColor =
+            FColor.Get( EColor.White );
     }
 
     public SetBlurEnable( enable: boolean ): void
@@ -66,10 +96,23 @@ export class CBombermanRenderer extends CRenderer
     {
         this.mBlurStrength = strength;
     };
-
-    protected OnRender_PostGeometryPass( renderable: IRenderable ): void
+        
+    protected OnRender_PrePostProcessPass( renderable: IRenderable ): void
     {
-        let gl = this.mContext.GetGLContext();
+        this.mContext.SetTexture( ETexture.Color + 2, this.mBomberpersonBackground.GetView() );
+        this.mContext.SetUniform1i( EBombermanUniform.PostProcessPass, 0 );
+
+        if ( this.mBlurEnabled && this.mBlurStrength > 0 )
+        {
+            this.mContext.SetRenderTargets( 1, [this.mBlurTempRenderTargets[1]] );
+            this.Clear( this.mClearColor );
+        }
+    };
+
+    protected OnRender_PostPostProcessPass( renderable: IRenderable ): void
+    {
+        this.mContext.SetUniform1i( EBombermanUniform.PostProcessPass, 1 );
+        this.mWorldFrame.Render( this.mContext, ERenderPass.PostProcessing );
 
         if ( this.mBlurEnabled && this.mBlurStrength > 0 )
         {
@@ -80,13 +123,10 @@ export class CBombermanRenderer extends CRenderer
             for ( let i = 0; i < this.mBlurPasses; ++i )
             {
                 this.mContext.SetRenderTargets( 1, [this.mBlurTempRenderTargets[0]] );
-                if ( i == 0 )
-                    this.mContext.SetTexture( ETexture.Color, this.mColorRenderTarget.GetTextureView() );
-                else
-                    this.mContext.SetTexture( ETexture.Color, this.mBlurTempRenderTargets[1].GetTextureView() );
+                this.mContext.SetTexture( ETexture.Color, this.mBlurTempRenderTargets[1].GetTextureView() );
                 this.Clear();
 
-                this.mContext.SetUniform2f( EUniform.BlurPixelOffset, 0, this.mBlurStrength );
+                this.mContext.SetUniform2f( EBombermanUniform.BlurPixelOffset, 0, this.mBlurStrength );
 
                 this.mFrame.Render( this.mContext, ERenderPass.PostProcessing );
 
@@ -94,17 +134,17 @@ export class CBombermanRenderer extends CRenderer
                 this.mContext.SetTexture( ETexture.Color, this.mBlurTempRenderTargets[0].GetTextureView() );
                 this.Clear();
 
-                this.mContext.SetUniform2f( EUniform.BlurPixelOffset, this.mBlurStrength, 0 );
+                this.mContext.SetUniform2f( EBombermanUniform.BlurPixelOffset, this.mBlurStrength, 0 );
 
                 this.mFrame.Render( this.mContext, ERenderPass.PostProcessing );
             }
 
             this.mContext.SetProgram( this.mTargetCopyProgram );
+            this.mContext.SetRenderTargets( 1, [null] );
             this.mContext.SetTexture( ETexture.Color, this.mBlurTempRenderTargets[1].GetTextureView() );
-            this.mContext.SetRenderTargets( 1, [this.mColorRenderTarget] );
             this.mContext.SetViewport( this.mFrameViewport );
-            this.Clear();
-            
+            this.Clear( this.mClearColor );
+
             this.mFrame.Render( this.mContext, ERenderPass.PostProcessing );
         }
     };

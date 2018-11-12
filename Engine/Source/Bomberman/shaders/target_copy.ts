@@ -1,8 +1,8 @@
 ﻿import { CProgram, ETexture, EAttribute, EUniform } from "../../game_engine/rendering/program";
 
-export abstract class FTargetCopyShaders
+abstract class FTargetCopyShaders
 {
-    private static VertexShaderCode: string =
+    static VertexShaderCode: string =
         'precision mediump float;' +
         'attribute vec3 aPosition;' +
         'attribute vec2 aTexcoord;' +
@@ -14,37 +14,20 @@ export abstract class FTargetCopyShaders
         '   vTexcoord = aTexcoord;' +
         '}';
 
-    private static PixelShaderCode: string =
+    static PixelShaderCode: string =
         'precision mediump float;' +
         'varying vec2 vTexcoord;' +
         'uniform sampler2D tFrameTex;' +
         'void main( void ) {' +
         '   gl_FragColor = texture2D( tFrameTex, vTexcoord );' +
         '}';
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // @brief Get vertex shader code for user interface program.
-    // @return Vertex shader code.
-    public static GetVertexShaderCode(): string
-    {
-        return FTargetCopyShaders.VertexShaderCode;
-    };
-
-    //////////////////////////////////////////////////////////////////////////
-    // @brief Get pixel (fragment) shader code for user interface program.
-    // @return Pixel shader code.
-    public static GetPixelShaderCode(): string
-    {
-        return FTargetCopyShaders.PixelShaderCode;
-    };
 };
 
 export class CTargetCopyProgram extends CProgram
 {
     public constructor( gl: WebGLRenderingContext, name: string )
     {
-        super( gl, name, FTargetCopyShaders.GetVertexShaderCode(), FTargetCopyShaders.GetPixelShaderCode() );
+        super( gl, name, FTargetCopyShaders.VertexShaderCode, FTargetCopyShaders.PixelShaderCode );
 
         this.QueryAttributeLocation( gl, "aPosition", EAttribute.Position );
         this.QueryAttributeLocation( gl, "aTexcoord", EAttribute.Texcoord );

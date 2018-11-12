@@ -32,6 +32,11 @@
     <None Remove="Source\Bomberman\bomb.ts" />
     <None Remove="Source\Bomberman\player.ts" />
     <None Remove="Source\Bomberman\renderer.ts" />
+    <None Remove="Source\Bomberman\shaders\geometry.ts" />
+    <None Remove="Source\Bomberman\shaders\post_process.ts" />
+    <None Remove="Source\Bomberman\shaders\shader_constants.ts" />
+    <None Remove="Source\Bomberman\shaders\user_interface.ts" />
+    <None Remove="Source\Bomberman\user_interface.ts" />
     <None Remove="Source\Bomberman\world.ts" />
     <None Remove="Source\game_engine\core\error.ts" />
     <None Remove="Source\game_engine\core\map.ts" />
@@ -53,7 +58,6 @@
     <None Remove="Source\game_engine\net\index.ts" />
     <None Remove="Source\game_engine\shaders\blur.ts" />
     <None Remove="Source\game_engine\shaders\geometry.ts" />
-    <None Remove="Source\game_engine\shaders\lighting.ts" />
     <None Remove="Source\game_engine\shaders\target_copy.ts" />
   </ItemGroup>
 
@@ -65,6 +69,11 @@
     <TypeScriptCompile Include="Source\Bomberman\bomb.ts" />
     <TypeScriptCompile Include="Source\Bomberman\player.ts" />
     <TypeScriptCompile Include="Source\Bomberman\renderer.ts" />
+    <TypeScriptCompile Include="Source\Bomberman\shaders\geometry.ts" />
+    <TypeScriptCompile Include="Source\Bomberman\shaders\post_process.ts" />
+    <TypeScriptCompile Include="Source\Bomberman\shaders\shader_constants.ts" />
+    <TypeScriptCompile Include="Source\Bomberman\shaders\user_interface.ts" />
+    <TypeScriptCompile Include="Source\Bomberman\user_interface.ts" />
     <TypeScriptCompile Include="Source\Bomberman\world.ts" />
     <TypeScriptCompile Include="Source\game_engine\core\error.ts" />
     <TypeScriptCompile Include="Source\game_engine\core\map.ts" />
@@ -87,7 +96,6 @@
     <TypeScriptCompile Include="Source\game_engine\net\index.ts" />
     <TypeScriptCompile Include="Source\Bomberman\shaders\blur.ts" />
     <TypeScriptCompile Include="Source\game_engine\shaders\geometry.ts" />
-    <TypeScriptCompile Include="Source\game_engine\shaders\lighting.ts" />
     <TypeScriptCompile Include="Source\Bomberman\shaders\target_copy.ts" />
   </ItemGroup>
 

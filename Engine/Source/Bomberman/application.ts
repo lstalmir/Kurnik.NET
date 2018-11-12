@@ -33,6 +33,8 @@ export class CBombermanApplication
         worldDesc.Width = appDesc.Width;
         worldDesc.Height = appDesc.Height;
         worldDesc.Flags = appDesc.Flags;
+        worldDesc.BlockSize = 40;
+        worldDesc.BlockSpacing = 2;
 
         this.mWorld = new CBombermanWorld( this.mContext, worldDesc );
         this.mRenderer = new CBombermanRenderer( this.mContext );
