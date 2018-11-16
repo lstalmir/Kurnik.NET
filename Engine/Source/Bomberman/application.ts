@@ -1,12 +1,14 @@
 ﻿import { CApplication } from "../game_engine";
-import { IBombermanApplication, EBombermanStatus, FBombermanApplicationDesc, EBombermanApplicationFlags } from "../bomberman"
+import { IBombermanApplication, EBombermanStatus, FBombermanApplicationDesc, EBombermanApplicationFlags, FBombermanPlayerDesc, FBombermanPlayerInitData } from "../bomberman"
 import { CBombermanWorld, FBombermanWorldDesc } from "./world";
-import { CBombermanPlayer } from "./player";
+import { CBombermanPlayer, FBombermanPlayerDesc, FBombermanPlayerInitData } from "./player";
 import { FVector } from "../game_engine/core/math/vector";
 import { FRotator } from "../game_engine/core/math/rotator";
 import { CBombermanBomb } from "./bomb";
 import { CBombermanRenderer } from "./renderer";
 import { CBombermanBlock } from "./block";
+import { CBombermanUserInterface, FBombermanUserInterfaceDesc } from "./user_interface";
+import { CBombermanExternalResources } from "./external_resources";
 
 export class CBombermanApplication
     extends CApplication
@@ -20,6 +22,8 @@ export class CBombermanApplication
     protected mPerfStart: number;
     protected mPerfEnd: number;
 
+    protected mUserInterface: CBombermanUserInterface;
+
     //////////////////////////////////////////////////////////////////////////
     public constructor( appDesc: FBombermanApplicationDesc )
     {
@@ -27,6 +31,9 @@ export class CBombermanApplication
             appDesc.CanvasID,
             ( appDesc.Flags & EBombermanApplicationFlags.Debug ) > 0,
             ( appDesc.Flags & EBombermanApplicationFlags.UseWebGL2 ) > 0 );
+
+        CBombermanExternalResources.InitializePaths(
+            ( appDesc.Flags & EBombermanApplicationFlags.UseGlobalPaths ) > 0 );
 
         let worldDesc = new FBombermanWorldDesc;
         worldDesc.Name = "BOMBERMAN-WORLD";
@@ -40,6 +47,14 @@ export class CBombermanApplication
         this.mRenderer = new CBombermanRenderer( this.mContext );
         this.mTargetRefreshRate = 30;
         this.mPerfCaptureFrames = 0;
+
+        let uiDesc = new FBombermanUserInterfaceDesc;
+        uiDesc.PlayerEntry.Width = 200;
+        uiDesc.PlayerEntry.Height = 50;
+        uiDesc.PlayerEntry.Spacing = 5;
+
+        this.mUserInterface = new CBombermanUserInterface( this.mContext, uiDesc );
+        this.mUserInterface.Hide();
 
         ( <CBombermanRenderer>this.mRenderer ).SetBlurEnable( true );
 
@@ -64,7 +79,6 @@ export class CBombermanApplication
     //////////////////////////////////////////////////////////////////////////
     protected RenderLoop(): void
     {
-        //while ( true )
         {
             if ( this.mPerfCaptureFrames == 0 )
             {
@@ -83,6 +97,8 @@ export class CBombermanApplication
                 this.mBlurStrength = 0;
                 ( <CBombermanRenderer>this.mRenderer ).SetBlurStrength( this.mBlurStrength );
                 ( <CBombermanRenderer>this.mRenderer ).SetBlurEnable( false );
+
+                this.mUserInterface.Show();
             }
 
             if ( this.mPerfCaptureFrames == this.mTargetRefreshRate )
@@ -115,20 +131,21 @@ export class CBombermanApplication
     };
 
     //////////////////////////////////////////////////////////////////////////
-    public AddPlayer( id: number, name: string, x: number, y: number, rotation: number ): EBombermanStatus
+    public AddPlayer( desc: FBombermanPlayerDesc, initData?: FBombermanPlayerInitData ): EBombermanStatus
     {
         try
         {
-            if ( ( <CBombermanWorld>this.mWorld ).Players.Get( id ) != null )
-            { // Player with specified ID already exists.
-                return EBombermanStatus.AlreadyExists;
+            let result = ( <CBombermanWorld>this.mWorld ).AddPlayer(
+                this.mContext, desc, initData );
+
+            if ( EBombermanStatus.OK != result )
+            { // Failed to add player to the world
+                return result;
             }
-
-            let player = new CBombermanPlayer( this.mContext, id, name );
-            player.Position.Set( new FVector( x, y, 0 ) );
-            player.Rotation.Set( new FRotator( rotation ) );
-
-            ( <CBombermanWorld>this.mWorld ).Players.Put( id, player );
+            
+            this.mUserInterface.AddPlayer(
+                ( <CBombermanWorld>this.mWorld ).Players.Get( desc.Id ) );
+            
             return EBombermanStatus.OK;
         }
         catch ( e ) { }

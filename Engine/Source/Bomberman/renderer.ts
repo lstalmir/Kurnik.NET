@@ -13,6 +13,7 @@ import { CTexture2D } from "../game_engine/engine/texture";
 import { FColor, EColor } from "../game_engine/core/color";
 import { CRectangle } from "../game_engine/geometry/2d/rectangle";
 import { CRectangleFactory } from "../game_engine/geometry/2d/rectangle_factory";
+import { CBombermanExternalResources } from "./external_resources";
 
 export class CBombermanRenderer extends CRenderer
 {
@@ -71,7 +72,7 @@ export class CBombermanRenderer extends CRenderer
         
         this.mBomberpersonBackground = new CTexture2D(
             context,
-            "/images/background.png" );
+            CBombermanExternalResources.BackgroundImagePath );
 
         this.mWorldFrame =
             new CRectangleFactory()

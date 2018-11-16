@@ -31,16 +31,30 @@
                 application.SetTargetRefreshRate( 30 );
 
                 application.Run();
+
+                var playerDesc = new bomberman.FBombermanPlayerDesc;
+                playerDesc.Id = 0;
+                playerDesc.Name = 'player';
+                playerDesc.AvatarSrc = 'images/player-avatar.png';
+
+                var playerInitData = new bomberman.FBombermanPlayerInitData;
+                playerInitData.X = 5;
+                playerInitData.Y = 1;
+                playerInitData.Rotation = 0;
+
+                application.AddPlayer( playerDesc, playerInitData );
             } );
         }
     </script>
 </head>
 <body onload="init()">
     <h1>Example game engine application</h1>
-    <canvas width="1280" height="720" id="GameWindow">
-        CANVAS element not supported.
-    </canvas>
-    <br />
-    FPS: <span id="GameFPS"></span>
+    <div style="width:1280px;height:720px;position:relative;">
+        <canvas width="1280" height="720" id="GameWindow">
+            CANVAS element not supported.
+        </canvas>
+        <br />
+        FPS: <span id="GameFPS"></span>
+    </div>
 </body>
 </html>
