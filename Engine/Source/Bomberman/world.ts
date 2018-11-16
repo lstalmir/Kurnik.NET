@@ -11,8 +11,9 @@ import { FVector } from "../game_engine/core/math/vector";
 import { FColor, EColor } from "../game_engine/core/color";
 import { CInstancedObject } from "../game_engine/engine/instanced_object";
 import { CTexture2D } from "../game_engine/engine/texture";
-import { EBombermanApplicationFlags, EBombermanStatus } from "../bomberman";
+import { EBombermanApplicationFlags, EBombermanStatus, FBombermanPlayerDesc, FBombermanPlayerInitData } from "../bomberman";
 import { EBombermanUniform } from "./shaders/shader_constants";
+import { CBombermanExternalResources } from "./external_resources";
 
 export class FBombermanWorldDesc
 {
@@ -46,6 +47,7 @@ export class CBombermanWorld extends CWorld
     {
         super( context, worldDesc.Name );
         this.mPlayersMaterial = new CMaterial( "PLAYERS_MATERIAL" );
+        this.mPlayersMaterial.DiffuseColor = new FColor( 252 / 255, 230 / 255, 65 / 255 );
         this.mBombsMaterial = new CMaterial( "BOMBS_MATERIAL" );
         this.mBlocksMaterial = new CMaterial( "BLOCKS_MATERIAL" );
         this.mBlocksMaterial.DiffuseColor = new FColor( 147 / 255, 121 / 255, 116 / 255 );
@@ -62,7 +64,9 @@ export class CBombermanWorld extends CWorld
         // Load textures if not disabled
         if ( ( worldDesc.Flags & EBombermanApplicationFlags.NoTextures ) == 0 )
         {
-            this.mDefaultBlocksMaterial.DiffuseTexture = new CTexture2D( context, "/images/default-block.png" );
+            this.mDefaultBlocksMaterial.DiffuseTexture = new CTexture2D(
+                context,
+                CBombermanExternalResources.DefaultBlockTexturePath );
         }
 
         this.GenerateDefaultBlocks( context );
@@ -96,6 +100,36 @@ export class CBombermanWorld extends CWorld
             for ( let block of this.Blocks.Values() )
                 block.Render( context, pass );
         }
+    };
+
+    //////////////////////////////////////////////////////////////////////////
+    public AddPlayer( context: CContext, desc: FBombermanPlayerDesc, initData?: FBombermanPlayerInitData ): EBombermanStatus
+    {
+        try
+        {
+            if ( this.Players.Get( desc.Id ) != null )
+            { // Player with specified ID already exists
+                return EBombermanStatus.AlreadyExists;
+            }
+
+            let scaledInitData: FBombermanPlayerInitData = null;
+            if ( initData )
+            {
+                let spacedBlockSize = this.mBlockSpacing + this.mBlockSize;
+
+                scaledInitData = new FBombermanPlayerInitData;
+                scaledInitData.X = spacedBlockSize * initData.X;
+                scaledInitData.Y = spacedBlockSize * initData.Y;
+                scaledInitData.Rotation = initData.Rotation;
+            }
+
+            let player = new CBombermanPlayer( context, desc, scaledInitData );
+
+            this.Players.Put( desc.Id, player );
+            return EBombermanStatus.OK;
+        }
+        catch( e ) { }
+        return EBombermanStatus.Error;
     };
 
     //////////////////////////////////////////////////////////////////////////

@@ -11,6 +11,21 @@ export enum EBombermanStatus
     NotImplemented = -5
 };
 
+//////////////////////////////////////////////////////////////////////////////
+export class FBombermanPlayerDesc
+{
+    Id: number;
+    Name: string;
+    AvatarSrc: string;
+};
+
+export class FBombermanPlayerInitData
+{
+    X: number;
+    Y: number;
+    Rotation: number;
+};
+
 export interface IBombermanApplication
 {
     //////////////////////////////////////////////////////////////////////////
@@ -62,22 +77,13 @@ export interface IBombermanApplication
     ///     AlreadyExists error is returned and the state of the application
     ///     remains unchanged.
     ///
-    /// \param id [in] 
-    ///     Unique identifier to associate the new player with.
+    /// \param desc [in]
+    ///     Player description structure. Contains player's unique identifier
+    ///     and other fields describing the specific player.
     ///
-    /// \param name [in] 
-    ///     Friendly name of the player.
-    ///
-    /// \param x [in] 
-    ///     Location of the new player (x component, horizontal).
-    ///
-    /// \param y [in] 
-    ///     Location of the new player (y component, vertical).
-    ///
-    /// \param rotation [in] 
-    ///     Rotation angle of the new player (in radians).
-    ///     The application assumes 0 as no rotation, when player is facing
-    ///     north (top). All rotations are clock-wise.
+    /// \param initData [in, optional] 
+    ///     Optional structure describing initial state of the player, e.g.,
+    ///     its position and rotation.
     ///
     /// \return 
     ///     Result of the operation.
@@ -90,11 +96,8 @@ export interface IBombermanApplication
     ///         instance.
     //////////////////////////////////////////////////////////////////////////
     AddPlayer(
-        id          : number,
-        name        : string,
-        x           : number,
-        y           : number,
-        rotation    : number
+        desc        : FBombermanPlayerDesc,
+        initData?   : FBombermanPlayerInitData
     ): EBombermanStatus;
 
     //////////////////////////////////////////////////////////////////////////
@@ -200,7 +203,8 @@ export enum EBombermanApplicationFlags
     None = 0,
     NoTextures = 1,
     UseWebGL2 = 2,
-    Debug = 4
+    Debug = 4,
+    UseGlobalPaths = 8
 };
 
 //////////////////////////////////////////////////////////////////////////////

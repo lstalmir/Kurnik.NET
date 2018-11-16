@@ -30,6 +30,7 @@
     <None Remove="Source\Bomberman\application.ts" />
     <None Remove="Source\Bomberman\block.ts" />
     <None Remove="Source\Bomberman\bomb.ts" />
+    <None Remove="Source\Bomberman\external_resources.ts" />
     <None Remove="Source\Bomberman\player.ts" />
     <None Remove="Source\Bomberman\renderer.ts" />
     <None Remove="Source\Bomberman\shaders\geometry.ts" />
@@ -67,6 +68,7 @@
     <TypeScriptCompile Include="Source\Bomberman\application.ts" />
     <TypeScriptCompile Include="Source\Bomberman\block.ts" />
     <TypeScriptCompile Include="Source\Bomberman\bomb.ts" />
+    <TypeScriptCompile Include="Source\Bomberman\external_resources.ts" />
     <TypeScriptCompile Include="Source\Bomberman\player.ts" />
     <TypeScriptCompile Include="Source\Bomberman\renderer.ts" />
     <TypeScriptCompile Include="Source\Bomberman\shaders\geometry.ts" />
