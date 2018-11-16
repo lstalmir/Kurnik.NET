@@ -1,12 +1,10 @@
 ﻿import { CApplication } from "../game_engine";
 import { IBombermanApplication, EBombermanStatus, FBombermanApplicationDesc, EBombermanApplicationFlags, FBombermanPlayerDesc, FBombermanPlayerInitData } from "../bomberman"
 import { CBombermanWorld, FBombermanWorldDesc } from "./world";
-import { CBombermanPlayer, FBombermanPlayerDesc, FBombermanPlayerInitData } from "./player";
 import { FVector } from "../game_engine/core/math/vector";
 import { FRotator } from "../game_engine/core/math/rotator";
 import { CBombermanBomb } from "./bomb";
 import { CBombermanRenderer } from "./renderer";
-import { CBombermanBlock } from "./block";
 import { CBombermanUserInterface, FBombermanUserInterfaceDesc } from "./user_interface";
 import { CBombermanExternalResources } from "./external_resources";
 
