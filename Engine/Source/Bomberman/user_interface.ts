@@ -1,5 +1,5 @@
 ﻿import { CContext } from "../game_engine/rendering/context";
-import { CBombermanPlayer, FBombermanPlayerDesc } from "./player";
+import { CBombermanPlayer } from "./player";
 import { CBombermanExternalResources } from "./external_resources";
 
 class FBombermanPlayerEntryDesc
