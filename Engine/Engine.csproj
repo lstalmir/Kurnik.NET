@@ -43,6 +43,7 @@
     <None Remove="Source\game_engine\core\map.ts" />
     <None Remove="Source\game_engine\core\math\rotator.ts" />
     <None Remove="Source\game_engine\core\math\utility.ts" />
+    <None Remove="Source\game_engine\core\time.ts" />
     <None Remove="Source\game_engine\engine\animated_texture.ts" />
     <None Remove="Source\game_engine\engine\font.ts" />
     <None Remove="Source\game_engine\engine\instanced_object.ts" />
@@ -81,6 +82,7 @@
     <TypeScriptCompile Include="Source\game_engine\core\map.ts" />
     <TypeScriptCompile Include="Source\game_engine\core\math\rotator.ts" />
     <TypeScriptCompile Include="Source\game_engine\core\math\utility.ts" />
+    <TypeScriptCompile Include="Source\game_engine\core\time.ts" />
     <TypeScriptCompile Include="Source\game_engine\engine\animated_texture.ts" />
     <TypeScriptCompile Include="Source\game_engine\engine\font.ts" />
     <TypeScriptCompile Include="Source\game_engine\engine\instanced_object.ts" />
