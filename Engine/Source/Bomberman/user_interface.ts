@@ -35,7 +35,8 @@ class CBombermanPlayerEntry implements IUserInterfaceAnimatedHTMLElement
 
     protected mPlayer: CBombermanPlayer;
     protected mHTMLElement: HTMLDivElement;
-    
+
+    //////////////////////////////////////////////////////////////////////////
     constructor( context: CContext, player: CBombermanPlayer, desc: FBombermanPlayerEntryDesc )
     {
         this.mPlayer = player;
@@ -57,11 +58,19 @@ class CBombermanPlayerEntry implements IUserInterfaceAnimatedHTMLElement
         this.mHTMLElement.appendChild( playerName );
     };
 
+    //////////////////////////////////////////////////////////////////////////
     public GetHTMLElement(): HTMLElement
     {
         return this.mHTMLElement;
     };
 
+    //////////////////////////////////////////////////////////////////////////
+    public GetPlayer(): CBombermanPlayer
+    {
+        return this.mPlayer;
+    };
+
+    //////////////////////////////////////////////////////////////////////////
     public PlayAnimation(): void
     {
         this.mHTMLElement.classList.remove( this.CSSAnimationClass );
@@ -69,11 +78,13 @@ class CBombermanPlayerEntry implements IUserInterfaceAnimatedHTMLElement
         this.mHTMLElement.classList.add( this.CSSAnimationClass );
     };
 
+    //////////////////////////////////////////////////////////////////////////
     public Hide(): void
     {
         this.mHTMLElement.style.visibility = "hidden";
     };
 
+    //////////////////////////////////////////////////////////////////////////
     public Show(): void
     {
         this.mHTMLElement.style.visibility = "visible";
@@ -86,12 +97,14 @@ class CBombermanPlayerEntrySeparator implements IUserInterfaceHTMLElement
 
     protected mHTMLElement: HTMLDivElement;
 
+    //////////////////////////////////////////////////////////////////////////
     constructor()
     {
         this.mHTMLElement = document.createElement( "div" );
         this.mHTMLElement.classList.add( this.CSSClass );
     };
 
+    //////////////////////////////////////////////////////////////////////////
     public GetHTMLElement(): HTMLElement
     {
         return this.mHTMLElement;
@@ -103,12 +116,14 @@ class CBombermanPlayerEntryFactory
     protected mContext: CContext;
     protected mDesc: FBombermanUserInterfaceDesc;
 
+    //////////////////////////////////////////////////////////////////////////
     public constructor( context: CContext, desc: FBombermanUserInterfaceDesc )
     {
         this.mContext = context;
         this.mDesc = desc;
     };
 
+    //////////////////////////////////////////////////////////////////////////
     public CreateEntry( player: CBombermanPlayer ): CBombermanPlayerEntry
     {
         return new CBombermanPlayerEntry( this.mContext, player, this.mDesc.PlayerEntry );
@@ -122,7 +137,7 @@ export class CBombermanUserInterface
 
     protected mUserInterfaceDivElement: HTMLDivElement;
 
-
+    //////////////////////////////////////////////////////////////////////////
     public constructor( context: CContext, desc: FBombermanUserInterfaceDesc )
     {
         this.mPlayers = new Array<CBombermanPlayerEntry>();
@@ -142,6 +157,7 @@ export class CBombermanUserInterface
         this.ImportStylesheet( CBombermanExternalResources.UserInterfaceStyleSheetPath );
     };
 
+    //////////////////////////////////////////////////////////////////////////
     public Show(): void
     {
         if ( this.IsHidden() )
@@ -168,6 +184,7 @@ export class CBombermanUserInterface
         }
     };
 
+    //////////////////////////////////////////////////////////////////////////
     public Hide(): void
     {
         this.mUserInterfaceDivElement.style.visibility = "hidden";
@@ -175,7 +192,8 @@ export class CBombermanUserInterface
         for ( let playerEntry of this.mPlayers )
             playerEntry.Hide();
     };
-    
+
+    //////////////////////////////////////////////////////////////////////////
     public AddPlayer( player: CBombermanPlayer ): void
     {
         let entry = this.mPlayerEntryFactory.CreateEntry( player );
@@ -194,6 +212,39 @@ export class CBombermanUserInterface
         this.mUserInterfaceDivElement.appendChild( entry.GetHTMLElement() );
     };
 
+    //////////////////////////////////////////////////////////////////////////
+    public RemovePlayer( id: number ): void
+    {
+        // Get entry index
+        let entryIndex = 0;
+        for ( let playerEntry of this.mPlayers )
+        {
+            if ( playerEntry.GetPlayer().Id == id )
+                break;
+            entryIndex++;
+        }
+
+        if ( entryIndex == this.mPlayers.length )
+            return;
+
+        this.mUserInterfaceDivElement.children.item( 2 * entryIndex ).remove();
+
+        if ( entryIndex == 0 && this.mPlayers.length > 1 )
+        { // Remove the entry and separator after it
+            this.mUserInterfaceDivElement.children.item( 0 ).remove();
+            return;
+        }
+
+        if ( this.mPlayers.length > 0 )
+        { // Remove the separator before the entry
+            this.mUserInterfaceDivElement.children.item( 2 * entryIndex - 1 ).remove();
+            return;
+        }
+
+        return;
+    };
+
+    //////////////////////////////////////////////////////////////////////////
     protected ImportStylesheet( location: string ): void
     {
         let link = document.createElement( "link" );
@@ -203,6 +254,7 @@ export class CBombermanUserInterface
         document.head.appendChild( link );
     };
 
+    //////////////////////////////////////////////////////////////////////////
     protected IsHidden(): boolean
     {
         return this.mUserInterfaceDivElement.style.visibility == "hidden";
