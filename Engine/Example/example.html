@@ -43,6 +43,18 @@
                 playerInitData.Rotation = 0;
 
                 application.AddPlayer( playerDesc, playerInitData );
+
+                playerDesc.Id = 1;
+                application.AddPlayer( playerDesc, playerInitData );
+
+                playerDesc.Id = 2;
+                application.AddPlayer( playerDesc, playerInitData );
+                
+                setTimeout( function ()
+                {
+                    playerDesc.Id = 3;
+                    application.AddPlayer( playerDesc, playerInitData );
+                }, 5000 );
             } );
         }
     </script>

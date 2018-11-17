@@ -1,6 +1,19 @@
 ﻿import { CContext } from "../game_engine/rendering/context";
 import { CBombermanPlayer } from "./player";
 import { CBombermanExternalResources } from "./external_resources";
+import { FAsyncTaskQueue } from "../game_engine/core/time";
+
+interface IUserInterfaceHTMLElement
+{
+    readonly CSSClass: string;
+};
+
+interface IUserInterfaceAnimatedHTMLElement extends IUserInterfaceHTMLElement
+{
+    readonly CSSAnimationClass: string;
+    readonly CSSAnimationDuration: number;
+    PlayAnimation(): void;
+};
 
 class FBombermanPlayerEntryDesc
 {
@@ -14,8 +27,12 @@ export class FBombermanUserInterfaceDesc
     PlayerEntry: FBombermanPlayerEntryDesc = new FBombermanPlayerEntryDesc;
 };
 
-class CBombermanPlayerEntry
+class CBombermanPlayerEntry implements IUserInterfaceAnimatedHTMLElement
 {
+    readonly CSSClass: string = "BOMBERMAN-USER-INTERFACE-PLAYER-ENTRY-CLASS";
+    readonly CSSAnimationClass: string = "BOMBERMAN-USER-INTERFACE-PLAYER-ENTRY-ANIMATION-CLASS";
+    readonly CSSAnimationDuration: number = 0.3;
+
     protected mPlayer: CBombermanPlayer;
     protected mHTMLElement: HTMLDivElement;
     
@@ -25,7 +42,7 @@ class CBombermanPlayerEntry
 
         let playerName = document.createElement( "span" );
         playerName.classList.add( "BOMBERMAN-USER-INTERFACE-PLAYER-ENTRY-PLAYER-NAME-CLASS" );
-        playerName.innerText = player.Name;
+        playerName.innerHTML = player.Name;
 
         let playerAvatar = document.createElement( "img" );
         playerAvatar.classList.add( "BOMBERMAN-USER-INTERFACE-PLAYER-ENTRY-PLAYER-AVATAR-CLASS" );
@@ -34,7 +51,8 @@ class CBombermanPlayerEntry
         this.mHTMLElement = document.createElement( "div" );
         this.mHTMLElement.style.height = desc.Height.toString() + "px";
         this.mHTMLElement.style.fontSize = ( desc.Height * 0.4 ).toString() + "px";
-        this.mHTMLElement.classList.add( "BOMBERMAN-USER-INTERFACE-PLAYER-ENTRY-CLASS" );
+        this.mHTMLElement.style.animationDuration = this.CSSAnimationDuration + "s";
+        this.mHTMLElement.classList.add( this.CSSClass, this.CSSAnimationClass );
         this.mHTMLElement.appendChild( playerAvatar );
         this.mHTMLElement.appendChild( playerName );
     };
@@ -43,16 +61,35 @@ class CBombermanPlayerEntry
     {
         return this.mHTMLElement;
     };
+
+    public PlayAnimation(): void
+    {
+        this.mHTMLElement.classList.remove( this.CSSAnimationClass );
+        void this.mHTMLElement.offsetHeight;
+        this.mHTMLElement.classList.add( this.CSSAnimationClass );
+    };
+
+    public Hide(): void
+    {
+        this.mHTMLElement.style.visibility = "hidden";
+    };
+
+    public Show(): void
+    {
+        this.mHTMLElement.style.visibility = "visible";
+    };
 };
 
-class CBombermanPlayerEntrySeparator
+class CBombermanPlayerEntrySeparator implements IUserInterfaceHTMLElement
 {
+    readonly CSSClass: string = "BOMBERMAN-USER-INTERFACE-PLAYER-ENTRY-SEPARATOR-CLASS";
+
     protected mHTMLElement: HTMLDivElement;
 
     constructor()
     {
         this.mHTMLElement = document.createElement( "div" );
-        this.mHTMLElement.classList.add( "BOMBERMAN-USER-INTERFACE-PLAYER-ENTRY-SEPARATOR-CLASS" );
+        this.mHTMLElement.classList.add( this.CSSClass );
     };
 
     public GetHTMLElement(): HTMLElement
@@ -107,19 +144,38 @@ export class CBombermanUserInterface
 
     public Show(): void
     {
-        this.mUserInterfaceDivElement.style.visibility = "visible";
+        if ( this.IsHidden() )
+        {
+            this.mUserInterfaceDivElement.style.visibility = "visible";
+
+            // We want to replay the animation of all player entries
+            if ( this.mPlayers.length > 0 )
+            {
+                let taskQueue = new FAsyncTaskQueue();
+
+                for ( let playerEntry of this.mPlayers )
+                {
+                    taskQueue.SubmitTask( function ()
+                    {
+                        playerEntry.Show();
+                        playerEntry.PlayAnimation();
+                    } );
+                }
+
+                taskQueue.SetExecuteAsyncInterval( this.mPlayers[0].CSSAnimationDuration );
+                taskQueue.ExecuteAsync();
+            }
+        }
     };
 
     public Hide(): void
     {
         this.mUserInterfaceDivElement.style.visibility = "hidden";
-    };
 
-    public Update(): void 
-    {
-        
+        for ( let playerEntry of this.mPlayers )
+            playerEntry.Hide();
     };
-
+    
     public AddPlayer( player: CBombermanPlayer ): void
     {
         let entry = this.mPlayerEntryFactory.CreateEntry( player );
@@ -130,6 +186,9 @@ export class CBombermanUserInterface
             this.mUserInterfaceDivElement.appendChild( 
                 new CBombermanPlayerEntrySeparator().GetHTMLElement() );
         }
+
+        if ( this.mUserInterfaceDivElement.style.visibility == "hidden" )
+            entry.Hide();
 
         this.mPlayers.push( entry );
         this.mUserInterfaceDivElement.appendChild( entry.GetHTMLElement() );
@@ -142,6 +201,11 @@ export class CBombermanUserInterface
         link.href = location;
 
         document.head.appendChild( link );
+    };
+
+    protected IsHidden(): boolean
+    {
+        return this.mUserInterfaceDivElement.style.visibility == "hidden";
     };
 };
 

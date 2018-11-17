@@ -85,7 +85,7 @@ export class CBombermanApplication
             
             this.mRenderer.Render( this.mWorld );
 
-            if ( this.mBlurStrength > 0.05 )
+            if ( this.mBlurStrength > 0.1 )
             {
                 this.mBlurStrength *= 0.95;
                 ( <CBombermanRenderer>this.mRenderer ).SetBlurStrength( this.mBlurStrength );
