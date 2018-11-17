@@ -161,6 +161,7 @@ export class CBombermanApplication
             }
 
             ( <CBombermanWorld>this.mWorld ).Players.Remove( id );
+            this.mUserInterface.RemovePlayer( id );
             return EBombermanStatus.OK;
         }
         catch ( e ) { }
