@@ -10,13 +10,18 @@
         <script type="text/javascript" src="/js/requirejs-min.js"></script>
         <script type="text/javascript" src="/js/game_engine.js"></script>
         <script type="text/javascript">
+            var mod_Bomberman = null;
             var application = null;
+            var playerId = 0;
+            var players = [];
             function init()
             {
                 if ( application === null )
                 {
                     require( ['./bomberman'], function ( bomberman )
                     {
+                        mod_Bomberman = bomberman;
+
                         try
                         {
                             var applicationDesc = new bomberman.FBombermanApplicationDesc;
@@ -24,7 +29,8 @@
                             applicationDesc.Width = 7;
                             applicationDesc.Height = 5;
                             applicationDesc.Flags = 0
-                                | bomberman.EBombermanApplicationFlags.UseWebGL2;
+                                | bomberman.EBombermanApplicationFlags.UseWebGL2
+                                | bomberman.EBombermanApplicationFlags.UseGlobalPaths;
 
                             application = bomberman.CreateBombermanApplication( applicationDesc );
 
@@ -37,10 +43,50 @@
                     } );
                 }
             }
+            function add_player()
+            {
+                var playerDesc = new mod_Bomberman.FBombermanPlayerDesc;
+                var playerInitData = new mod_Bomberman.FBombermanPlayerInitData;
+
+                playerDesc.Id = playerId;
+                playerDesc.Name = document.getElementById( 'player_name' ).value;
+                playerDesc.AvatarSrc = '/images/player-avatar.png';
+
+                playerInitData.X = playerId + 1;
+                playerInitData.Y = 1;
+                playerInitData.Rotation = 0;
+
+                application.AddPlayer( playerDesc, playerInitData );
+
+                players.push( [playerDesc.Name, playerId] );
+
+                playerId++;
+            }
+            function remove_player()
+            {
+                var playerName = document.getElementById( 'player_name' ).value;
+                for ( var i = 0; i < players.length; ++i )
+                {
+                    if ( players[i][0] == playerName )
+                    {
+                        application.RemovePlayer( players[i][1] );
+                        break;
+                    }
+                }
+            }
         </script>
         <button class="btn btn-default" onclick="init()">Start</button>
         <canvas width="1280" height="720" id="GameWindow">
             HTML5 canvas element is not supported.
         </canvas>
+    </div>
+</div>
+
+<div class="row" style="background:white;">
+    <div class="col-md-4">
+        <label>Nazwa gracza</label>
+        <input type="text" name="player_name" id="player_name"/>
+        <button class="btn btn-default" onclick="add_player()">Dodaj gracza</button>
+        <button class="btn btn-danger" onclick="remove_player()">Usuń gracza</button>
     </div>
 </div>
