@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Example game engine application</title>
+    <script src="../lib/requirejs-min.js" type="text/javascript"></script>
+    <script src="../bin/game_engine.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var application;
+        var applicationFPS;
+        function fps( framesPerSec )
+        {
+            applicationFPS.textContent = framesPerSec.toString();
+        }
+        function init()
+        {
+            applicationFPS = document.getElementById( "GameFPS" );
+
+            require( ['./bomberman'], function ( bomberman )
+            {
+                var applicationDesc = new bomberman.FBombermanApplicationDesc;
+                applicationDesc.CanvasID = "GameWindow";
+                applicationDesc.Width = 7;
+                applicationDesc.Height = 5;
+                applicationDesc.Flags = 0
+                    | bomberman.EBombermanApplicationFlags.UseWebGL2;
+
+                application = bomberman.CreateBombermanApplication( applicationDesc );
+
+                application.AddBlock( 0, 1, 1 );
+                application.SetRefreshRateCallback( fps );
+                application.SetTargetRefreshRate( 30 );
+
+                application.Run();
+            } );
+        }
+    </script>
+</head>
+<body onload="init()">
+    <h1>Example game engine application</h1>
+    <canvas width="1280" height="720" id="GameWindow">
+        CANVAS element not supported.
+    </canvas>
+    <br />
+    FPS: <span id="GameFPS"></span>
+</body>
+</html>

@@ -31,6 +31,11 @@
   <ItemGroup>
     <Content Remove="wwwroot\images\background.jpeg" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\images\fonts\engine\" />
+  </ItemGroup>
+
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="dotnet $(ProjectDir)../Engine/bin/netcoreapp2.1/Engine.dll $(ProjectDir)../Engine/bin/game_engine.js $(ProjectDir)wwwroot/js/game_engine.js" />
   </Target>

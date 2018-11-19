@@ -16,6 +16,11 @@ namespace Source.Controllers
             return View();
         }
 
+        public IActionResult EngineSample()
+        {
+            return View();
+        }
+        
         [Authorize]
         public IActionResult About()
         {
