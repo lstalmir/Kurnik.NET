@@ -1,0 +1,98 @@
+﻿body {
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+}
+.room_layout {
+    display: flex;
+}
+
+.game_column {
+    flex: 65%;
+    height: 90vh;
+    text-align: center;
+}
+
+.messenger_column {
+    flex: 35%;
+    height: 90vh;
+    text-align: center;
+}
+
+div.container.body-content {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    margin-top: 50px;
+}
+
+.players_section {
+    background-color: white;
+    padding: 20px;
+    display: inline-block;
+    margin-top: 20px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+}
+
+.players_section_button {
+    margin-top: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.row {
+    margin-top: 20px;
+    float: left;
+}
+
+.messenger_card {
+    background-color: white;
+    padding: 20px;
+    display: inline-block;
+    margin-top: 20px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+    width: 70%;
+}
+
+.messenger_button {
+    margin-top: 20px;
+}
+
+.message {
+    min-height: 50px;
+    border-radius: 4px;
+    margin-top: 10px;
+    background-color: #FFFFFF;
+    text-align: center;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.message-text-user {
+    padding-left: 10px;
+    padding-top: 10px;
+    font-weight: bold;
+    font-size: 12px;
+    float: left;
+}
+
+.message-text-message {
+    display: inline-block;
+    padding-top: 20px;
+}
+
+.messenger_section {
+    margin-top: 30px;
+    height: 70vh;
+    overflow: auto;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}

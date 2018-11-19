@@ -1,0 +1,106 @@
+﻿@{
+    ViewData["Title"] = "Room 2";
+}
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+<link rel="stylesheet" href="~/css/room.css" />
+<div class="room_layout">
+    <div class="game_column">
+        <div class="row">
+            <div class="col-md-12">
+                <script src="~/lib/signalr/dist/browser/signalr.js"></script>
+                <script type="text/javascript" src="/js/requirejs-min.js"></script>
+                <script type="text/javascript" src="/js/game_engine.js"></script>
+                <script type="text/javascript">
+                    window.onload = function() {
+                        init();
+                    };
+
+                    var mod_Bomberman = null;
+                    var application = null;
+                    var playerId = 0;
+                    var players = [];
+                    function init()
+                    {
+                        if ( application === null )
+                        {
+                            require( ['./bomberman'], function ( bomberman )
+                            {
+                                mod_Bomberman = bomberman;
+
+                                try
+                                {
+                                    var applicationDesc = new bomberman.FBombermanApplicationDesc;
+                                    applicationDesc.CanvasID = "GameWindow";
+                                    applicationDesc.Width = 7;
+                                    applicationDesc.Height = 5;
+                                    applicationDesc.Flags = 0
+                                        | bomberman.EBombermanApplicationFlags.UseWebGL2
+                                        | bomberman.EBombermanApplicationFlags.UseGlobalPaths;
+
+                                    application = bomberman.CreateBombermanApplication( applicationDesc );
+
+                                    application.Run();
+                                }
+                                catch ( e )
+                                {
+                                    alert( e );
+                                }
+                            } );
+                        }
+                    }
+                    function add_player()
+                    {
+                        var playerDesc = new mod_Bomberman.FBombermanPlayerDesc;
+                        var playerInitData = new mod_Bomberman.FBombermanPlayerInitData;
+
+                        playerDesc.Id = playerId;
+                        playerDesc.Name = document.getElementById( 'player_name' ).value;
+                        playerDesc.AvatarSrc = '/images/player-avatar.png';
+
+                        playerInitData.X = playerId + 1;
+                        playerInitData.Y = 1;
+                        playerInitData.Rotation = 0;
+
+                        application.AddPlayer( playerDesc, playerInitData );
+
+                        players.push( [playerDesc.Name, playerId] );
+
+                        playerId++;
+                    }
+                    function remove_player()
+                    {
+                        var playerName = document.getElementById( 'player_name' ).value;
+                        for ( var i = 0; i < players.length; ++i )
+                        {
+                            if ( players[i][0] == playerName )
+                            {
+                                application.RemovePlayer( players[i][1] );
+                                break;
+                            }
+                        }
+                    }</script>
+                <canvas width="1024" height="600" id="GameWindow">
+                    HTML5 canvas element is not supported.
+                </canvas>
+            </div>
+        </div>
+        <div class="players_section">
+            <input class="form-control" type="text" name="player_name" id="player_name" placeholder="Player" /><br />
+            <button class="btn btn-default players_section_button" onclick="add_player()">Add player</button>
+            <button class="btn btn-danger players_section_button" onclick="remove_player()">Remove player</button>
+        </div>
+    </div>
+    <div class="messenger_column">
+        <div class="messenger_card">
+            <section>
+                <input type="text" id="userInputRoom2" value="@UserManager.GetUserName(User)" disabled hidden />
+                <input class="form-control" type="text" id="messageInputRoom2" placeholder="Message" />
+                <input type="button" id="sendButtonRoom2" value="Send Message" class="btn btn-primary messenger_button" />
+            </section>
+        </div>
+        <div class="messenger_section" id="messagesListRoom2"></div>
+    </div>
+</div>
+<script src="~/js/chat2.js"></script>

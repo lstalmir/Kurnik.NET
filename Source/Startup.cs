@@ -89,6 +89,8 @@ namespace Source
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ChatHub>("/chatHub");
+                routes.MapHub<ChatHub2>("/chatHub2");
+                routes.MapHub<ChatHub3>("/chatHub3");
             });
 
             app.UseMvc(routes =>

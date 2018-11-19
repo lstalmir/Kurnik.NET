@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -36,9 +41,15 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
                     <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
                     -->
-                  <environment include="Development">
+                    <environment include="Development">
                         <li><a asp-area="" asp-controller="Home" asp-action="EngineSample">EngineSample</a></li>
                     </environment>
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <li><a asp-area="" asp-controller="Home" asp-action="Room_1">Room 1</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="Room_2">Room 2</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="Room_3">Room 3</a></li>
+                    }
                 </ul>
                 <partial name="_LoginPartial" />
             </div>

@@ -41,6 +41,21 @@ namespace Source.Controllers
             return View();
         }
 
+        public IActionResult Room_1()
+        {
+            return View();
+        }
+
+        public IActionResult Room_2()
+        {
+            return View();
+        }
+
+        public IActionResult Room_3()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
