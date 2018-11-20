@@ -1,0 +1,28 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Kurnik.Areas.Identity.Data;
+
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@{
+    ViewData["Title"] = "Profil użytkownika";
+}
+
+<h2>Index</h2>
+
+<div>
+    <h4>User</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            Login:
+        </dt>
+        <dd>
+            @UserManager.GetUserName(User)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@UserManager.GetUserId(User)">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

@@ -1,0 +1,44 @@
+.BOMBERMAN-USER-INTERFACE-CONTAINER-CLASS {
+    background: white;
+    position: absolute;
+}
+
+.BOMBERMAN-USER-INTERFACE-PLAYER-ENTRY-SEPARATOR-CLASS {
+    background: url( '../images/player-entry-separator.png' ) no-repeat center;
+    height: 5px;
+}
+
+.BOMBERMAN-USER-INTERFACE-PLAYER-ENTRY-CLASS {
+    padding: 5px 15px;
+}
+
+    .BOMBERMAN-USER-INTERFACE-PLAYER-ENTRY-CLASS:hover {
+        background: #f6f6f6;
+    }
+
+    .BOMBERMAN-USER-INTERFACE-PLAYER-ENTRY-CLASS img {
+        float: left;
+    }
+
+.BOMBERMAN-USER-INTERFACE-PLAYER-ENTRY-ANIMATION-CLASS {
+    animation-name: slide-up;
+    animation-timing-function: ease;
+}
+
+@keyframes slide-up {
+    0% {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.BOMBERMAN-USER-INTERFACE-PLAYER-ENTRY-PLAYER-NAME-CLASS {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    color: #494949;
+}

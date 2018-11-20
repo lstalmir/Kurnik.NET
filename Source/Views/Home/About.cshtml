@@ -1,7 +1,161 @@
-﻿@{
-    ViewData["Title"] = "About";
+﻿<!--
+@{
+    ViewData["Title"] = "Chat";
 }
 <h2>@ViewData["Title"]</h2>
 <h3>@ViewData["Message"]</h3>
 
 <p>Use this area to provide additional information.</p>
+-->
+@using Microsoft.AspNetCore.Identity
+@using Kurnik.Areas.Identity.Data;
+
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+<!--
+<style>
+    input[type=text] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        box-sizing: border-box;
+    }
+    label {
+        float: left;
+    }
+    .chat {
+        margin-top: 20px;
+        border-radius: 4px;
+        -webkit-box-shadow: 0px 0px 50px 0px rgba(0,0,0,0.75);
+        -moz-box-shadow: 0px 0px 50px 0px rgba(0,0,0,0.75);
+        box-shadow: 0px 0px 50px 0px rgba(0,0,0,0.75);
+    }
+    .chat ul {
+
+    }
+    .chat li {
+        margin-top: 10px;
+        list-style-type: none;
+    }
+    .row {
+        display: flex;
+    }
+
+    .column {
+        flex: 50%;
+    }
+
+</style>
+    -->
+
+<style>
+    .messenger {
+        display: flex;
+    }
+
+        .messenger .column {
+            flex: 50%;
+        }
+
+        .messenger .column-scroll {
+            height: 80vh;
+            overflow: auto;
+            flex: 50%;
+            margin-top: 50px;
+        }
+
+        .messenger .card {
+            width: 70%;
+            margin: 20% auto;
+            -webkit-box-shadow: 0px 0px 40px 0px rgba(0,0,0,0.75);
+            -moz-box-shadow: 0px 0px 40px 0px rgba(0,0,0,0.75);
+            box-shadow: 0px 0px 40px 0px rgba(0,0,0,0.75);
+            background: #FFFFFF;
+            border-radius: 4px;
+        }
+
+        .messenger input[type=text] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+
+        .messenger label {
+            float: left;
+        }
+
+        .messenger li {
+
+        }
+
+        .messenger .message {
+            min-height: 50px;
+            border-radius: 4px;
+            margin-top:10px;
+            background-color: #FFFFFF;
+            text-align: center;
+            margin-left: 10%;
+            margin-right: 10%;
+        }
+
+        .messenger .message .message-text-user {
+            padding-left: 10px;
+            padding-top: 5px;
+            font-weight: bold;
+            font-size: 12px;
+            float: left;
+        }
+
+        .messenger .message .message-text-message {
+            display: inline-block;
+            padding-top: 20px;
+        }
+
+    ::-webkit-scrollbar {
+        display: none;
+    }
+</style>
+<!--
+<div class="card">
+    <div class="card-form">
+        <h2>@ViewData["Title"]</h2>
+        <div class="row">
+            <section>
+                <label for="userInput">Login</label>
+                <input type="text" id="userInput" value="@UserManager.GetUserName(User)" />
+                <label for="messageInput">Message</label>
+                <input type="text" id="messageInput" />
+                <input type="button" id="sendButton" value="Send Message" class="form-button" />
+                <div class="chat" id="messagesList">
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+-->
+
+<div class="messenger">
+    <div class="column">
+        <div class="card">
+            <div class="card-form">
+                <h2>@ViewData["Title"]</h2>
+                <div class="row">
+                    <section>
+                        <label for="userInput">Login</label>
+                        <input type="text" id="userInput" value="@UserManager.GetUserName(User)" disabled />
+                        <label for="messageInput">Message</label>
+                        <input type="text" id="messageInput" />
+                        <input type="button" id="sendButton" value="Send Message" class="form-button" />
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="column-scroll" id="messagesList">
+    </div>
+</div>
+
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>

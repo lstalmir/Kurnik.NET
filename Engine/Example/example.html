@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Example game engine application</title>
+    <script src="../lib/requirejs-min.js" type="text/javascript"></script>
+    <script src="../bin/game_engine.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var application;
+        var applicationFPS;
+        function fps( framesPerSec )
+        {
+            applicationFPS.textContent = framesPerSec.toString();
+        }
+        function init()
+        {
+            applicationFPS = document.getElementById( "GameFPS" );
+
+            require( ['./bomberman'], function ( bomberman )
+            {
+                var applicationDesc = new bomberman.FBombermanApplicationDesc;
+                applicationDesc.CanvasID = "GameWindow";
+                applicationDesc.Width = 7;
+                applicationDesc.Height = 5;
+                applicationDesc.Flags = 0
+                    | bomberman.EBombermanApplicationFlags.UseWebGL2;
+
+                application = bomberman.CreateBombermanApplication( applicationDesc );
+
+                application.AddBlock( 0, 1, 1 );
+                application.SetRefreshRateCallback( fps );
+                application.SetTargetRefreshRate( 30 );
+
+                application.Run();
+
+                var playerDesc = new bomberman.FBombermanPlayerDesc;
+                playerDesc.Id = 0;
+                playerDesc.Name = 'player0';
+                playerDesc.AvatarSrc = 'images/player-avatar.png';
+
+                var playerInitData = new bomberman.FBombermanPlayerInitData;
+                playerInitData.X = 5;
+                playerInitData.Y = 1;
+                playerInitData.Rotation = 0;
+
+                application.AddPlayer( playerDesc, playerInitData );
+
+                playerDesc.Id = 1;
+                playerDesc.Name = 'player1';
+                playerInitData.X = 7;
+                application.AddPlayer( playerDesc, playerInitData );
+
+                playerDesc.Id = 2;
+                playerDesc.Name = 'player2';
+                playerInitData.X = 5;
+                application.AddPlayer( playerDesc, playerInitData );
+                
+                setTimeout( function ()
+                {
+                    playerDesc.Id = 3;
+                    playerDesc.Name = 'player3';
+                    application.AddPlayer( playerDesc, playerInitData );
+                }, 5000 );
+
+                setTimeout( function ()
+                {
+                    application.RemovePlayer( 1 );
+                }, 6000 );
+            } );
+        }
+    </script>
+</head>
+<body onload="init()">
+    <h1>Example game engine application</h1>
+    <div style="width:1280px;height:720px;position:relative;">
+        <canvas width="1280" height="720" id="GameWindow">
+            CANVAS element not supported.
+        </canvas>
+        <br />
+        FPS: <span id="GameFPS"></span>
+    </div>
+</body>
+</html>
