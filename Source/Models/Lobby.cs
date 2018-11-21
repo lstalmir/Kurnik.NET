@@ -17,7 +17,8 @@ namespace Kurnik.Models
         public bool Private { get; set; }
         public string OwnerID { get; set; }
 
+
+        public virtual IList<UserParticipationInLobby> UserParticipations { get; set; }
         public virtual User Owner{ get; set; }
-        public IList<UserParticipationInLobby> UserParticipations { get; set; }
     }
 }

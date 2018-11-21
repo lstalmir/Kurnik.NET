@@ -30,9 +30,29 @@ namespace Source.Data
                 .WithMany(user => user.LobbyParticipations)
                 .IsRequired();
 
-            modelBuilder.Entity<Lobby>().HasData(new Lobby { ID=1 ,Name = "test lobby", Private = false });
-            modelBuilder.Entity<Lobby>().HasData(new Lobby { ID=2 ,Name = "test lobby2", Private = false });
-            modelBuilder.Entity<Lobby>().HasData(new Lobby { ID=3 ,Name = "private lobby", Private = true });
+            var testUser = new User()
+            {
+                Id = "testuserid",
+                Email = "test@test.pl",
+                UserName = "test"
+            };
+            var testParticipation = new UserParticipationInLobby()
+            {
+                LobbyID = 5,
+                UserID = testUser.Id
+            };
+            var testLobby = new Lobby()
+            {
+                ID = 5,
+                Name = "POKÓJ TESTOWY",
+                Private = false,
+                OwnerId = testUser.Id,
+            };
+            modelBuilder.Entity<User>().HasData(testUser);
+
+            modelBuilder.Entity<Lobby>().HasData(testLobby);
+
+            modelBuilder.Entity<UserParticipationInLobby>().HasData(testParticipation);
         }
 
         public DbSet<Lobby> Lobbies { get; set; }

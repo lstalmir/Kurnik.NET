@@ -1,17 +1,23 @@
 ﻿using Kurnik.Models;
 using Kurnik.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Security.Claims;
 
 namespace Kurnik.Controllers
 {
+    [Authorize]
     public class LobbyController : Controller
     {
         private readonly ILobbyService _service;
+        private readonly string userId;
 
-        public LobbyController(ILobbyService service)
+        public LobbyController(ILobbyService service, IHttpContextAccessor httpContextAccessor)
         {
             _service = service;
+            userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
         }
 
         public IActionResult Index()
@@ -55,15 +61,42 @@ namespace Kurnik.Controllers
             {
                 return NotFound();
             }
-            ViewData["title"] = "Pokój";
             return View(lobby);
+        }
+
+        public IActionResult Edit(int id)
+        {
+            var lobby = _service.GetLobby(id);
+            if(lobby == null)
+            {
+                return NotFound();
+            }
+            if (_service.IsUserOwnerOfTheLobby(id, userId))
+            {
+                return Forbid();
+            }
+            var viewModel = new EditLobbyViewModel()
+            {
+                Name = lobby.Name,
+                Private = lobby.Private
+            };
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(int id, EditLobbyViewModel viewModel)
+        {
+            if (_service.IsUserOwnerOfTheLobby(id, userId))
+            {
+                return Forbid();
+            }
+            _service.EditLobby(id, viewModel.Name, viewModel.Private);
+            return RedirectToAction("Details", new { id });
         }
 
         [HttpPost]
         public IActionResult Join(int id)
         {
-            // TODO get userId
-            var userId = "not_implemented";
             try
             {
                 _service.AddUser(id, userId);
@@ -72,31 +105,14 @@ namespace Kurnik.Controllers
             {
                 return NotFound(ex1);
             }
-            return RedirectToAction("Details", id);
+            return RedirectToAction("Details", new { id });
         }
 
         [HttpPost]
         public IActionResult Leave(int id)
         {
-            // TODO get userId
-            var userId = "not_implemented";
             _service.RemoveUser(id, userId);
             return RedirectToAction("Index");
-        }
-
-        // consume with ajax
-        [HttpPut]
-        public IActionResult Visibility(int id, [FromBody] LobbyVisibilityChange change)
-        {
-            try
-            {
-                _service.SetPrivate(id, change.Private);
-            }
-            catch (ArgumentOutOfRangeException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            return Ok();
         }
 
         // consume with ajax when owner of the lobby removes user

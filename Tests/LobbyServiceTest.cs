@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Kurnik.Tests
 {
-    public class LobbyService_SetPrivateShould
+    public class LobbyService_EditLobbyShould
     {
         [Fact]
         public void ThrowExceptionGivenIdOutOfRange()
@@ -20,44 +20,15 @@ namespace Kurnik.Tests
             using (var context = new ApplicationDbContext(options))
             {
                 var service = new LobbyService(context);
-                Assert.Throws<ArgumentOutOfRangeException>(() => service.SetPrivate(5, true));
+                Assert.Throws<ArgumentOutOfRangeException>(() => service.EditLobby(5, "SomeLobby", true));
             }
         }
 
         [Fact]
-        public void DoNothingGivenSamePrivateValue()
+        public void UpdateDatabaseGivenExistingId()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "SetPrivateShould_DoNothingGivenSamePrivateValue")
-                .Options;
-
-            var id = 0;
-            using (var context = new ApplicationDbContext(options))
-            {
-                id = context.Lobbies.Add(new Lobby
-                {
-                    Name = "Test",
-                    Private = true
-                }).Entity.ID;
-                context.SaveChanges();
-            }
-            using (var context = new ApplicationDbContext(options))
-            {
-                var service = new LobbyService(context);
-                service.SetPrivate(id, true);
-            }
-
-            using (var context = new ApplicationDbContext(options))
-            {
-                Assert.True(context.Lobbies.Find(id).Private);
-            }
-        }
-
-        [Fact]
-        public void ChangeValueGivenDifferentValue()
-        {
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "SetPrivateShould_DoNothingGivenSamePrivateValue")
+                .UseInMemoryDatabase(databaseName: "SetPrivateShould_UpdateDatabaseGivenExistingId")
                 .Options;
 
             var id = 0;
@@ -73,12 +44,13 @@ namespace Kurnik.Tests
             using (var context = new ApplicationDbContext(options))
             {
                 var service = new LobbyService(context);
-                service.SetPrivate(id, true);
+                service.EditLobby(id, "GoodName", true);
             }
 
             using (var context = new ApplicationDbContext(options))
             {
                 Assert.True(context.Lobbies.Find(id).Private);
+                Assert.Equal("GoodName", context.Lobbies.Find(id).Name);
             }
         }
     }

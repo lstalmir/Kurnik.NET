@@ -55,7 +55,8 @@ namespace Source
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("DefaultConnection"))
+                    .UseLazyLoadingProxies());
             services.AddDefaultIdentity<User>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -98,7 +99,7 @@ namespace Source
                     template: "{controller=Home}/{action=Index}/{id?}");
                 routes.MapRoute(
                     name: "lobby",
-                     template: "{controller=Lobby}/{action=Details}/{id}");
+                     template: "{controller=Lobby}/{action=Details}/{id?}");
             });
         }
     }

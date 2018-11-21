@@ -1,6 +1,5 @@
 ﻿@model Kurnik.Models.Lobby;
-
-<h2>@ViewData["title"]</h2>
+<h2>Pokój</h2>
 
 <p>
     Nazwa: @Model.Name
@@ -8,3 +7,21 @@
 <p>
     Prywatny: @Model.Private
 </p>
+
+<a asp-area="" asp-controller="Lobby" asp-action="Edit" asp-route-id="@Model.ID">Edytuj</a>
+
+<br />
+<br />
+
+<p>
+    Użytkownicy:
+</p>
+@for (var i = 0; i < Model.UserParticipations.Count; i++)
+{
+    var user = Model.UserParticipations.ElementAt(i).User;
+    <text>@user.Email</text>
+    <br />
+}
+
+
+

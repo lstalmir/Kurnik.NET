@@ -26,13 +26,14 @@ namespace Kurnik.Services
             _dbContext = dbContext;
         }
 
-        public void SetPrivate(int lobbyId, bool isPrivate)
+        public void EditLobby(int lobbyId, string name, bool isPrivate)
         {
             var lobby = _dbContext.Lobbies.Find(lobbyId);
             if(lobby == null)
             {
                 ThrowLobbyNotFoundException(lobbyId);
             }
+            lobby.Name = name;
             lobby.Private = isPrivate;
             _dbContext.SaveChanges();
         }
@@ -68,6 +69,16 @@ namespace Kurnik.Services
             user.LobbyParticipations.Add(participation);
             lobby.UserParticipations.Add(participation);
             _dbContext.SaveChanges();
+        }
+
+        public bool IsUserOwnerOfTheLobby(int lobbyId, string userId)
+        {
+            var lobby = _dbContext.Lobbies.Find(lobbyId);
+            if(lobby == null)
+            {
+                ThrowLobbyNotFoundException(lobbyId);
+            }
+            return lobby.OwnerId == userId;
         }
 
         public void RemoveUser(int lobbyId, string userId)
