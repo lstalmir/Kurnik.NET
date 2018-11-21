@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Kurnik.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -44,20 +44,6 @@ namespace Kurnik.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Lobbies",
-                columns: table => new
-                {
-                    ID = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(nullable: true),
-                    Private = table.Column<bool>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Lobbies", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -167,6 +153,27 @@ namespace Kurnik.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Lobbies",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(nullable: true),
+                    Private = table.Column<bool>(nullable: false),
+                    OwnerID = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Lobbies", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Lobbies_AspNetUsers_OwnerID",
+                        column: x => x.OwnerID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserParticipationInLobbies",
                 columns: table => new
                 {
@@ -189,6 +196,21 @@ namespace Kurnik.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "Lobbies",
+                columns: new[] { "ID", "Name", "OwnerID", "Private" },
+                values: new object[] { 1, "test lobby", null, false });
+
+            migrationBuilder.InsertData(
+                table: "Lobbies",
+                columns: new[] { "ID", "Name", "OwnerID", "Private" },
+                values: new object[] { 2, "test lobby2", null, false });
+
+            migrationBuilder.InsertData(
+                table: "Lobbies",
+                columns: new[] { "ID", "Name", "OwnerID", "Private" },
+                values: new object[] { 3, "private lobby", null, true });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -226,6 +248,11 @@ namespace Kurnik.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Lobbies_OwnerID",
+                table: "Lobbies",
+                column: "OwnerID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserParticipationInLobbies_UserID",

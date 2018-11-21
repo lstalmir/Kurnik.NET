@@ -35,16 +35,11 @@ namespace Kurnik.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
 
-                    b.Property<string>("Login")
-                        .IsRequired();
-
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256);
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256);
-
-                    b.Property<string>("Password");
 
                     b.Property<string>("PasswordHash");
 
@@ -78,11 +73,21 @@ namespace Kurnik.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<string>("OwnerID");
+
                     b.Property<bool>("Private");
 
                     b.HasKey("ID");
 
+                    b.HasIndex("OwnerID");
+
                     b.ToTable("Lobbies");
+
+                    b.HasData(
+                        new { ID = 1, Name = "test lobby", Private = false },
+                        new { ID = 2, Name = "test lobby2", Private = false },
+                        new { ID = 3, Name = "private lobby", Private = true }
+                    );
                 });
 
             modelBuilder.Entity("Kurnik.Models.UserParticipationInLobby", b =>
@@ -207,6 +212,13 @@ namespace Kurnik.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("Kurnik.Models.Lobby", b =>
+                {
+                    b.HasOne("Kurnik.Areas.Identity.Data.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerID");
                 });
 
             modelBuilder.Entity("Kurnik.Models.UserParticipationInLobby", b =>

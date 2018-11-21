@@ -29,6 +29,10 @@ namespace Source.Data
                 .HasOne(participation => participation.User)
                 .WithMany(user => user.LobbyParticipations)
                 .IsRequired();
+
+            modelBuilder.Entity<Lobby>().HasData(new Lobby { ID=1 ,Name = "test lobby", Private = false });
+            modelBuilder.Entity<Lobby>().HasData(new Lobby { ID=2 ,Name = "test lobby2", Private = false });
+            modelBuilder.Entity<Lobby>().HasData(new Lobby { ID=3 ,Name = "private lobby", Private = true });
         }
 
         public DbSet<Lobby> Lobbies { get; set; }

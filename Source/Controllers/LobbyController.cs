@@ -16,9 +16,38 @@ namespace Kurnik.Controllers
 
         public IActionResult Index()
         {
-            // TODO list lobbies
+            var currentUserId = "not_implemented";
+            return View(_service.GetAllPublicAndOwnedLobbies(currentUserId));
+        }
+
+        public IActionResult Create()
+        {
             return View();
         }
+
+        [HttpPost]
+        public IActionResult Create(Lobby lobby)
+        {
+            // TODO get userId
+            string ownerId = null;
+            try
+            {
+                _service.CreateLobby(ownerId, lobby.Name, lobby.Private);
+            }
+            catch (ArgumentOutOfRangeException ex1)
+            {
+                return NotFound(ex1);
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpDelete]
+        public IActionResult Remove(int id)
+        {
+            _service.RemoveLobby(id);
+            return RedirectToAction("Index");
+        }
+
         public IActionResult Details(int id)
         {
             var lobby = _service.GetLobby(id);
