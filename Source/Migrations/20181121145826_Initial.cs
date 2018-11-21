@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Kurnik.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -53,7 +53,8 @@ namespace Kurnik.Migrations
                     ID = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(nullable: true),
-                    Private = table.Column<bool>(nullable: false)
+                    Private = table.Column<bool>(nullable: false),
+                    OwnerId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -189,6 +190,21 @@ namespace Kurnik.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "testuserid", 0, "01db2396-5664-464a-8f77-d77a287d9808", "test@test.pl", false, false, null, null, null, null, null, false, null, false, "test" });
+
+            migrationBuilder.InsertData(
+                table: "Lobbies",
+                columns: new[] { "ID", "Name", "OwnerId", "Private" },
+                values: new object[] { 5, "POKÓJ TESTOWY", "testuserid", false });
+
+            migrationBuilder.InsertData(
+                table: "UserParticipationInLobbies",
+                columns: new[] { "LobbyID", "UserID" },
+                values: new object[] { 5, "testuserid" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

@@ -9,8 +9,8 @@ using Source.Data;
 namespace Kurnik.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20181120190210_CustomUser")]
-    partial class CustomUser
+    [Migration("20181121145826_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -37,16 +37,11 @@ namespace Kurnik.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
 
-                    b.Property<string>("Login")
-                        .IsRequired();
-
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256);
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256);
-
-                    b.Property<string>("Password");
 
                     b.Property<string>("PasswordHash");
 
@@ -71,6 +66,10 @@ namespace Kurnik.Migrations
                         .HasName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasData(
+                        new { Id = "testuserid", AccessFailedCount = 0, ConcurrencyStamp = "01db2396-5664-464a-8f77-d77a287d9808", Email = "test@test.pl", EmailConfirmed = false, LockoutEnabled = false, PhoneNumberConfirmed = false, TwoFactorEnabled = false, UserName = "test" }
+                    );
                 });
 
             modelBuilder.Entity("Kurnik.Models.Lobby", b =>
@@ -80,11 +79,17 @@ namespace Kurnik.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<string>("OwnerId");
+
                     b.Property<bool>("Private");
 
                     b.HasKey("ID");
 
                     b.ToTable("Lobbies");
+
+                    b.HasData(
+                        new { ID = 5, Name = "POKÓJ TESTOWY", OwnerId = "testuserid", Private = false }
+                    );
                 });
 
             modelBuilder.Entity("Kurnik.Models.UserParticipationInLobby", b =>
@@ -98,6 +103,10 @@ namespace Kurnik.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("UserParticipationInLobbies");
+
+                    b.HasData(
+                        new { LobbyID = 5, UserID = "testuserid" }
+                    );
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

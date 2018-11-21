@@ -16,6 +16,8 @@ namespace Kurnik.Models
         [Display(Name = "Prywatny")]
         public bool Private { get; set; }
 
-        public IList<UserParticipationInLobby> UserParticipations { get; set; }
+        public string OwnerId { get; set; }
+
+        public virtual IList<UserParticipationInLobby> UserParticipations { get; set; }
     }
 }
