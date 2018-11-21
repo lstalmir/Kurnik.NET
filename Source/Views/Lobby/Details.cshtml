@@ -1,5 +1,5 @@
 ﻿@model Kurnik.Models.Lobby;
-<h2>Pokój</h2>
+<h2>Pokój o id @ViewContext.RouteData.Values["id"]</h2>
 
 <p>
     Nazwa: @Model.Name
@@ -8,7 +8,20 @@
     Prywatny: @Model.Private
 </p>
 
+@if (ViewBag.isOwner){
 <a asp-area="" asp-controller="Lobby" asp-action="Edit" asp-route-id="@Model.ID">Edytuj</a>
+}
+@if (!ViewBag.isParticipator){
+    <form asp-controller="Lobby" asp-action="Join" asp-route-id="@ViewContext.RouteData.Values["id"]" method="post" role="form">
+        <button type="submit">Dołącz</button>
+    </form>
+}
+@if (ViewBag.IsParticipator){
+<form asp-controller="Lobby" asp-action="Leave" asp-route-id="@ViewContext.RouteData.Values["id"]"
+      method="post" role="form">
+    <button type="submit">Wyjdź</button>
+</form>joi
+}
 
 <br />
 <br />
@@ -19,7 +32,13 @@
 @for (var i = 0; i < Model.UserParticipations.Count; i++)
 {
     var user = Model.UserParticipations.ElementAt(i).User;
-    <text>@user.Email</text>
+    <text>@user.Email id=@user.Id</text>
+    @if (ViewBag.isOwner){
+    <form asp-controller="Lobby" asp-action="Remove" asp-route-id="@ViewContext.RouteData.Values["id"]" method="post" role="form">
+        <input type="hidden" value="@user.Id" name="userId"/>
+        <button type="submit">Usuń</button>
+    </form>
+    }
     <br />
 }
 

@@ -10,5 +10,6 @@ namespace Kurnik.Services
         void RemoveUser(int lobbyId, string userId);
         void InviteUser(int lobbyId, string userId);
         bool IsUserOwnerOfTheLobby(int lobbyId, string userId);
+        bool IsUserParticipatorOfTheLobby(int lobbyId, string userId);
     }
 }

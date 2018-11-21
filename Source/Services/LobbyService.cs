@@ -26,7 +26,7 @@ namespace Kurnik.Services
         public void EditLobby(int lobbyId, string name, bool isPrivate)
         {
             var lobby = _dbContext.Lobbies.Find(lobbyId);
-            if(lobby == null)
+            if (lobby == null)
             {
                 ThrowLobbyNotFoundException(lobbyId);
             }
@@ -43,16 +43,16 @@ namespace Kurnik.Services
         public void AddUser(int lobbyId, string userId)
         {
             var lobby = _dbContext.Lobbies.Find(lobbyId);
-            if(lobby == null)
+            if (lobby == null)
             {
                 ThrowLobbyNotFoundException(lobbyId);
             }
             var user = _dbContext.Users.Find(userId);
-            if(user == null)
+            if (user == null)
             {
                 ThrowUserNotFoundException(userId);
             }
-            var alreadyExistingParticipation = _dbContext.UserParticipationInLobbies.Find(new object[] { lobbyId, userId});
+            var alreadyExistingParticipation = _dbContext.UserParticipationInLobbies.Find(new object[] { lobbyId, userId });
             if (alreadyExistingParticipation != null)
             {
                 throw new InvalidOperationException("User is already in the lobby");
@@ -71,21 +71,27 @@ namespace Kurnik.Services
         public bool IsUserOwnerOfTheLobby(int lobbyId, string userId)
         {
             var lobby = _dbContext.Lobbies.Find(lobbyId);
-            if(lobby == null)
+            if (lobby == null)
             {
                 ThrowLobbyNotFoundException(lobbyId);
             }
             return lobby.OwnerId == userId;
         }
 
+        public bool IsUserParticipatorOfTheLobby(int lobbyId, string userId)
+        {
+            return _dbContext.UserParticipationInLobbies.Find(new object[] { lobbyId, userId }) != null;
+        }
+
         public void RemoveUser(int lobbyId, string userId)
         {
             var participation = _dbContext.UserParticipationInLobbies.Find(new object[] { lobbyId, userId });
-            if(participation != null)
+            if (participation == null)
             {
-                _dbContext.UserParticipationInLobbies.Remove(participation);
-                _dbContext.SaveChanges();
+                throw new ArgumentOutOfRangeException(string.Format("User with id '{0} does not participate in the lobby", userId));
             }
+            _dbContext.UserParticipationInLobbies.Remove(participation);
+            _dbContext.SaveChanges();
         }
 
         public void InviteUser(int lobbyId, string userId)

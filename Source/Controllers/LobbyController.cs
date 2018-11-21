@@ -32,6 +32,10 @@ namespace Kurnik.Controllers
             {
                 return NotFound();
             }
+            var isUserParticipator = _service.IsUserParticipatorOfTheLobby(id, userId);
+            var isUserOwner = _service.IsUserOwnerOfTheLobby(id, userId);
+            ViewBag.isOwner = isUserOwner;
+            ViewBag.isParticipator = isUserParticipator;
             return View(lobby);
         }
 
@@ -86,13 +90,15 @@ namespace Kurnik.Controllers
             return RedirectToAction("Index");
         }
 
-        // consume with ajax when owner of the lobby removes user
-        [HttpDelete]
-        [Route("Lobby/{lobbyId}/User/{userId}")]
-        public IActionResult RemoveUser(int lobbyId, string userId)
+        [HttpPost]
+        public IActionResult Remove(int id, string userId)
         {
-            _service.RemoveUser(lobbyId, userId);
-            return NoContent();
+            if (_service.IsUserOwnerOfTheLobby(id, userId))
+            {
+                return Forbid();
+            }
+            _service.RemoveUser(id, userId);
+            return RedirectToAction("Details", new { id });
         }
     }
 }
