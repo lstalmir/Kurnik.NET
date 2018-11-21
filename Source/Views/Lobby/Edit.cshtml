@@ -1,12 +1,10 @@
-﻿@model Kurnik.Models.Lobby;
+﻿@model Kurnik.Models.EditLobbyViewModel;
 
-<h2>Ustawienia pokoju</h2>
+<h2>Ustawienia pokoju o id @ViewContext.RouteData.Values["id"]</h2>
 
-<p>
-    Nazwa: @Model.Name
-</p>
-<p>
-    Prywatny: @Model.Private
-</p>
-<button>Zapisz zmiany</button>
-<button>Anuluj</button>
+<form asp-controller="Lobby" asp-action="Edit" asp-route-id="@ViewContext.RouteData.Values["id"]"
+      method="post" class="form-horizontal" role="form">
+    Nazwa: <input asp-for="Name"/> <br/>
+    Prywatny <input type="checkbox" asp-for="Private"/> <br/>
+    <button type="submit">Zapisz</button>
+</form>

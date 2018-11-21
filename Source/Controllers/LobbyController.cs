@@ -1,5 +1,6 @@
 ﻿using Kurnik.Models;
 using Kurnik.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -7,6 +8,7 @@ using System.Security.Claims;
 
 namespace Kurnik.Controllers
 {
+    [Authorize]
     public class LobbyController : Controller
     {
         private readonly ILobbyService _service;
@@ -44,10 +46,15 @@ namespace Kurnik.Controllers
             {
                 return Forbid();
             }
-            return View(lobby);
+            var viewModel = new EditLobbyViewModel()
+            {
+                Name = lobby.Name,
+                Private = lobby.Private
+            };
+            return View(viewModel);
         }
 
-        [HttpPut]
+        [HttpPost]
         public IActionResult Edit(int id, EditLobbyViewModel viewModel)
         {
             if (_service.IsUserOwnerOfTheLobby(id, userId))
