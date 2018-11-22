@@ -78,7 +78,7 @@ namespace Kurnik.Services
             {
                 ThrowLobbyNotFoundException(lobbyId);
             }
-            return lobby.OwnerId == userId;
+            return lobby.OwnerID == userId;
         }
 
         public void RemoveUser(int lobbyId, string userId)
@@ -114,14 +114,10 @@ namespace Kurnik.Services
 
         }
 
-        public void RemoveLobby(int id, string userId)
+        public void RemoveLobby(int lobbyId, string userId)
         {
-            var lobby = _dbContext.Lobbies.Find(new object[] { id });
-            if (lobby == null)
-            {
-                ThrowLobbyNotFoundException(id);
-            }
-            if (lobby.OwnerID != userId)
+            var lobby = _dbContext.Lobbies.Find(new object[] { lobbyId });
+            if (!IsUserOwnerOfTheLobby(lobbyId, userId))
             {
                 throw new InvalidOperationException("You do not have permission to perform this operation");
             }

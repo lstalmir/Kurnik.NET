@@ -198,19 +198,19 @@ namespace Kurnik.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Lobbies",
-                columns: new[] { "ID", "Name", "OwnerID", "Private" },
-                values: new object[] { 1, "test lobby", null, false });
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "testuserid", 0, "933348e1-3140-45e5-b6d9-631a4f6c7bcd", "test@test.pl", false, false, null, null, null, null, null, false, null, false, "test" });
 
             migrationBuilder.InsertData(
                 table: "Lobbies",
                 columns: new[] { "ID", "Name", "OwnerID", "Private" },
-                values: new object[] { 2, "test lobby2", null, false });
+                values: new object[] { 5, "POKÓJ TESTOWY", "testuserid", false });
 
             migrationBuilder.InsertData(
-                table: "Lobbies",
-                columns: new[] { "ID", "Name", "OwnerID", "Private" },
-                values: new object[] { 3, "private lobby", null, true });
+                table: "UserParticipationInLobbies",
+                columns: new[] { "LobbyID", "UserID" },
+                values: new object[] { 5, "testuserid" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

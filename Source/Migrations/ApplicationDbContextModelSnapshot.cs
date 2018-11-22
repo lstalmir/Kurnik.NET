@@ -66,7 +66,7 @@ namespace Kurnik.Migrations
                     b.ToTable("AspNetUsers");
 
                     b.HasData(
-                        new { Id = "testuserid", AccessFailedCount = 0, ConcurrencyStamp = "01db2396-5664-464a-8f77-d77a287d9808", Email = "test@test.pl", EmailConfirmed = false, LockoutEnabled = false, PhoneNumberConfirmed = false, TwoFactorEnabled = false, UserName = "test" }
+                        new { Id = "testuserid", AccessFailedCount = 0, ConcurrencyStamp = "933348e1-3140-45e5-b6d9-631a4f6c7bcd", Email = "test@test.pl", EmailConfirmed = false, LockoutEnabled = false, PhoneNumberConfirmed = false, TwoFactorEnabled = false, UserName = "test" }
                     );
                 });
 
@@ -77,16 +77,18 @@ namespace Kurnik.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<string>("OwnerId");
+                    b.Property<string>("OwnerID");
 
                     b.Property<bool>("Private");
 
                     b.HasKey("ID");
 
+                    b.HasIndex("OwnerID");
+
                     b.ToTable("Lobbies");
 
                     b.HasData(
-                        new { ID = 5, Name = "POKÓJ TESTOWY", OwnerId = "testuserid", Private = false }
+                        new { ID = 5, Name = "POKÓJ TESTOWY", OwnerID = "testuserid", Private = false }
                     );
                 });
 
@@ -216,6 +218,13 @@ namespace Kurnik.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("Kurnik.Models.Lobby", b =>
+                {
+                    b.HasOne("Kurnik.Areas.Identity.Data.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerID");
                 });
 
             modelBuilder.Entity("Kurnik.Models.UserParticipationInLobby", b =>

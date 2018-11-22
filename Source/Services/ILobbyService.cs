@@ -13,5 +13,6 @@ namespace Kurnik.Services
         bool IsUserOwnerOfTheLobby(int lobbyId, string userId);
         Lobby CreateLobby(string ownerId, string name, bool visibility);
         IList<Lobby> GetAllPublicAndOwnedLobbies(string currentUserId);
+        void RemoveLobby(int id, string userId);
     }
 }

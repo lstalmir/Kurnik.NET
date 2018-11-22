@@ -9,7 +9,7 @@ using Source.Data;
 namespace Kurnik.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20181121150913_Initial")]
+    [Migration("20181121185221_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -66,6 +66,10 @@ namespace Kurnik.Migrations
                         .HasName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasData(
+                        new { Id = "testuserid", AccessFailedCount = 0, ConcurrencyStamp = "933348e1-3140-45e5-b6d9-631a4f6c7bcd", Email = "test@test.pl", EmailConfirmed = false, LockoutEnabled = false, PhoneNumberConfirmed = false, TwoFactorEnabled = false, UserName = "test" }
+                    );
                 });
 
             modelBuilder.Entity("Kurnik.Models.Lobby", b =>
@@ -86,9 +90,7 @@ namespace Kurnik.Migrations
                     b.ToTable("Lobbies");
 
                     b.HasData(
-                        new { ID = 1, Name = "test lobby", Private = false },
-                        new { ID = 2, Name = "test lobby2", Private = false },
-                        new { ID = 3, Name = "private lobby", Private = true }
+                        new { ID = 5, Name = "POKÓJ TESTOWY", OwnerID = "testuserid", Private = false }
                     );
                 });
 
@@ -103,6 +105,10 @@ namespace Kurnik.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("UserParticipationInLobbies");
+
+                    b.HasData(
+                        new { LobbyID = 5, UserID = "testuserid" }
+                    );
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

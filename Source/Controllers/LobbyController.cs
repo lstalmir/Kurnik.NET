@@ -22,8 +22,7 @@ namespace Kurnik.Controllers
 
         public IActionResult Index()
         {
-            var currentUserId = "not_implemented";
-            return View(_service.GetAllPublicAndOwnedLobbies(currentUserId));
+            return View(_service.GetAllPublicAndOwnedLobbies(userId));
         }
 
         public IActionResult Create()
@@ -32,13 +31,11 @@ namespace Kurnik.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Lobby lobby)
+        public IActionResult Create(EditLobbyViewModel lobby)
         {
-            // TODO get userId
-            string ownerId = null;
             try
             {
-                _service.CreateLobby(ownerId, lobby.Name, lobby.Private);
+                _service.CreateLobby(userId, lobby.Name, lobby.Private);
             }
             catch (ArgumentOutOfRangeException ex1)
             {
@@ -48,9 +45,13 @@ namespace Kurnik.Controllers
         }
 
         [HttpDelete]
-        public IActionResult Remove(int id)
+        public IActionResult Delete(int id)
         {
-            _service.RemoveLobby(id);
+            if (_service.IsUserOwnerOfTheLobby(id, userId))
+            {
+                return Forbid();
+            }
+            _service.RemoveLobby(id, userId);
             return RedirectToAction("Index");
         }
 
