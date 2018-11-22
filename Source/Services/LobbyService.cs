@@ -106,7 +106,7 @@ namespace Kurnik.Services
             return newLobby;
         }
 
-        public IList<Lobby> GetAllPublicAndOwnedLobbies(string userId)
+        public IList<Lobby> GetAllPublicOrOwnedLobbies(string userId)
         {
             return _dbContext.Lobbies.Where(
                 lobby => !lobby.Private || lobby.OwnerID.Equals(userId)

@@ -22,7 +22,7 @@ namespace Kurnik.Controllers
 
         public IActionResult Index()
         {
-            return View(_service.GetAllPublicAndOwnedLobbies(userId));
+            return View(_service.GetAllPublicOrOwnedLobbies(userId));
         }
 
         public IActionResult Create()
