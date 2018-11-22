@@ -7,6 +7,7 @@ namespace Kurnik.Services
     public class LobbyService : ILobbyService
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly ILobbyInvitationSenderService _lobbyInvitationSenderService;
 
         private void ThrowLobbyNotFoundException(int lobbyId)
         {
@@ -18,9 +19,10 @@ namespace Kurnik.Services
             throw new ArgumentOutOfRangeException(string.Format("User with id {0} not found", userId));
         }
 
-        public LobbyService(ApplicationDbContext dbContext)
+        public LobbyService(ApplicationDbContext dbContext, ILobbyInvitationSenderService lobbyInvitationSenderService)
         {
             _dbContext = dbContext;
+            _lobbyInvitationSenderService = lobbyInvitationSenderService;
         }
 
         public void EditLobby(int lobbyId, string name, bool isPrivate)
@@ -88,15 +90,36 @@ namespace Kurnik.Services
             var participation = _dbContext.UserParticipationInLobbies.Find(new object[] { lobbyId, userId });
             if (participation == null)
             {
-                throw new ArgumentOutOfRangeException(string.Format("User with id '{0} does not participate in the lobby", userId));
+                throw new InvalidOperationException(string.Format("User with id '{0} does not participate in the lobby", userId));
             }
             _dbContext.UserParticipationInLobbies.Remove(participation);
             _dbContext.SaveChanges();
         }
 
-        public void InviteUser(int lobbyId, string userId)
+        public void InviteUser(int lobbyId, string invitedUserId)
         {
-            throw new NotImplementedException();
+            var invitedUser = _dbContext.Users.Find(invitedUserId);
+            if(invitedUser == null)
+            {
+                ThrowUserNotFoundException(invitedUserId);
+            }
+            var lobby = _dbContext.Lobbies.Find(lobbyId);
+            if(lobby == null)
+            {
+                ThrowLobbyNotFoundException(lobbyId);
+            }
+            var invitingUser = _dbContext.Users.Find(lobby.OwnerId);
+            if (IsUserParticipatorOfTheLobby(lobbyId, invitedUserId))
+            {
+                throw new InvalidOperationException("User is already in the lobby");
+            }
+            var invitation = new LobbyInvitationMessage()
+            {
+                InvitingUserName = invitingUser.UserName,
+                LobbyId = lobbyId,
+                LobbyName = lobby.Name
+            };
+            _lobbyInvitationSenderService.SendInvitationToLobby(invitedUserId, invitation);
         }
     }
 }

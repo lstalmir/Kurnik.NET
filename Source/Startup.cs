@@ -65,6 +65,7 @@ namespace Source
             services.AddSignalR();
 
             services.AddScoped<ILobbyService, LobbyService>();
+            services.AddScoped<ILobbyInvitationSenderService, LobbyInvitationSenderService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,6 +91,7 @@ namespace Source
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ChatHub>("/chatHub");
+                routes.MapHub<InvitationHub>("/invitationHub");
             });
 
             app.UseMvc(routes =>

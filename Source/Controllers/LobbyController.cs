@@ -12,12 +12,12 @@ namespace Kurnik.Controllers
     public class LobbyController : Controller
     {
         private readonly ILobbyService _service;
-        private readonly string userId;
+        private readonly string currentUserId;
 
         public LobbyController(ILobbyService service, IHttpContextAccessor httpContextAccessor)
         {
             _service = service;
-            userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            currentUserId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
         }
 
         public IActionResult Index()
@@ -32,8 +32,8 @@ namespace Kurnik.Controllers
             {
                 return NotFound();
             }
-            var isUserParticipator = _service.IsUserParticipatorOfTheLobby(id, userId);
-            var isUserOwner = _service.IsUserOwnerOfTheLobby(id, userId);
+            var isUserParticipator = _service.IsUserParticipatorOfTheLobby(id, currentUserId);
+            var isUserOwner = _service.IsUserOwnerOfTheLobby(id, currentUserId);
             ViewBag.isOwner = isUserOwner;
             ViewBag.isParticipator = isUserParticipator;
             return View(lobby);
@@ -46,7 +46,7 @@ namespace Kurnik.Controllers
             {
                 return NotFound();
             }
-            if (_service.IsUserOwnerOfTheLobby(id, userId))
+            if (_service.IsUserOwnerOfTheLobby(id, currentUserId))
             {
                 return Forbid();
             }
@@ -61,7 +61,7 @@ namespace Kurnik.Controllers
         [HttpPost]
         public IActionResult Edit(int id, EditLobbyViewModel viewModel)
         {
-            if (_service.IsUserOwnerOfTheLobby(id, userId))
+            if (_service.IsUserOwnerOfTheLobby(id, currentUserId))
             {
                 return Forbid();
             }
@@ -74,11 +74,15 @@ namespace Kurnik.Controllers
         {
             try
             {
-                _service.AddUser(id, userId);
+                _service.AddUser(id, currentUserId);
             }
             catch (ArgumentOutOfRangeException ex1)
             {
                 return NotFound(ex1);
+            }
+            catch(InvalidOperationException ex2)
+            {
+                return Conflict(ex2);
             }
             return RedirectToAction("Details", new { id });
         }
@@ -86,19 +90,58 @@ namespace Kurnik.Controllers
         [HttpPost]
         public IActionResult Leave(int id)
         {
-            _service.RemoveUser(id, userId);
+            try
+            {
+                _service.RemoveUser(id, currentUserId);
+            }
+            catch(InvalidOperationException ex)
+            {
+                return Conflict(ex);
+            }
             return RedirectToAction("Index");
         }
 
         [HttpPost]
         public IActionResult Remove(int id, string userId)
         {
-            if (_service.IsUserOwnerOfTheLobby(id, userId))
+            try
             {
-                return Forbid();
+                if (_service.IsUserOwnerOfTheLobby(id, userId))
+                {
+                    return Forbid();
+                }
+                _service.RemoveUser(id, userId);
+            }catch(ArgumentOutOfRangeException e1)
+            {
+                return NotFound(e1);
+            }catch(InvalidOperationException e2)
+            {
+                return Conflict(e2);
             }
-            _service.RemoveUser(id, userId);
             return RedirectToAction("Details", new { id });
+        }
+
+        // consume with ajax call
+        [HttpPost]
+        [Route("/lobbies/{lobbyId}/invitations")]
+        public IActionResult InviteUser(int lobbyId, [FromBody] string invitedUserId)
+        {
+            try
+            {
+                if (!_service.IsUserOwnerOfTheLobby(lobbyId, currentUserId))
+                {
+                    return Forbid();
+                }
+                _service.InviteUser(lobbyId, invitedUserId);
+            }catch(ArgumentOutOfRangeException ex1)
+            {
+                return NotFound(ex1);
+            }
+            catch (InvalidOperationException ex2)
+            {
+                return Conflict(ex2);
+            }
+            return Ok();
         }
     }
 }
