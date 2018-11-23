@@ -206,10 +206,10 @@ namespace Kurnik.Tests
         }
 
         [Fact]
-        public void SuccessWhenUserIsInTheLobby()
+        public void RemoveUserParticipationFromDatabase()
         {
             //arrange
-            var options = Utils.GetDbOptions("RemoveUserShould_SuccessWhenUserIsInTheLobby");
+            var options = Utils.GetDbOptions("RemoveUserShould_RemoveUserParticipationFromDatabase");
             using (var context = new ApplicationDbContext(options))
             {
                 context.Lobbies.Add(new Lobby()
@@ -241,6 +241,45 @@ namespace Kurnik.Tests
                 Assert.Equal(0, context.Lobbies.Find(5).UserParticipations.Count);
                 Assert.Null(context.Users.Find("test_user").LobbyParticipation);
             }
+        }
+
+        [Fact]
+        public void RemoveUserConnectionsToHub()
+        {
+            //arrange
+            var chatService = new Mock<IChatService>();
+            var options = Utils.GetDbOptions("RemoveUserShould_RemoveUserConnectionsToHub");
+            using (var context = new ApplicationDbContext(options))
+            {
+                context.Lobbies.Add(new Lobby()
+                {
+                    ID = 5
+                });
+                context.Users.Add(new User()
+                {
+                    Id = "test_user",
+                    UserName = "TestUser"
+                });
+                context.UserParticipationInLobbies.Add(new UserParticipationInLobby()
+                {
+                    UserID = "test_user",
+                    LobbyID = 5
+                });
+                context.SaveChanges();
+            }
+            //act
+            using (var context = new ApplicationDbContext(options))
+            {
+                var service = new LobbyService(context, null, chatService.Object);
+                service.RemoveUser(5, "test_user");
+            }
+            //assert
+            chatService.Verify(cs => cs.RemoveConnectionsFromChat(
+                It.IsAny<ICollection<string>>(),
+                It.Is<string>(connectionId => connectionId == "5")));
+            chatService.Verify(cs => cs.OnUserLeft(
+                It.Is<string>(username => username == "TestUser"),
+                It.Is<string>(chatId => chatId == "5")));
         }
     }
 
