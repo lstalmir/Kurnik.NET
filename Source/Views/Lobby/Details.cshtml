@@ -8,19 +8,22 @@
     Prywatny: @Model.Private
 </p>
 
-@if (ViewBag.isOwner){
-<a asp-area="" asp-controller="Lobby" asp-action="Edit" asp-route-id="@Model.ID">Edytuj</a>
+@if (ViewBag.isOwner)
+{
+    <a asp-area="" asp-controller="Lobby" asp-action="Edit" asp-route-id="@Model.ID">Edytuj</a>
 }
-@if (!ViewBag.isParticipator){
+@if (!ViewBag.isParticipator)
+{
     <form asp-controller="Lobby" asp-action="Join" asp-route-id="@ViewContext.RouteData.Values["id"]" method="post" role="form">
         <button type="submit">Dołącz</button>
     </form>
 }
-@if (ViewBag.IsParticipator){
-<form asp-controller="Lobby" asp-action="Leave" asp-route-id="@ViewContext.RouteData.Values["id"]"
-      method="post" role="form">
-    <button type="submit">Wyjdź</button>
-</form>
+@if (ViewBag.IsParticipator)
+{
+    <form asp-controller="Lobby" asp-action="Leave" asp-route-id="@ViewContext.RouteData.Values["id"]"
+          method="post" role="form">
+        <button type="submit">Wyjdź</button>
+    </form>
 }
 
 <br />
@@ -33,14 +36,19 @@
 {
     var user = Model.UserParticipations.ElementAt(i).User;
     <text>@user.Email id=@user.Id</text>
-    @if (ViewBag.isOwner){
-    <form asp-controller="Lobby" asp-action="Remove" asp-route-id="@ViewContext.RouteData.Values["id"]" method="post" role="form">
-        <input type="hidden" value="@user.Id" name="userId"/>
-        <button type="submit">Usuń</button>
-    </form>
+    @if (ViewBag.isOwner)
+    {
+        <form asp-controller="Lobby" asp-action="Remove" asp-route-id="@ViewContext.RouteData.Values["id"]" method="post" role="form">
+            <input type="hidden" value="@user.Id" name="userId" />
+            <button type="submit">Usuń</button>
+        </form>
     }
     <br />
 }
 
+<input type="text" id="message-input"/>
+<button id="send-message-button">Wyślij</button>
 
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>
 

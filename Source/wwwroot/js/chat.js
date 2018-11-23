@@ -2,7 +2,9 @@
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
-connection.on("ReceiveMessage", function (user, message) {
+connection.on("HandleMessage", function (user, message) {
+    console.log("User " + user + " said: " + message);
+    /*
     var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     //var encodedMsg = user + " says " + msg;
     var div = document.createElement("div");
@@ -18,18 +20,27 @@ connection.on("ReceiveMessage", function (user, message) {
     div.appendChild(text_message);
     //document.getElementById("messagesList").appendChild(div);
     document.getElementById("messagesList").insertAdjacentElement('afterbegin', div);
+    */
+});
 
+connection.on("OnUserJoined", function (username) {
+    console.log("User " + username + " has joined the chat");
+});
+
+connection.on("OnUserLeft", function (username) {
+    console.log("User " + username + " has left the chat");
 });
 
 connection.start().catch(function (err) {
     return console.error(err.toString());
 });
 
-document.getElementById("sendButton").addEventListener("click", function (event) {
-    var user = document.getElementById("userInput").value;
-    var message = document.getElementById("messageInput").value;
-    connection.invoke("SendMessage", user, message).catch(function (err) {
+document.getElementById("send-message-button").addEventListener("click", function (event) {
+    /*var user = document.getElementById("userInput").value;*/
+    var message = document.getElementById("message-input").value;
+    connection.invoke("SendMessage", message).catch(function (err) {
         return console.error(err.toString());
     });
+    console.log("Sended message: " + message);
     event.preventDefault();
 });

@@ -172,7 +172,8 @@ namespace Kurnik.Migrations
                 columns: table => new
                 {
                     LobbyID = table.Column<int>(nullable: false),
-                    UserID = table.Column<string>(nullable: false)
+                    UserID = table.Column<string>(nullable: false),
+                    ConnectionIds = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -194,7 +195,7 @@ namespace Kurnik.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "testuserid", 0, "01db2396-5664-464a-8f77-d77a287d9808", "test@test.pl", false, false, null, null, null, null, null, false, null, false, "test" });
+                values: new object[] { "testuserid", 0, "2bedda60-89f3-4a6c-a602-0dc7aed356c7", "test@test.pl", false, false, null, null, null, null, null, false, null, false, "test" });
 
             migrationBuilder.InsertData(
                 table: "Lobbies",
@@ -203,8 +204,8 @@ namespace Kurnik.Migrations
 
             migrationBuilder.InsertData(
                 table: "UserParticipationInLobbies",
-                columns: new[] { "LobbyID", "UserID" },
-                values: new object[] { 5, "testuserid" });
+                columns: new[] { "LobbyID", "UserID", "ConnectionIds" },
+                values: new object[] { 5, "testuserid", "" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -246,7 +247,8 @@ namespace Kurnik.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_UserParticipationInLobbies_UserID",
                 table: "UserParticipationInLobbies",
-                column: "UserID");
+                column: "UserID",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

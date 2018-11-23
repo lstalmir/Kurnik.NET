@@ -66,7 +66,7 @@ namespace Kurnik.Migrations
                     b.ToTable("AspNetUsers");
 
                     b.HasData(
-                        new { Id = "testuserid", AccessFailedCount = 0, ConcurrencyStamp = "01db2396-5664-464a-8f77-d77a287d9808", Email = "test@test.pl", EmailConfirmed = false, LockoutEnabled = false, PhoneNumberConfirmed = false, TwoFactorEnabled = false, UserName = "test" }
+                        new { Id = "testuserid", AccessFailedCount = 0, ConcurrencyStamp = "2bedda60-89f3-4a6c-a602-0dc7aed356c7", Email = "test@test.pl", EmailConfirmed = false, LockoutEnabled = false, PhoneNumberConfirmed = false, TwoFactorEnabled = false, UserName = "test" }
                     );
                 });
 
@@ -96,14 +96,17 @@ namespace Kurnik.Migrations
 
                     b.Property<string>("UserID");
 
+                    b.Property<string>("ConnectionIds");
+
                     b.HasKey("LobbyID", "UserID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserID")
+                        .IsUnique();
 
                     b.ToTable("UserParticipationInLobbies");
 
                     b.HasData(
-                        new { LobbyID = 5, UserID = "testuserid" }
+                        new { LobbyID = 5, UserID = "testuserid", ConnectionIds = "" }
                     );
                 });
 
@@ -226,8 +229,8 @@ namespace Kurnik.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Kurnik.Areas.Identity.Data.User", "User")
-                        .WithMany("LobbyParticipations")
-                        .HasForeignKey("UserID")
+                        .WithOne("LobbyParticipation")
+                        .HasForeignKey("Kurnik.Models.UserParticipationInLobby", "UserID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

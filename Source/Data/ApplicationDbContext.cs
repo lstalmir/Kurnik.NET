@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Kurnik.Areas.Identity.Data;
+using Kurnik.Data;
 using Kurnik.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -23,12 +24,20 @@ namespace Source.Data
                 .HasKey(participation => new { participation.LobbyID, participation.UserID });
             modelBuilder.Entity<UserParticipationInLobby>()
                 .HasOne(participation => participation.Lobby)
-                .WithMany(lobby => lobby.UserParticipations)
-                 .IsRequired();
+                .WithMany(lobby => lobby.UserParticipations);
             modelBuilder.Entity<UserParticipationInLobby>()
                 .HasOne(participation => participation.User)
-                .WithMany(user => user.LobbyParticipations)
-                .IsRequired();
+                .WithOne(user => user.LobbyParticipation)
+                .HasForeignKey<UserParticipationInLobby>(participation => participation.UserID);
+
+            // hub connections of the user are hold in db as a string
+            var converter = new ConnectionIdsConverter();
+            modelBuilder.Entity<UserParticipationInLobby>()
+                .Property(p => p.ConnectionIds)
+                .HasConversion(
+                    connectionIds => converter.ToDbColumn(connectionIds),
+                    connectionIdsStrings => converter.ToEntityAttribute(connectionIdsStrings)
+                );
 
             var testUser = new User()
             {

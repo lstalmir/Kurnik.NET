@@ -66,6 +66,8 @@ namespace Source
 
             services.AddScoped<ILobbyService, LobbyService>();
             services.AddScoped<ILobbyInvitationSenderService, LobbyInvitationSenderService>();
+            services.AddScoped<IChatService, ChatService>();
+            services.AddScoped<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
