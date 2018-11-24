@@ -1,4 +1,5 @@
 ﻿using Kurnik.Models;
+using System.Collections.Generic;
 
 namespace Kurnik.Services
 {
@@ -12,6 +13,9 @@ namespace Kurnik.Services
         void RemoveUser(int lobbyId, string userId);
         void InviteUser(int lobbyId, string invitedUserId);
         bool IsUserOwnerOfTheLobby(int lobbyId, string userId);
+        Lobby CreateLobby(string ownerId, string name, bool visibility);
+        IList<Lobby> GetAllPublicOrOwnedLobbies(string currentUserId);
+        void RemoveLobby(int id, string userId);
         bool IsUserParticipatorOfTheLobby(int lobbyId, string userId);
     }
 }

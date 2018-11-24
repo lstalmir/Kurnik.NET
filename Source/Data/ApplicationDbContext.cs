@@ -55,7 +55,7 @@ namespace Source.Data
                 ID = 5,
                 Name = "POKÓJ TESTOWY",
                 Private = false,
-                OwnerId = testUser.Id,
+                OwnerID = testUser.Id,
             };
             modelBuilder.Entity<User>().HasData(testUser);
 

@@ -22,9 +22,39 @@ namespace Kurnik.Controllers
 
         public IActionResult Index()
         {
-            // TODO list lobbies
+            return View(_service.GetAllPublicOrOwnedLobbies(currentUserId));
+        }
+
+        public IActionResult Create()
+        {
             return View();
         }
+
+        [HttpPost]
+        public IActionResult Create(EditLobbyViewModel lobby)
+        {
+            try
+            {
+                _service.CreateLobby(currentUserId, lobby.Name, lobby.Private);
+            }
+            catch (ArgumentOutOfRangeException ex1)
+            {
+                return NotFound(ex1);
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpDelete]
+        public IActionResult Delete(int id)
+        {
+            if (_service.IsUserOwnerOfTheLobby(id, currentUserId))
+            {
+                return Forbid();
+            }
+            _service.RemoveLobby(id, currentUserId);
+            return RedirectToAction("Index");
+        }
+
         public IActionResult Details(int id)
         {
             var lobby = _service.GetLobby(id);
@@ -89,7 +119,7 @@ namespace Kurnik.Controllers
 		
 		[HttpPost]
 		public IActionResult AddLobby(string name, bool isPrivate){
-			_service.AddLobby(name, isPrivate);
+			var lobby = _service.CreateLobby(currentUserId, name, isPrivate);
 			ViewData["title"] = "Pokój";
             return View(lobby);
 		}

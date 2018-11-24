@@ -63,6 +63,7 @@ namespace Kurnik.Services
 					Private = isPrivate
 				}).Entity;
 				_dbContext.SaveChanges();
+            return lobby;
 		}
 
         public void AddUser(int lobbyId, string userId)
@@ -119,7 +120,7 @@ namespace Kurnik.Services
         public bool IsUserOwnerOfTheLobby(int lobbyId, string userId)
         {
             var lobby = GetLobbyOrThrow(lobbyId);
-            return lobby.OwnerId == userId;
+            return lobby.OwnerID == userId;
         }
 
         public bool IsUserParticipatorOfTheLobby(int lobbyId, string userId)
@@ -146,7 +147,7 @@ namespace Kurnik.Services
         {
             var invitedUser = GetUserOrThrow(invitedUserId);
             var lobby = GetLobbyOrThrow(lobbyId);
-            var invitingUser = _dbContext.Users.Find(lobby.OwnerId);
+            var invitingUser = _dbContext.Users.Find(lobby.OwnerID);
             if (IsUserParticipatorOfTheLobby(lobbyId, invitedUserId))
             {
                 throw new InvalidOperationException("User is already in the lobby");
@@ -158,6 +159,34 @@ namespace Kurnik.Services
                 LobbyName = lobby.Name
             };
             _lobbyInvitationSenderService.SendInvitationToLobby(invitedUserId, invitation);
+        }
+
+        public Lobby CreateLobby(string ownerId, string name, bool isPrivate)
+        {
+            if (_dbContext.Lobbies.FirstOrDefault(lobby => lobby.Name == name) != null)
+                throw new InvalidOperationException("Lobby with this name already exists!");
+
+            var newLobby = _dbContext.Lobbies.Add(new Lobby() { Name = name, Private = isPrivate, OwnerID = ownerId }).Entity;
+            _dbContext.SaveChanges();
+            return newLobby;
+        }
+
+        public IList<Lobby> GetAllPublicOrOwnedLobbies(string userId)
+        {
+            return _dbContext.Lobbies.Where(
+                lobby => !lobby.Private || lobby.OwnerID.Equals(userId)
+                ).ToList();
+
+        }
+        public void RemoveLobby(int lobbyId, string userId)
+        {
+            var lobby = _dbContext.Lobbies.Find(new object[] { lobbyId });
+            if (!IsUserOwnerOfTheLobby(lobbyId, userId))
+            {
+                throw new InvalidOperationException("You do not have permission to perform this operation");
+            }
+            _dbContext.Lobbies.Remove(lobby);
+            _dbContext.SaveChanges();
         }
     }
 }

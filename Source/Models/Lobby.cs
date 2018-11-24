@@ -12,12 +12,11 @@ namespace Kurnik.Models
     {
         public int ID { get; set; }
         [Display(Name = "Nazwa")]
-        public String Name { get; set; }
+        public string Name { get; set; }
         [Display(Name = "Prywatny")]
         public bool Private { get; set; }
-
-        public string OwnerId { get; set; }
-
+        public string OwnerID { get; set; }
         public virtual IList<UserParticipationInLobby> UserParticipations { get; set; }
+        public virtual User Owner{ get; set; }
     }
 }

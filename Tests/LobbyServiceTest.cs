@@ -6,6 +6,7 @@ using Moq;
 using Source.Data;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Kurnik.Tests
@@ -328,7 +329,7 @@ namespace Kurnik.Tests
                 {
                     ID = 5,
                     Name = "Lobby",
-                    OwnerId = "lobby_owner"
+                    OwnerID = "lobby_owner"
                 });
                 context.Users.Add(new User()
                 {
@@ -653,6 +654,175 @@ namespace Kurnik.Tests
             }
             //assert
             chatService.Verify(cs => cs.OnUserLeft(It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+        }
+    }
+
+    public class LobbyService_GetAllPublicOrOnwedLobbiesShould
+    {
+        [Fact]
+        public void ReturnCorrectLobbiesList()
+        {
+            //arrange
+            var options = Utils.GetDbOptions("GetAllPublicOrOnwedLobbiesShould_ReturnCorrectLobbiesList");
+            IEnumerable<string> lobbyNamesList;
+            using (var context = new ApplicationDbContext(options))
+            {
+                context.Lobbies.Add(new Lobby() { Name = "OurUserPublicLobby", OwnerID = "our_user", Private = false });
+                context.Lobbies.Add(new Lobby() { Name = "OtherUserPublicLobby", OwnerID = "other_user", Private = false });
+                context.Lobbies.Add(new Lobby() { Name = "OurUserPrivateLobby", OwnerID = "our_user", Private = true });
+                context.Lobbies.Add(new Lobby() { Name = "OtherUserPrivateLobby", OwnerID = "other_user", Private = true });
+                context.SaveChanges();
+            }
+            //act
+            using (var context = new ApplicationDbContext(options))
+            {
+                var service = new LobbyService(context, null, null);
+                lobbyNamesList = from l in service.GetAllPublicOrOwnedLobbies("our_user")
+                                 select l.Name;
+            }
+            //assert
+            using (var context = new ApplicationDbContext(options))
+            {
+                Assert.Contains("OurUserPublicLobby", lobbyNamesList);
+                Assert.Contains("OtherUserPublicLobby", lobbyNamesList);
+                Assert.Contains("OurUserPrivateLobby", lobbyNamesList);
+                Assert.DoesNotContain("OtherUserPrivateLobby", lobbyNamesList);
+            }
+        }
+    }
+    public class LobbyService_RemoveLobbyShould
+    {
+        [Fact]
+        public void SucceedWhenLobbyExists()
+        {
+            //arrange
+            var options = Utils.GetDbOptions("RemoveLobbyShould_SucceedWhenLobbyExists");
+            using (var context = new ApplicationDbContext(options))
+            {
+                context.Lobbies.Add(new Lobby() {
+                    ID = 5,
+                    Name = "new_lobby",
+                    OwnerID = "test_user"
+                });
+                context.Users.Add(new User()
+                {
+                    Id = "test_user"
+                });
+                context.SaveChanges();
+            }
+            //act
+            using (var context = new ApplicationDbContext(options))
+            {
+                var service = new LobbyService(context, null, null);
+                service.RemoveLobby(5, "test_user");
+            }
+            //assert
+            using(var context = new ApplicationDbContext(options))
+            {
+                Assert.Null(context.Lobbies.Find(5));
+            }
+        }
+        [Fact]
+        public void ThrowArgumentOutOfRangeExceptionWhenLobbyDoesNotExists()
+        {
+            //arrange
+            var options = Utils.GetDbOptions("RemoveLobbyShould_ThrowArgumentOutOfRangeExceptionWhenLobbyDoesNotExists");
+            using (var context = new ApplicationDbContext(options))
+            {
+                context.Users.Add(new User()
+                {
+                    Id = "test_user"
+                });
+                context.SaveChanges();
+            }
+            //act & assert
+            using (var context = new ApplicationDbContext(options))
+            {
+                var service = new LobbyService(context, null, null);
+                Assert.Throws<ArgumentOutOfRangeException>(() => service.RemoveLobby(1, "test_user"));
+            }
+        }
+
+        [Fact]
+        public void ThrowInvalidOperationExceptionWhenUserIsNotOwnerOfTheLobby()
+        {
+            //arrange
+            var options = Utils.GetDbOptions("RemoveLobbyShould_ThrowInvalidOperationExceptionWhenUserIsNotOwnerOfTheLobby");
+            using (var context = new ApplicationDbContext(options))
+            {
+                context.Lobbies.Add(new Lobby() {
+                    ID = 5,
+                    Name = "new_lobby",
+                    OwnerID = "test_user"
+                });
+                context.Users.Add(new User()
+                {
+                    Id = "test_user"
+                });
+                context.SaveChanges();
+            }
+            //act & assert
+            using (var context = new ApplicationDbContext(options))
+            {
+                var service = new LobbyService(context, null, null);
+                Assert.Throws<InvalidOperationException>(() => service.RemoveLobby(5, "not_owner_id"));
+            }
+        }
+    }
+
+    public class LobbyService_CreateLobbyShould
+    {
+        [Fact]
+        public void SucceedWhenGivenUniqueName()
+        {
+            //assert
+            var options = Utils.GetDbOptions("CreateLobbyShould_SucceedWhenGivenUniqueName");
+            Lobby lobby;
+            using (var context = new ApplicationDbContext(options))
+            {
+                context.Users.Add(new User()
+                {
+                    Id = "test_user"
+                });
+                context.SaveChanges();
+            }
+            //act
+            using (var context = new ApplicationDbContext(options))
+            {
+                var service = new LobbyService(context, null, null);
+                lobby = service.CreateLobby("test_user", "new_lobby", true);
+            }
+            //assert
+            using (var context = new ApplicationDbContext(options))
+            {
+                Assert.NotNull(lobby);
+                Assert.Equal("new_lobby", lobby.Name);
+                Assert.Equal("test_user", lobby.OwnerID);
+                Assert.True(lobby.Private);
+            }
+        }
+        [Fact]
+        public void ThrowInvalidOperationExceptionWhenLobbyWithThisNameExists()
+        {
+            //arrange
+            var options = Utils.GetDbOptions("CreateLobbyShould_ThrowInvalidOperationExceptionWhenLobbyWithThisNameExists");
+            using (var context = new ApplicationDbContext(options))
+            {
+                context.Lobbies.Add(new Lobby() {
+                    Name = "new_lobby"
+                });
+                context.Users.Add(new User()
+                {
+                    Id = "test_user"
+                });
+                context.SaveChanges();
+            }
+            //act & assert
+            using (var context = new ApplicationDbContext(options))
+            {
+                var service = new LobbyService(context, null, null);
+                Assert.Throws<InvalidOperationException>(() => service.CreateLobby("test_user", "new_lobby", true));
+            }
         }
     }
 }
