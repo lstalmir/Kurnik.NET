@@ -55,6 +55,15 @@ namespace Kurnik.Services
         {
             return _dbContext.Lobbies.Find(id);
         }
+		
+		public Lobby AddLobby(string name, bool isPrivate){
+			var lobby = _dbContext.Lobbies.Add(
+				new Lobby(){
+					Name = name,
+					Private = isPrivate
+				}).Entity;
+				_dbContext.SaveChanges();
+		}
 
         public void AddUser(int lobbyId, string userId)
         {

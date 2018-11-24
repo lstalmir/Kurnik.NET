@@ -86,6 +86,13 @@ namespace Kurnik.Controllers
             }
             return RedirectToAction("Details", new { id });
         }
+		
+		[HttpPost]
+		public IActionResult AddLobby(string name, bool isPrivate){
+			_service.AddLobby(name, isPrivate);
+			ViewData["title"] = "Pokój";
+            return View(lobby);
+		}
 
         [HttpPost]
         public IActionResult Leave(int id)
