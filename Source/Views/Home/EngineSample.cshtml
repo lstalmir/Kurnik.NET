@@ -70,6 +70,7 @@
                     if ( players[i][0] == playerName )
                     {
                         application.RemovePlayer( players[i][1] );
+                        players = players.filter( ( c ) => c[1] != players[i][1] );
                         break;
                     }
                 }

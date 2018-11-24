@@ -228,6 +228,7 @@ export class CBombermanUserInterface
             return;
 
         this.mUserInterfaceDivElement.children.item( 2 * entryIndex ).remove();
+        this.mPlayers = this.mPlayers.filter( ( c ) => c.GetPlayer().Id != id );
 
         if ( entryIndex == 0 && this.mPlayers.length > 1 )
         { // Remove the entry and separator after it
