@@ -48,6 +48,7 @@ class CBombermanPlayerEntry implements IUserInterfaceAnimatedHTMLElement
         let playerAvatar = document.createElement( "img" );
         playerAvatar.classList.add( "BOMBERMAN-USER-INTERFACE-PLAYER-ENTRY-PLAYER-AVATAR-CLASS" );
         playerAvatar.src = player.AvatarSrc;
+        playerAvatar.style.borderLeftColor = player.Color.GetCSSString();
 
         this.mHTMLElement = document.createElement( "div" );
         this.mHTMLElement.style.height = desc.Height.toString() + "px";
@@ -261,5 +262,3 @@ export class CBombermanUserInterface
         return this.mUserInterfaceDivElement.style.visibility == "hidden";
     };
 };
-
-

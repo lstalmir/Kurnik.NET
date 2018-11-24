@@ -12,11 +12,23 @@ export enum EBombermanStatus
 };
 
 //////////////////////////////////////////////////////////////////////////////
+export enum EBombermanPlayerColor
+{
+    Red,
+    Green,
+    Blue,
+    Yellow,
+    Cyan,
+    Magenta
+};
+
+//////////////////////////////////////////////////////////////////////////////
 export class FBombermanPlayerDesc
 {
     Id: number;
     Name: string;
     AvatarSrc: string;
+    Color: EBombermanPlayerColor;
 };
 
 export class FBombermanPlayerInitData

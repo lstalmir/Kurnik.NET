@@ -52,6 +52,17 @@
                 playerDesc.Name = document.getElementById( 'player_name' ).value;
                 playerDesc.AvatarSrc = '/images/player-avatar.png';
 
+                var color = document.getElementById( 'player_color' ).value;
+                switch ( color )
+                {
+                    case 'red': playerDesc.Color = mod_Bomberman.EBombermanPlayerColor.Red; break;
+                    case 'green': playerDesc.Color = mod_Bomberman.EBombermanPlayerColor.Green; break;
+                    case 'blue': playerDesc.Color = mod_Bomberman.EBombermanPlayerColor.Blue; break;
+                    case 'yellow': playerDesc.Color = mod_Bomberman.EBombermanPlayerColor.Yellow; break;
+                    case 'cyan': playerDesc.Color = mod_Bomberman.EBombermanPlayerColor.Cyan; break;
+                    case 'magenta': playerDesc.Color = mod_Bomberman.EBombermanPlayerColor.Magenta; break;
+                }
+                
                 playerInitData.X = playerId + 1;
                 playerInitData.Y = 1;
                 playerInitData.Rotation = 0;
@@ -87,6 +98,15 @@
     <div class="col-md-4">
         <label>Nazwa gracza</label>
         <input type="text" name="player_name" id="player_name"/>
+        <label>Kolor</label>
+        <select name="player_color" id="player_color">
+            <option value="red">Czerwony</option>
+            <option value="green">Zielony</option>
+            <option value="blue">Niebieski</option>
+            <option value="yellow">Żółty</option>
+            <option value="cyan">Cyjan</option>
+            <option value="magenta">Magenta</option>
+        </select>
         <button class="btn btn-default" onclick="add_player()">Dodaj gracza</button>
         <button class="btn btn-danger" onclick="remove_player()">Usuń gracza</button>
     </div>

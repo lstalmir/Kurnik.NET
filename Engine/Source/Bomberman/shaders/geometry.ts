@@ -1,5 +1,5 @@
 ﻿import { CProgram, EUniform, ETexture, EAttribute } from "../../game_engine/rendering/program";
-import { EBombermanUniform } from "./shader_constants";
+import { EBombermanUniform, EBombermanTexture } from "./shader_constants";
 
 abstract class FGeometryShaders
 {
@@ -38,13 +38,20 @@ abstract class FGeometryShaders
         'uniform int bUseSpecularTex;' +
         'uniform int bUseNormalTex;' +
         'uniform int bUseAlphaTex;' +
+        'uniform int bPlayerPass;' +
 
         'void main( void ) {' +
         '   vec4 outColor;' +
         '   vec3 color = uMatDiffuseColor;' +
         '   if( bUseDiffuseTex == 1 ) {' +
         '       vec4 diffuse = texture2D( uMatDiffuseTex, vTexcoord );' +
-        '       color = color * (1.0 - diffuse.a) + diffuse.rgb * diffuse.a;' +
+        '       if( bPlayerPass == 0 ) {' +
+        '           color = mix( color, diffuse.rgb, diffuse.a );' +
+        '       } else {' +
+        '           color = (1.0-diffuse.b) * (diffuse.g) * mix(color, vec3(0.95, 0.95, 0.95), 1.0-diffuse.r);' +
+        '           gl_FragColor = vec4( color, diffuse.g );' +
+        '           return;' +
+        '       }' +
         '   }' +
         '   float alpha = 1.0 - uMatTransparency;' +
         '   if( bUseAlphaTex == 1 ) {' +
@@ -70,6 +77,7 @@ export class CGeometryProgram extends CProgram
         this.QueryTextureLocation( gl, "uMatSpecularTex", ETexture.MaterialSpecular );
         this.QueryTextureLocation( gl, "uMatNormalTex", ETexture.MaterialNormal );
         this.QueryTextureLocation( gl, "uMatAlphaTex", ETexture.MaterialAlpha );
+        this.QueryTextureLocation( gl, "uMatColorMaskTex", EBombermanTexture.MaterialColorMask );
 
         this.QueryUniformLocation( gl, "uInvFrameSize", EUniform.InvFrameSize );
         this.QueryUniformLocation( gl, "uInvWorldSize", EBombermanUniform.InvWorldSize );
@@ -82,5 +90,6 @@ export class CGeometryProgram extends CProgram
         this.QueryUniformLocation( gl, "bUseSpecularTex", EUniform.UseSpecularTexture );
         this.QueryUniformLocation( gl, "bUseNormalTex", EUniform.UseNormalTexture );
         this.QueryUniformLocation( gl, "bUseAlphaTex", EUniform.UseAlphaTexture );
+        this.QueryUniformLocation( gl, "bPlayerPass", EBombermanUniform.PlayerPass );
     }
 }

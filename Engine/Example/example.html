@@ -36,6 +36,7 @@
                 playerDesc.Id = 0;
                 playerDesc.Name = 'player0';
                 playerDesc.AvatarSrc = 'images/player-avatar.png';
+                playerDesc.Color = bomberman.EBombermanPlayerColor.Red;
 
                 var playerInitData = new bomberman.FBombermanPlayerInitData;
                 playerInitData.X = 5;
@@ -46,25 +47,12 @@
 
                 playerDesc.Id = 1;
                 playerDesc.Name = 'player1';
-                playerInitData.X = 7;
-                application.AddPlayer( playerDesc, playerInitData );
+                playerDesc.Color = bomberman.EBombermanPlayerColor.Cyan;
+                playerInitData.X = 6;
+                playerInitData.Y = 3;
+                playerInitData.Rotation = 0;
 
-                playerDesc.Id = 2;
-                playerDesc.Name = 'player2';
-                playerInitData.X = 5;
                 application.AddPlayer( playerDesc, playerInitData );
-                
-                setTimeout( function ()
-                {
-                    playerDesc.Id = 3;
-                    playerDesc.Name = 'player3';
-                    application.AddPlayer( playerDesc, playerInitData );
-                }, 5000 );
-
-                setTimeout( function ()
-                {
-                    application.RemovePlayer( 1 );
-                }, 6000 );
             } );
         }
     </script>
