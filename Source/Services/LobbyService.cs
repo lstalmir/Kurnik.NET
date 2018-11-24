@@ -1,35 +1,52 @@
-﻿using Kurnik.Models;
+﻿using Kurnik.Areas.Identity.Data;
+using Kurnik.Models;
 using Source.Data;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Kurnik.Services
 {
     public class LobbyService : ILobbyService
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly ILobbyInvitationSenderService _lobbyInvitationSenderService;
+        private readonly IChatService _chatService;
 
-        private void ThrowLobbyNotFoundException(int lobbyId)
-        {
-            throw new ArgumentOutOfRangeException(string.Format("Lobby with id {0} not found", lobbyId));
-        }
-
-        private void ThrowUserNotFoundException(string userId)
-        {
-            throw new ArgumentOutOfRangeException(string.Format("User with id {0} not found", userId));
-        }
-
-        public LobbyService(ApplicationDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
-
-        public void SetPrivate(int lobbyId, bool isPrivate)
+        private Lobby GetLobbyOrThrow(int lobbyId)
         {
             var lobby = _dbContext.Lobbies.Find(lobbyId);
             if(lobby == null)
             {
-                ThrowLobbyNotFoundException(lobbyId);
+                throw new ArgumentOutOfRangeException(string.Format("Lobby with id {0} not found", lobbyId));
             }
+            return lobby;
+        }
+        
+        private User GetUserOrThrow(string userId)
+        {
+            var user = _dbContext.Users.Find(userId);
+            if(user == null)
+            {
+                throw new ArgumentOutOfRangeException(string.Format("User with id {0} not found", userId));
+            }
+            return user;
+        }
+
+        public LobbyService(
+            ApplicationDbContext dbContext,
+            ILobbyInvitationSenderService lobbyInvitationSenderService,
+            IChatService chatService)
+        {
+            _dbContext = dbContext;
+            _lobbyInvitationSenderService = lobbyInvitationSenderService;
+            _chatService = chatService;
+        }
+
+        public void EditLobby(int lobbyId, string name, bool isPrivate)
+        {
+            var lobby = GetLobbyOrThrow(lobbyId);
+            lobby.Name = name;
             lobby.Private = isPrivate;
             _dbContext.SaveChanges();
         }
@@ -38,23 +55,24 @@ namespace Kurnik.Services
         {
             return _dbContext.Lobbies.Find(id);
         }
+		
+		public Lobby AddLobby(string name, bool isPrivate){
+			var lobby = _dbContext.Lobbies.Add(
+				new Lobby(){
+					Name = name,
+					Private = isPrivate
+				}).Entity;
+				_dbContext.SaveChanges();
+            return lobby;
+		}
 
         public void AddUser(int lobbyId, string userId)
         {
-            var lobby = _dbContext.Lobbies.Find(lobbyId);
-            if(lobby == null)
+            var lobby = GetLobbyOrThrow(lobbyId);
+            var user = GetUserOrThrow(userId);
+            if(user.LobbyParticipation != null)
             {
-                ThrowLobbyNotFoundException(lobbyId);
-            }
-            var user = _dbContext.Users.Find(userId);
-            if(user == null)
-            {
-                ThrowUserNotFoundException(userId);
-            }
-            var alreadyExistingParticipation = _dbContext.UserParticipationInLobbies.Find(new object[] { lobbyId, userId});
-            if (alreadyExistingParticipation != null)
-            {
-                throw new InvalidOperationException("User is already in the lobby");
+                throw new InvalidOperationException("User can participate in only one lobby at the same time");
             }
             var participation = _dbContext.UserParticipationInLobbies.Add(
                 new UserParticipationInLobby()
@@ -62,24 +80,113 @@ namespace Kurnik.Services
                     LobbyID = lobbyId,
                     UserID = userId
                 }).Entity;
-            user.LobbyParticipations.Add(participation);
-            lobby.UserParticipations.Add(participation);
             _dbContext.SaveChanges();
+        }
+
+        public void SaveUserConnection(string userId, string connectionId)
+        {
+            var user = GetUserOrThrow(userId);
+            if(user.LobbyParticipation == null)
+            {
+                throw new InvalidOperationException("User does not participate in any lobby");
+            }
+            user.LobbyParticipation.ConnectionIds.Add(connectionId);
+            _dbContext.SaveChanges();
+            var chatId = user.LobbyParticipation.LobbyID.ToString();
+            _chatService.AddConnectionToChat(connectionId, chatId);
+            if(user.LobbyParticipation.ConnectionIds.Count == 1)
+            {
+                _chatService.OnUserJoined(user.UserName, chatId);
+            }
+        }
+
+        public void RemoveUserConnection(string userId, string connectionId)
+        {
+            var user = GetUserOrThrow(userId);
+            if (user.LobbyParticipation == null)
+            {
+                throw new InvalidOperationException("User does not participate in any lobby");
+            }
+            user.LobbyParticipation.ConnectionIds.Remove(connectionId);
+            _dbContext.SaveChanges();
+            var chatId = user.LobbyParticipation.LobbyID.ToString();
+            _chatService.RemoveConnectionsFromChat(new List<string> { connectionId }, chatId);
+            if(user.LobbyParticipation.ConnectionIds.Count == 0)
+            {
+                _chatService.OnUserLeft(user.UserName, chatId);
+            }
+        }
+
+        public bool IsUserOwnerOfTheLobby(int lobbyId, string userId)
+        {
+            var lobby = GetLobbyOrThrow(lobbyId);
+            return lobby.OwnerID == userId;
+        }
+
+        public bool IsUserParticipatorOfTheLobby(int lobbyId, string userId)
+        {
+            return _dbContext.UserParticipationInLobbies.Find(new object[] { lobbyId, userId }) != null;
         }
 
         public void RemoveUser(int lobbyId, string userId)
         {
             var participation = _dbContext.UserParticipationInLobbies.Find(new object[] { lobbyId, userId });
-            if(participation != null)
+            if (participation == null)
             {
-                _dbContext.UserParticipationInLobbies.Remove(participation);
-                _dbContext.SaveChanges();
+                throw new InvalidOperationException(string.Format("User with id '{0} does not participate in the lobby", userId));
             }
+            var user = participation.User;
+            _dbContext.UserParticipationInLobbies.Remove(participation);
+            _dbContext.SaveChanges();
+            var chatId = participation.LobbyID.ToString();
+            _chatService.RemoveConnectionsFromChat(participation.ConnectionIds, chatId);
+            _chatService.OnUserLeft(user.UserName, chatId);
         }
 
-        public void InviteUser(int lobbyId, string userId)
+        public void InviteUser(int lobbyId, string invitedUserId)
         {
-            throw new NotImplementedException();
+            var invitedUser = GetUserOrThrow(invitedUserId);
+            var lobby = GetLobbyOrThrow(lobbyId);
+            var invitingUser = _dbContext.Users.Find(lobby.OwnerID);
+            if (IsUserParticipatorOfTheLobby(lobbyId, invitedUserId))
+            {
+                throw new InvalidOperationException("User is already in the lobby");
+            }
+            var invitation = new LobbyInvitationMessage()
+            {
+                InvitingUserName = invitingUser.UserName,
+                LobbyId = lobbyId,
+                LobbyName = lobby.Name
+            };
+            _lobbyInvitationSenderService.SendInvitationToLobby(invitedUserId, invitation);
+        }
+
+        public Lobby CreateLobby(string ownerId, string name, bool isPrivate)
+        {
+            if (_dbContext.Lobbies.FirstOrDefault(lobby => lobby.Name == name) != null)
+                throw new InvalidOperationException("Lobby with this name already exists!");
+
+            var newLobby = _dbContext.Lobbies.Add(new Lobby() { Name = name, Private = isPrivate, OwnerID = ownerId }).Entity;
+            _dbContext.SaveChanges();
+            return newLobby;
+        }
+
+        public IList<Lobby> GetAllPublicOrOwnedLobbies(string userId)
+        {
+            return _dbContext.Lobbies.Where(
+                lobby => !lobby.Private || lobby.OwnerID.Equals(userId)
+                ).ToList();
+
+        }
+        public void RemoveLobby(int lobbyId, string userId)
+        {
+            var lobby = _dbContext.Lobbies.Find(new object[] { lobbyId });
+            if (!IsUserOwnerOfTheLobby(lobbyId, userId))
+            {
+                throw new InvalidOperationException("You do not have permission to perform this operation");
+            }
+            _dbContext.Lobbies.Remove(lobby);
+            _dbContext.SaveChanges();
         }
     }
 }

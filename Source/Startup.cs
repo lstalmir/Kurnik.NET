@@ -55,7 +55,8 @@ namespace Source
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("DefaultConnection"))
+                    .UseLazyLoadingProxies());
             services.AddDefaultIdentity<User>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -64,6 +65,9 @@ namespace Source
             services.AddSignalR();
 
             services.AddScoped<ILobbyService, LobbyService>();
+            services.AddScoped<ILobbyInvitationSenderService, LobbyInvitationSenderService>();
+            services.AddScoped<IChatService, ChatService>();
+            services.AddScoped<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -89,6 +93,7 @@ namespace Source
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ChatHub>("/chatHub");
+                routes.MapHub<InvitationHub>("/invitationHub");
             });
 
             app.UseMvc(routes =>
@@ -98,7 +103,7 @@ namespace Source
                     template: "{controller=Home}/{action=Index}/{id?}");
                 routes.MapRoute(
                     name: "lobby",
-                     template: "{controller=Lobby}/{action=Details}/{id}");
+                     template: "{controller=Lobby}/{action=Details}/{id?}");
             });
         }
     }

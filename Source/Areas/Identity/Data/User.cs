@@ -10,6 +10,6 @@ namespace Kurnik.Areas.Identity.Data
 {
     public class User : IdentityUser
     {
-        public IList<UserParticipationInLobby> LobbyParticipations { get; set; }
+        public virtual UserParticipationInLobby LobbyParticipation { get; set; }
     }
 }

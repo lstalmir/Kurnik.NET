@@ -35,16 +35,11 @@ namespace Kurnik.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
 
-                    b.Property<string>("Login")
-                        .IsRequired();
-
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256);
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256);
-
-                    b.Property<string>("Password");
 
                     b.Property<string>("PasswordHash");
 
@@ -69,6 +64,10 @@ namespace Kurnik.Migrations
                         .HasName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasData(
+                        new { Id = "testuserid", AccessFailedCount = 0, ConcurrencyStamp = "2bedda60-89f3-4a6c-a602-0dc7aed356c7", Email = "test@test.pl", EmailConfirmed = false, LockoutEnabled = false, PhoneNumberConfirmed = false, TwoFactorEnabled = false, UserName = "test" }
+                    );
                 });
 
             modelBuilder.Entity("Kurnik.Models.Lobby", b =>
@@ -78,11 +77,19 @@ namespace Kurnik.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<string>("OwnerID");
+
                     b.Property<bool>("Private");
 
                     b.HasKey("ID");
 
+                    b.HasIndex("OwnerID");
+
                     b.ToTable("Lobbies");
+
+                    b.HasData(
+                        new { ID = 5, Name = "POKÓJ TESTOWY", OwnerID = "testuserid", Private = false }
+                    );
                 });
 
             modelBuilder.Entity("Kurnik.Models.UserParticipationInLobby", b =>
@@ -91,11 +98,18 @@ namespace Kurnik.Migrations
 
                     b.Property<string>("UserID");
 
+                    b.Property<string>("ConnectionIds");
+
                     b.HasKey("LobbyID", "UserID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserID")
+                        .IsUnique();
 
                     b.ToTable("UserParticipationInLobbies");
+
+                    b.HasData(
+                        new { LobbyID = 5, UserID = "testuserid", ConnectionIds = "" }
+                    );
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -209,6 +223,13 @@ namespace Kurnik.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Kurnik.Models.Lobby", b =>
+                {
+                    b.HasOne("Kurnik.Areas.Identity.Data.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerID");
+                });
+
             modelBuilder.Entity("Kurnik.Models.UserParticipationInLobby", b =>
                 {
                     b.HasOne("Kurnik.Models.Lobby", "Lobby")
@@ -217,8 +238,8 @@ namespace Kurnik.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Kurnik.Areas.Identity.Data.User", "User")
-                        .WithMany("LobbyParticipations")
-                        .HasForeignKey("UserID")
+                        .WithOne("LobbyParticipation")
+                        .HasForeignKey("Kurnik.Models.UserParticipationInLobby", "UserID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

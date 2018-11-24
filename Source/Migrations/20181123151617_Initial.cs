@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Kurnik.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -53,7 +53,8 @@ namespace Kurnik.Migrations
                     ID = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(nullable: true),
-                    Private = table.Column<bool>(nullable: false)
+                    Private = table.Column<bool>(nullable: false),
+                    OwnerId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -171,7 +172,8 @@ namespace Kurnik.Migrations
                 columns: table => new
                 {
                     LobbyID = table.Column<int>(nullable: false),
-                    UserID = table.Column<string>(nullable: false)
+                    UserID = table.Column<string>(nullable: false),
+                    ConnectionIds = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -189,6 +191,21 @@ namespace Kurnik.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "testuserid", 0, "2bedda60-89f3-4a6c-a602-0dc7aed356c7", "test@test.pl", false, false, null, null, null, null, null, false, null, false, "test" });
+
+            migrationBuilder.InsertData(
+                table: "Lobbies",
+                columns: new[] { "ID", "Name", "OwnerId", "Private" },
+                values: new object[] { 5, "POKÓJ TESTOWY", "testuserid", false });
+
+            migrationBuilder.InsertData(
+                table: "UserParticipationInLobbies",
+                columns: new[] { "LobbyID", "UserID", "ConnectionIds" },
+                values: new object[] { 5, "testuserid", "" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -230,7 +247,8 @@ namespace Kurnik.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_UserParticipationInLobbies_UserID",
                 table: "UserParticipationInLobbies",
-                column: "UserID");
+                column: "UserID",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
