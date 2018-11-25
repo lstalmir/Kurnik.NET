@@ -25,3 +25,13 @@
     border-radius: 3px;
     color: #FFFFFF;
 }
+
+.rooms-table-card {
+    width: 70%;
+    margin: 10% auto;
+    -webkit-box-shadow: 0px 0px 40px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 40px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 40px 0px rgba(0,0,0,0.75);
+    background: #FFFFFF;
+    border-radius: 4px;
+}

@@ -4,39 +4,42 @@
     ViewData["Title"] = "View";
 }
 
-<h2>List</h2>
+<div class="card" style="width: 80%; padding: 20px;">
+    <button class="btn btn-primary" onclick="location.href='@Url.Action("Create", "Lobby")'">Create new</button>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Private)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Private)
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <table class="table table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.ID)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Private)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Private)
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" onclick="location.href='@Url.Action("Details", "Lobby", new {@item.ID})'">Details</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
