@@ -11,18 +11,20 @@ namespace Kurnik.Controllers
     [Authorize]
     public class LobbyController : Controller
     {
-        private readonly ILobbyService _service;
+        private readonly ILobbyService _lobbyService;
+        private readonly IGameService _gameService;
         private readonly string currentUserId;
 
-        public LobbyController(ILobbyService service, IHttpContextAccessor httpContextAccessor)
+        public LobbyController(ILobbyService lobbyService, IGameService gameService, IHttpContextAccessor httpContextAccessor)
         {
-            _service = service;
+            _lobbyService = lobbyService;
+            _gameService = gameService;
             currentUserId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
         }
 
         public IActionResult Index()
         {
-            return View(_service.GetAllPublicOrOwnedLobbies(currentUserId));
+            return View(_lobbyService.GetAllPublicOrOwnedLobbies(currentUserId));
         }
 
         public IActionResult Create()
@@ -35,7 +37,7 @@ namespace Kurnik.Controllers
         {
             try
             {
-                _service.CreateLobby(currentUserId, lobby.Name, lobby.Private);
+                _lobbyService.CreateLobby(currentUserId, lobby.Name, lobby.Private);
             }
             catch (ArgumentOutOfRangeException ex1)
             {
@@ -47,23 +49,23 @@ namespace Kurnik.Controllers
         [HttpDelete]
         public IActionResult Delete(int id)
         {
-            if (_service.IsUserOwnerOfTheLobby(id, currentUserId))
+            if (_lobbyService.IsUserOwnerOfTheLobby(id, currentUserId))
             {
                 return Forbid();
             }
-            _service.RemoveLobby(id, currentUserId);
+            _lobbyService.RemoveLobby(id, currentUserId);
             return RedirectToAction("Index");
         }
 
         public IActionResult Details(int id)
         {
-            var lobby = _service.GetLobby(id);
+            var lobby = _lobbyService.GetLobby(id);
             if (lobby == null)
             {
                 return NotFound();
             }
-            var isUserParticipator = _service.IsUserParticipatorOfTheLobby(id, currentUserId);
-            var isUserOwner = _service.IsUserOwnerOfTheLobby(id, currentUserId);
+            var isUserParticipator = _lobbyService.IsUserParticipatorOfTheLobby(id, currentUserId);
+            var isUserOwner = _lobbyService.IsUserOwnerOfTheLobby(id, currentUserId);
             ViewBag.isOwner = isUserOwner;
             ViewBag.isParticipator = isUserParticipator;
             return View(lobby);
@@ -71,12 +73,12 @@ namespace Kurnik.Controllers
 
         public IActionResult Edit(int id)
         {
-            var lobby = _service.GetLobby(id);
+            var lobby = _lobbyService.GetLobby(id);
             if(lobby == null)
             {
                 return NotFound();
             }
-            if (_service.IsUserOwnerOfTheLobby(id, currentUserId))
+            if (_lobbyService.IsUserOwnerOfTheLobby(id, currentUserId))
             {
                 return Forbid();
             }
@@ -91,11 +93,11 @@ namespace Kurnik.Controllers
         [HttpPost]
         public IActionResult Edit(int id, EditLobbyViewModel viewModel)
         {
-            if (_service.IsUserOwnerOfTheLobby(id, currentUserId))
+            if (_lobbyService.IsUserOwnerOfTheLobby(id, currentUserId))
             {
                 return Forbid();
             }
-            _service.EditLobby(id, viewModel.Name, viewModel.Private);
+            _lobbyService.EditLobby(id, viewModel.Name, viewModel.Private);
             return RedirectToAction("Details", new { id });
         }
 
@@ -104,7 +106,7 @@ namespace Kurnik.Controllers
         {
             try
             {
-                _service.AddUser(id, currentUserId);
+                _lobbyService.AddUser(id, currentUserId);
             }
             catch (ArgumentOutOfRangeException ex1)
             {
@@ -119,7 +121,7 @@ namespace Kurnik.Controllers
 		
 		[HttpPost]
 		public IActionResult AddLobby(string name, bool isPrivate){
-			var lobby = _service.CreateLobby(currentUserId, name, isPrivate);
+			var lobby = _lobbyService.CreateLobby(currentUserId, name, isPrivate);
 			ViewData["title"] = "Pokój";
             return View(lobby);
 		}
@@ -129,7 +131,7 @@ namespace Kurnik.Controllers
         {
             try
             {
-                _service.RemoveUser(id, currentUserId);
+                _lobbyService.RemoveUser(id, currentUserId);
             }
             catch(InvalidOperationException ex)
             {
@@ -143,11 +145,11 @@ namespace Kurnik.Controllers
         {
             try
             {
-                if (_service.IsUserOwnerOfTheLobby(id, userId))
+                if (_lobbyService.IsUserOwnerOfTheLobby(id, userId))
                 {
                     return Forbid();
                 }
-                _service.RemoveUser(id, userId);
+                _lobbyService.RemoveUser(id, userId);
             }catch(ArgumentOutOfRangeException e1)
             {
                 return NotFound(e1);
@@ -165,11 +167,11 @@ namespace Kurnik.Controllers
         {
             try
             {
-                if (!_service.IsUserOwnerOfTheLobby(lobbyId, currentUserId))
+                if (!_lobbyService.IsUserOwnerOfTheLobby(lobbyId, currentUserId))
                 {
                     return Forbid();
                 }
-                _service.InviteUser(lobbyId, invitedUserId);
+                _lobbyService.InviteUser(lobbyId, invitedUserId);
             }catch(ArgumentOutOfRangeException ex1)
             {
                 return NotFound(ex1);
@@ -179,6 +181,29 @@ namespace Kurnik.Controllers
                 return Conflict(ex2);
             }
             return Ok();
+        }
+
+        [HttpPost]
+        public IActionResult BeginGame( int lobbyId,
+            [FromForm( Name = "GameWidth" )] int width,
+            [FromForm( Name = "GameHeight" )] int height )
+        {
+            try
+            {
+                if( !_lobbyService.IsUserOwnerOfTheLobby( lobbyId, currentUserId ) )
+                    return Forbid();
+
+                _gameService.AddGame( _lobbyService.GetLobby( lobbyId ), width, height );
+            }
+            catch( ArgumentOutOfRangeException e ) { return NotFound( e ); }
+            catch( InvalidOperationException e ) { return Conflict( e ); }
+            catch( ArgumentException ) { return ValidationProblem(); }
+            return RedirectToAction( "Game", lobbyId );
+        }
+        
+        public IActionResult Game( int lobbyId )
+        {
+            return View();
         }
     }
 }
