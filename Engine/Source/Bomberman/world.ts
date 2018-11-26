@@ -108,6 +108,12 @@ export class CBombermanWorld extends CWorld
     };
 
     //////////////////////////////////////////////////////////////////////////
+    public GetBlockSize(): number
+    {
+        return this.mBlockSize + this.mBlockSpacing;
+    };
+
+    //////////////////////////////////////////////////////////////////////////
     public AddPlayer( context: CContext, desc: FBombermanPlayerDesc, initData?: FBombermanPlayerInitData ): EBombermanStatus
     {
         try

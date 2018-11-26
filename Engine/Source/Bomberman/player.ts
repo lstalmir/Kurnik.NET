@@ -18,6 +18,8 @@ export class CBombermanPlayer extends CRectangle
     public readonly AvatarSrc: string;
     public readonly Color: FBombermanColor;
 
+    protected mDirection: number;
+
     //////////////////////////////////////////////////////////////////////////
     public constructor( context: CContext, desc: FBombermanPlayerDesc, initData?: FBombermanPlayerInitData )
     {
@@ -42,7 +44,31 @@ export class CBombermanPlayer extends CRectangle
         {
             context.SetUniform3f( EUniform.MaterialDiffuseColor,
                 this.Color.r, this.Color.g, this.Color.b );
+
+            context.SetUniform1i( EBombermanUniform.FlipTexcoordHorizontal,
+                this.mDirection );
         }
         super.Render( context, renderPass );
-    }
+
+        if ( renderPass == ERenderPass.Geometry )
+        {
+            context.SetUniform1i( EBombermanUniform.FlipTexcoordHorizontal,
+                0 );
+        }
+    };
+
+    //////////////////////////////////////////////////////////////////////////
+    public Move( newPosition: FVector, worldScale: number ): void
+    {
+        let newPositionScaled = newPosition.Multiply( worldScale );
+        if ( this.Position.x < newPositionScaled.x )
+        {
+            this.mDirection = 1;
+        }
+        else if ( this.Position.x > newPositionScaled.x )
+        {
+            this.mDirection = 0;
+        }
+        this.Position.Set( newPositionScaled );
+    };
 };

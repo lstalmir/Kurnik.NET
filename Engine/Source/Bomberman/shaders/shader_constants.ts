@@ -5,7 +5,8 @@ export enum EBombermanUniform
     BlurPixelOffset = EUniform.USER_DEFINED,
     InvWorldSize,
     PostProcessPass,
-    PlayerPass
+    PlayerPass,
+    FlipTexcoordHorizontal
 };
 
 export enum EBombermanTexture

@@ -13,12 +13,15 @@ abstract class FGeometryShaders
         'varying float vDepth;' +
         'uniform vec2 uInvFrameSize;' +
         'uniform vec2 uInvWorldSize;' +
+        'uniform int bFlipTexcoordHorizontal;' +
 
         'void main( void ) {' +
         '   vec2 position = 2.0 * (aPosition.xy + aInstancePosition.xy) * uInvWorldSize - 1.0;' +
         '   float depth = aPosition.z + aInstancePosition.z;' +
         '   gl_Position = vec4( position, depth, 1.0 );' +
         '   vTexcoord = aTexcoord + aInstanceTexcoord;' +
+        '   if( bFlipTexcoordHorizontal == 1 )' +
+        '       vTexcoord.x = 1.0 - vTexcoord.x;' +
         '   vDepth = depth;' +
         '}';
 
@@ -91,5 +94,6 @@ export class CGeometryProgram extends CProgram
         this.QueryUniformLocation( gl, "bUseNormalTex", EUniform.UseNormalTexture );
         this.QueryUniformLocation( gl, "bUseAlphaTex", EUniform.UseAlphaTexture );
         this.QueryUniformLocation( gl, "bPlayerPass", EBombermanUniform.PlayerPass );
+        this.QueryUniformLocation( gl, "bFlipTexcoordHorizontal", EBombermanUniform.FlipTexcoordHorizontal );
     }
 }

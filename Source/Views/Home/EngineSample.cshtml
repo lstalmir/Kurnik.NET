@@ -41,6 +41,7 @@
                             alert( e );
                         }
                     } );
+                    document.onkeydown = player_move;
                 }
             }
             function add_player()
@@ -69,7 +70,7 @@
 
                 application.AddPlayer( playerDesc, playerInitData );
 
-                players.push( [playerDesc.Name, playerId] );
+                players.push( [playerDesc.Name, playerId, playerInitData.X, playerInitData.Y] );
 
                 playerId++;
             }
@@ -84,6 +85,38 @@
                         players = players.filter( ( c ) => c[1] != players[i][1] );
                         break;
                     }
+                }
+            }
+            function player_move( e )
+            {
+                e = e || window.event;
+
+                var playerMoved = false;
+
+                if ( e.keyCode == '37' )
+                {
+                    players[0][2] -= 1;
+                    playerMoved = true;
+                }
+                else if ( e.keyCode == '39' )
+                {
+                    players[0][2] += 1;
+                    playerMoved = true;
+                }
+                else if ( e.keyCode == '38' )
+                {
+                    players[0][3] -= 1;
+                    playerMoved = true;
+                }
+                else if ( e.keyCode == '40' )
+                {
+                    players[0][3] += 1;
+                    playerMoved = true;
+                }
+
+                if ( playerMoved )
+                {
+                    application.SetPlayerTransform( players[0][1], players[0][2], players[0][3], 0 );
                 }
             }
         </script>

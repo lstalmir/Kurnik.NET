@@ -176,8 +176,8 @@ export class CBombermanApplication
         { // Player not found.
             return EBombermanStatus.NotFound;
         }
-
-        player.Position.Set( new FVector( x, y, 0 ) );
+        
+        player.Move( new FVector( x, y, 0 ), ( <CBombermanWorld>this.mWorld ).GetBlockSize() );
         player.Rotation.Set( new FRotator( rotation ) );
         return EBombermanStatus.OK;
     };
