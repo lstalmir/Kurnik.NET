@@ -47,7 +47,6 @@ export class CBombermanWorld extends CWorld
     {
         super( context, worldDesc.Name );
         this.mPlayersMaterial = new CMaterial( "PLAYERS_MATERIAL" );
-        this.mPlayersMaterial.DiffuseColor = new FColor( 252 / 255, 230 / 255, 65 / 255 );
         this.mBombsMaterial = new CMaterial( "BOMBS_MATERIAL" );
         this.mBlocksMaterial = new CMaterial( "BLOCKS_MATERIAL" );
         this.mBlocksMaterial.DiffuseColor = new FColor( 147 / 255, 121 / 255, 116 / 255 );
@@ -67,6 +66,10 @@ export class CBombermanWorld extends CWorld
             this.mDefaultBlocksMaterial.DiffuseTexture = new CTexture2D(
                 context,
                 CBombermanExternalResources.DefaultBlockTexturePath );
+
+            this.mPlayersMaterial.DiffuseTexture = new CTexture2D(
+                context,
+                CBombermanExternalResources.PlayerImagePath );
         }
 
         this.GenerateDefaultBlocks( context );
@@ -88,9 +91,11 @@ export class CBombermanWorld extends CWorld
 
         if ( pass == ERenderPass.Geometry )
         {
+            context.SetUniform1i( EBombermanUniform.PlayerPass, 1 );
             context.SetMaterial( this.mPlayersMaterial );
             for ( let player of this.Players.Values() )
                 player.Render( context, pass );
+            context.SetUniform1i( EBombermanUniform.PlayerPass, 0 );
 
             context.SetMaterial( this.mBombsMaterial );
             for ( let bomb of this.Bombs.Values() )
@@ -100,6 +105,12 @@ export class CBombermanWorld extends CWorld
             for ( let block of this.Blocks.Values() )
                 block.Render( context, pass );
         }
+    };
+
+    //////////////////////////////////////////////////////////////////////////
+    public GetBlockSize(): number
+    {
+        return this.mBlockSize + this.mBlockSpacing;
     };
 
     //////////////////////////////////////////////////////////////////////////

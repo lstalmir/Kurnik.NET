@@ -48,6 +48,7 @@ class CBombermanPlayerEntry implements IUserInterfaceAnimatedHTMLElement
         let playerAvatar = document.createElement( "img" );
         playerAvatar.classList.add( "BOMBERMAN-USER-INTERFACE-PLAYER-ENTRY-PLAYER-AVATAR-CLASS" );
         playerAvatar.src = player.AvatarSrc;
+        playerAvatar.style.borderLeftColor = player.Color.GetCSSString();
 
         this.mHTMLElement = document.createElement( "div" );
         this.mHTMLElement.style.height = desc.Height.toString() + "px";
@@ -228,6 +229,7 @@ export class CBombermanUserInterface
             return;
 
         this.mUserInterfaceDivElement.children.item( 2 * entryIndex ).remove();
+        this.mPlayers = this.mPlayers.filter( ( c ) => c.GetPlayer().Id != id );
 
         if ( entryIndex == 0 && this.mPlayers.length > 1 )
         { // Remove the entry and separator after it
@@ -260,5 +262,3 @@ export class CBombermanUserInterface
         return this.mUserInterfaceDivElement.style.visibility == "hidden";
     };
 };
-
-

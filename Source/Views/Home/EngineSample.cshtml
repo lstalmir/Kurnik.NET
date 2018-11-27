@@ -41,6 +41,7 @@
                             alert( e );
                         }
                     } );
+                    document.onkeydown = player_move;
                 }
             }
             function add_player()
@@ -52,13 +53,24 @@
                 playerDesc.Name = document.getElementById( 'player_name' ).value;
                 playerDesc.AvatarSrc = '/images/player-avatar.png';
 
+                var color = document.getElementById( 'player_color' ).value;
+                switch ( color )
+                {
+                    case 'red': playerDesc.Color = mod_Bomberman.EBombermanPlayerColor.Red; break;
+                    case 'green': playerDesc.Color = mod_Bomberman.EBombermanPlayerColor.Green; break;
+                    case 'blue': playerDesc.Color = mod_Bomberman.EBombermanPlayerColor.Blue; break;
+                    case 'yellow': playerDesc.Color = mod_Bomberman.EBombermanPlayerColor.Yellow; break;
+                    case 'cyan': playerDesc.Color = mod_Bomberman.EBombermanPlayerColor.Cyan; break;
+                    case 'magenta': playerDesc.Color = mod_Bomberman.EBombermanPlayerColor.Magenta; break;
+                }
+                
                 playerInitData.X = playerId + 1;
                 playerInitData.Y = 1;
                 playerInitData.Rotation = 0;
 
                 application.AddPlayer( playerDesc, playerInitData );
 
-                players.push( [playerDesc.Name, playerId] );
+                players.push( [playerDesc.Name, playerId, playerInitData.X, playerInitData.Y] );
 
                 playerId++;
             }
@@ -70,8 +82,41 @@
                     if ( players[i][0] == playerName )
                     {
                         application.RemovePlayer( players[i][1] );
+                        players = players.filter( ( c ) => c[1] != players[i][1] );
                         break;
                     }
+                }
+            }
+            function player_move( e )
+            {
+                e = e || window.event;
+
+                var playerMoved = false;
+
+                if ( e.keyCode == '37' )
+                {
+                    players[0][2] -= 1;
+                    playerMoved = true;
+                }
+                else if ( e.keyCode == '39' )
+                {
+                    players[0][2] += 1;
+                    playerMoved = true;
+                }
+                else if ( e.keyCode == '38' )
+                {
+                    players[0][3] -= 1;
+                    playerMoved = true;
+                }
+                else if ( e.keyCode == '40' )
+                {
+                    players[0][3] += 1;
+                    playerMoved = true;
+                }
+
+                if ( playerMoved )
+                {
+                    application.SetPlayerTransform( players[0][1], players[0][2], players[0][3], 0 );
                 }
             }
         </script>
@@ -86,6 +131,15 @@
     <div class="col-md-4">
         <label>Nazwa gracza</label>
         <input type="text" name="player_name" id="player_name"/>
+        <label>Kolor</label>
+        <select name="player_color" id="player_color">
+            <option value="red">Czerwony</option>
+            <option value="green">Zielony</option>
+            <option value="blue">Niebieski</option>
+            <option value="yellow">Żółty</option>
+            <option value="cyan">Cyjan</option>
+            <option value="magenta">Magenta</option>
+        </select>
         <button class="btn btn-default" onclick="add_player()">Dodaj gracza</button>
         <button class="btn btn-danger" onclick="remove_player()">Usuń gracza</button>
     </div>
